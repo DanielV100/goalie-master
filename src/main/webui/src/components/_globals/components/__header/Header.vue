@@ -1,0 +1,61 @@
+<script setup>
+import * as GlobalConfig from '../../../../globals/gloablConfig.js';
+
+function logOutClicked() {
+
+}
+</script>
+
+<template>
+  <div class="__header">
+    <a href="#/dashboard" class="logo">{{ GlobalConfig.APP_NAME }}</a>
+    <div class="header-right">
+      <i class='bx bx-user'></i>
+      <i @click="logOutClicked" class='bx bx-log-out'></i>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.__header {
+  overflow: hidden;
+  background-color: var(--lightGrey);
+}
+.__header a {
+  float: left;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+}
+.__header a.logo {
+  padding: 12pt;
+  font-size: 25pt;
+  font-weight: bold;
+}
+.__header a:hover {
+  background-color: var(--lightestGrey);
+  color: black;
+}
+i {
+  padding: 12pt;
+  font-size: 35pt;
+}
+i:hover {
+  font-weight: 900;
+  cursor: pointer;
+  background-color: var(--lightestGrey);
+}
+.header-right {
+  float: right;
+}
+@media screen and (max-width: 500px) {
+  .__header a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  .header-right {
+    float: none;
+  }
+}
+</style>

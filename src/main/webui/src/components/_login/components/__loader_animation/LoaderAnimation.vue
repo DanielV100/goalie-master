@@ -32,8 +32,8 @@ changeWaitingText();
   border: 16px solid var(--avocadoGreenLowOpacity);
   border-radius: 50%;
   border-top: 16px solid var(--avocadoGreen);
-  width: 120pt;
-  height: 120pt;
+  width: 140px;
+  height: 140px;
   -webkit-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
 }
