@@ -2,10 +2,12 @@
 import {computed, ref} from 'vue';
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 import * as LocalConfig from './resources/loginFormConfig.js';
+import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
 
 const username = ref('');
 const password = ref('');
 const isPasswordInvisible = ref(true);
+const isLoginFormVisible = ref(true);
 
 //Button is only clickable, when username and password is set
 const isLoginButtonDisabled = computed(() => {
@@ -14,7 +16,14 @@ const isLoginButtonDisabled = computed(() => {
 });
 
 function loginButtonClicked() {
+  showLoaderAnimation();
+}
 
+/**
+ * Setting boolean false, to display login loader.
+ */
+function showLoaderAnimation() {
+  isLoginFormVisible.value = false;
 }
 function passwordIconClicked() {
   togglePasswordIcon();
@@ -40,13 +49,11 @@ function togglePasswordIcon() {
 function setPasswordVisibility(type) {
   document.getElementById('password').setAttribute("type", type);
 }
-
-
 </script>
 
 <template>
   <div class="__loginForm">
-    <div class="wrapper">
+    <div v-if="isLoginFormVisible" class="wrapper">
       <form action="">
         <h1>{{ GlobalConfig.APP_NAME }}</h1>
         <p class="dedication">{{ LocalConfig.DEDICATION_TEXT }}</p>
@@ -61,6 +68,9 @@ function setPasswordVisibility(type) {
         </div>
         <button type="submit" :disabled="isLoginButtonDisabled" @click="loginButtonClicked">Login</button>
       </form>
+    </div>
+    <div v-else class="wrapper">
+      <LoaderAnimation />
     </div>
   </div>
 </template>
