@@ -2,20 +2,22 @@
 import { onMounted } from 'vue';
 import * as LocalConfig from './resources/overviewConfig.js';
 
-
 const username = "daniel.vollmer!";
-let i = 0;
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 onMounted(() => {
-  typeWriter();
+  writeUsernameInTypewriterStyle();
 });
 
 
-function typeWriter() {
-  if (i < username.length) {
+/**
+ * Writes username in typewriter style (every letter in ms seconds).
+ * @returns {Promise<void>}
+ */
+async function writeUsernameInTypewriterStyle() {
+  for(let i = 0; i < username.length; i++) {
     document.querySelector(".welcomeName").innerHTML += username.charAt(i);
-    i++;
-    setTimeout(typeWriter, LocalConfig.TYPEWRITTERSPEED);
+    await delay(LocalConfig.TYPEWRITTERSPEED);
   }
 }
 
@@ -67,10 +69,10 @@ function callPageForAddingNewGoalie() {
   color: var(--avocadoGreen)
 }
 .wrapper {
-  min-width: 80%;
+  text-align: center;
   max-width: 80%;
+  min-width: 80%;
   background: var(--lightGrey);
-  padding: 20px 20px 10px 20px;
 }
 .custom-button {
   width: calc(50% - 20px);

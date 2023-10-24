@@ -88,8 +88,6 @@ function setPasswordVisibility(type) {
   text-align: center;
   max-width: 50%;
   min-width: 50%;
-  background: transparent;
-  padding: 30px 50px;
 }
 .wrapper button {
   width: 80%;
