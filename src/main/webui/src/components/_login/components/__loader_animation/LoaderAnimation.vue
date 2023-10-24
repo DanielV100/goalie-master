@@ -3,8 +3,6 @@ import * as LocalConfig from './resources/loaderAnimationConfig.js';
 import {ref} from "vue";
 
 const waitingText = ref();
-
-
 //every two seconds there is another waiting text
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
