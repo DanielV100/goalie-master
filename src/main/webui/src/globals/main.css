@@ -1,0 +1,187 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,200;6..12,400;6..12,800&display=swap");
+
+/**** VARIABLES ****/
+:root {
+    /**** COLORS ****/
+    /* used for (1)  hovering over buttons */
+    --deepForestGreen: rgba(51, 114, 85, 1);
+    /* used for (1) buttons in standard mode, (2) loaders, (3) success animation, (4) greeting */
+    --avocadoGreen: rgba(95, 191, 129, 1);
+    /* used for (1) disabled buttons, (2) loaders  */
+    --avocadoGreenLowOpacity: rgba(95, 191, 129, 0.3);
+    /* used for (1) light text */
+    --mouseGrey: rgba(240, 240, 240, 0.3);
+    /* used for (1) header */
+    --lightGrey: rgba(240, 240, 240, 1);
+    /* used for page indicator */
+    --deepOceanBlue: rgba(33, 49, 63, 1);
+    /* used for (1) input border, (2) textarea border */
+    --lightestGrey:rgba(221, 221, 221, 1);
+
+    --limeGreen: rgba(147, 216, 78, 1);
+    --darkMossGreen: rgba(58, 140, 102, 1);
+
+    /**** FONT FAMILY ****/
+    --standardFont: "Nunito Sans", sans-serif;
+
+    /**** FONT SIZES ****/
+    --standardFontSize: 20px;
+    --headingFontSize: 38px;
+    --bigHeadingFontSize: 42px;
+    --iconsFontSize: 30px;
+    /**** FONT SIZES MOBIL ****/
+    --standardFontSizeMobil: 14px;
+    --headingFontSizeMobil: 28px;
+    --bigHeadingFontSizeMobil: 32px;
+
+    /**** BORDER RADIUS ****/
+    /* text input in forms */
+    --formInputBorderRadius: 4pt;
+    --buttonHoverBorderRadius: 40pt;
+
+    /**** BORDER WIDTH ****/
+    /* on hover in form inputs */
+    --formInputBorderWidthOnHover: 1pt;
+}
+
+/**** ALL ****/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--standardFont);
+}
+
+/**** BUTTONS ****/
+button {
+    background: var(--avocadoGreen);
+    border:none;
+    cursor: pointer;
+    border-radius: 4pt;
+    color: white;
+    font-size: var(--standardFontSize);
+    font-weight: 600;
+}
+
+button[disabled]:hover {
+    border-radius: 4pt;
+    cursor: not-allowed;
+}
+
+button:hover {
+    background: var(--deepForestGreen);
+    border-radius: var(--buttonHoverBorderRadius);
+    transition: all 0.5s ease;
+}
+
+button:disabled {
+    background: var(--avocadoGreenLowOpacity);
+    color: var(--mouseGrey);
+    cursor: not-allowed;
+}
+
+/**** TEXT ****/
+p {
+    font-size: var(--standardFontSize);
+}
+
+/**** TEXTAREA ****/
+textarea {
+    width: 100%;
+    resize: none;
+    font-size: var(--standardFontSize);
+    border-radius: var(--formInputBorderRadius);
+    border: none;
+}
+
+textarea:hover {
+    border-width: var(--formInputBorderWidthOnHover);
+    border-color: var(--lightestGrey);
+    border-style: solid;
+}
+
+/**** INPUT FIELDS ****/
+input {
+    font-size: var(--standardFontSize);
+    border-radius: var(--formInputBorderRadius);
+    border: none;
+}
+@media screen and (max-width: 750px){
+    input {
+        font-size: var(--standardFontSizeMobil);
+    }
+}
+
+input:hover {
+    border-width: var(--formInputBorderWidthOnHover);
+    border-color: var(--lightestGrey);
+    border-style: solid;
+}
+
+input:focus {
+    color: black;
+}
+
+input::placeholder {
+    color: var(--mouseGrey);
+}
+
+/**** HEADINGS ****/
+h1 {
+    font-size: var(--headingFontSize);
+    font-weight: 800;
+}
+@media screen and (max-width: 750px){
+    h1 {
+        font-size: var(--headingFontSizeMobil);
+    }
+}
+h2 {
+    font-size: var(--headingFontSize);
+    font-weight: bold;
+}
+
+
+/**** CURRENT PAGE INDICATOR ****/
+.current_page_indicator {
+    display: inline;
+    margin-top: 8pt;
+    margin-left: 12pt;
+    display: flex;
+    align-items: center;
+    color: var(--deepOceanBlue);
+}
+.current_page_indicator i {
+    display: inline-block;
+    font-size: 20pt;
+    font-weight: 100;
+}
+.current_page_indicator i:hover {
+    color: black;
+    font-weight: bold;
+}
+.current_page_indicator p {
+    display: inline-block;
+    font-size: 14pt;
+}
+
+i:hover {
+    cursor: pointer;
+}
+
+
+
+.wrapper {
+    margin-top: 20pt;
+    place-self: center;
+    min-width: 80%;
+    max-width: 80%;
+    background: var(--lightGrey);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    border-radius: 10pt;
+    padding: 20pt 20pt 10pt 20pt;
+    text-align: left;
+}

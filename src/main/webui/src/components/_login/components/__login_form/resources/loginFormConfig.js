@@ -1,0 +1,1 @@
+export const DEDICATION_TEXT = 'pour simon';

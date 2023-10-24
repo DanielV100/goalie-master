@@ -27,3 +27,8 @@ npm run dev
 ```sh
 npm run build
 ```
+## Frontend Structure
+The frontend is structurally divided into three parts
+* Login area (_login), where the user logs into the system
+* Menu area (_menu), where all available functions are displayed
+* Detailed view (_detailed), where e.g. a goalkeeper can be created
