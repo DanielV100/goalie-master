@@ -79,17 +79,17 @@ function resetForm() {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_BIRTHDAY }}</label>
-            <input id="birthday" type="date" />
+            <input id="birthday" type="text" onfocus="(this.type = 'date')" placeholder="15.06.1969" />
           </div>
         </div>
         <div class="input-box">
           <label>{{ LocalConfig.FORM_NOTES }}</label>
           <input id="notes" type="text" placeholder="Wir brauchen Eier!" />
         </div>
-        <button :disabled="submitButtonDisabled">Torwart anlegen</button>
+        <button :disabled="submitButtonDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
       </form>
     </div>
-    <div v-if="sumbmittedSuccessfully" class="submit-successfull">
+    <div v-if="sumbmittedSuccessfully" class="submit-successful">
       <div class="success-animation">
         <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
           <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
@@ -118,6 +118,14 @@ function resetForm() {
   background: var(--lightGrey);
 }
 
+.submit-successful {
+  padding-right: 20pt;
+  padding-left: 20pt;
+  width: 80%;
+  display: flex;
+  place-self: center;
+  align-items: center;
+}
 
 
 #btn-new-keeper {
@@ -145,14 +153,7 @@ function resetForm() {
   transition: all 0.2s ease;
 }
 
-.submit-successfull {
-  padding-right: 20pt;
-  padding-left: 20pt;
-  width: 80%;
-  display: flex;
-  place-self: center;
-  align-items: center;
-}
+
 
 .success-animation {
   margin: 20pt auto;
@@ -208,31 +209,8 @@ function resetForm() {
     box-shadow: inset 0px 0px 0px 30px #4bb71b;
   }
 }
-
-input {
-  font-size: 18pt;
+#notes {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
-
-
-.wrapper form input {
-  place-content: center;
-}
-
-
-.input-box label {
-  color: #333;
-}
-
-.input-box input:focus {
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  color: black;
-}
-
-.address :where(input, .select-box) {
-  margin-top: 15px;
-}
-
-
-
-
 </style>

@@ -99,6 +99,7 @@ function setPasswordVisibility(type) {
   margin-top: -5pt;
   color: var(--mouseGrey);
 }
+/** special input style for login **/
 .input-box {
   margin-top: 20px;
   position: relative;
@@ -118,6 +119,23 @@ function setPasswordVisibility(type) {
   top: 50%;
   transform: translateY(-50%);
   font-size: var(--iconsFontSize);
+}
+input {
+  font-size: var(--standardFontSize);
+  border-radius: var(--formInputBorderRadius);
+}
+@media screen and (max-width: 750px){
+  input {
+    font-size: var(--standardFontSizeMobil);
+  }
+}
+
+input:focus {
+  border-color: var(--lightestGrey);
+}
+
+input::placeholder {
+  color: var(--mouseGrey);
 }
 
 @media screen and (max-width: 900px){

@@ -17,6 +17,7 @@
     --deepOceanBlue: rgba(33, 49, 63, 1);
     /* used for (1) input border, (2) textarea border */
     --lightestGrey:rgba(221, 221, 221, 1);
+    --placeholderColor: rgb(152, 152, 152);
 
     --limeGreen: rgba(147, 216, 78, 1);
     --darkMossGreen: rgba(58, 140, 102, 1);
@@ -36,12 +37,12 @@
 
     /**** BORDER RADIUS ****/
     /* text input in forms */
-    --formInputBorderRadius: 4pt;
-    --buttonHoverBorderRadius: 40pt;
+    --formInputBorderRadius: 4px;
+    --buttonHoverBorderRadius: 40px;
 
     /**** BORDER WIDTH ****/
     /* on hover in form inputs */
-    --formInputBorderWidthOnHover: 1pt;
+    --formInputBorderWidthOnHover: 1px;
 }
 
 /**** ALL ****/
@@ -68,6 +69,7 @@ button[disabled]:hover {
     cursor: not-allowed;
 }
 
+
 button:hover {
     background: var(--deepForestGreen);
     border-radius: var(--buttonHoverBorderRadius);
@@ -76,7 +78,7 @@ button:hover {
 
 button:disabled {
     background: var(--avocadoGreenLowOpacity);
-    color: var(--mouseGrey);
+    color: var(--lightGrey);
     cursor: not-allowed;
 }
 
@@ -101,30 +103,7 @@ textarea:hover {
 }
 
 /**** INPUT FIELDS ****/
-input {
-    font-size: var(--standardFontSize);
-    border-radius: var(--formInputBorderRadius);
-    border: none;
-}
-@media screen and (max-width: 750px){
-    input {
-        font-size: var(--standardFontSizeMobil);
-    }
-}
 
-input:hover {
-    border-width: var(--formInputBorderWidthOnHover);
-    border-color: var(--lightestGrey);
-    border-style: solid;
-}
-
-input:focus {
-    color: black;
-}
-
-input::placeholder {
-    color: var(--mouseGrey);
-}
 
 /**** HEADINGS ****/
 h1 {
@@ -142,36 +121,37 @@ h2 {
 }
 
 /**** FORM ****/
-
 form[class="form"] div[class="input-box"] {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 form[class="form"] div[class="input-box"] input {
     position: relative;
-    height: 50px;
     width: 100%;
-    color: #707070;
+    color: black;
     margin-top: 8px;
     border: 2px solid var(--lightestGrey);
-    border-radius: 4px;
     padding: 0 15px;
+    font-size: var(--standardFontSize);
+}
+form[class="form"] div[class="input-box"] label {
+    color: var(--placeholderColor);
+}
+form[class="form"] div[class="input-box"] input:focus {
+    border-color: black;
+}
+form[class="form"] div[class="input-box"] input::placeholder {
+    color: var(--placeholderColor);
 }
 form[class="form"] div[class="column"] {
     display: flex;
     column-gap: 15px;
 }
-.form button {
-    height: 55px;
+form[class="form"] button {
     width: 100%;
-    color: #fff;
-    font-size: 18pt;
-    font-weight: 400;
     margin-top: 30px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
+
 @media screen and (max-width: 500px) {
     .form .column {
         flex-wrap: wrap;
