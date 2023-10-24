@@ -85,10 +85,7 @@ function setPasswordVisibility(type) {
   width: 80%;
   padding: 20px;
   margin-top: 30px;
-
 }
-
-
 
 .dedication {
   margin-top: -5pt;
@@ -115,7 +112,10 @@ function setPasswordVisibility(type) {
   font-size: var(--iconsFontSize);
 }
 
-
-
-
+@media screen and (max-width: 900px){
+  .wrapper button {
+    padding: 10px;
+    margin-top: 15px;
+  }
+}
 </style>
