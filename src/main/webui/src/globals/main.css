@@ -143,27 +143,7 @@ h2 {
 
 
 /**** CURRENT PAGE INDICATOR ****/
-.current_page_indicator {
-    display: inline;
-    margin-top: 8pt;
-    margin-left: 12pt;
-    display: flex;
-    align-items: center;
-    color: var(--deepOceanBlue);
-}
-.current_page_indicator i {
-    display: inline-block;
-    font-size: 20pt;
-    font-weight: 100;
-}
-.current_page_indicator i:hover {
-    color: black;
-    font-weight: bold;
-}
-.current_page_indicator p {
-    display: inline-block;
-    font-size: 14pt;
-}
+
 
 i:hover {
     cursor: pointer;
