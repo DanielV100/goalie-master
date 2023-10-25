@@ -1,6 +1,13 @@
 <script setup>
 import * as LocalConfig from './resources/successAnimationConfig.js';
 
+function goToMenuButtonClicked() {
+  gotToMenu();
+}
+
+function gotToMenu() {
+  /* ToDO: Go to menu on click */
+}
 </script>
 
 <template>
@@ -13,7 +20,7 @@ import * as LocalConfig from './resources/successAnimationConfig.js';
       <div>
         <h2><slot></slot></h2>
         <div>
-          <button>{{ LocalConfig.BUTTON_GO_TO_MENU }}</button>
+          <button @click="goToMenuButtonClicked">{{ LocalConfig.BUTTON_GO_TO_MENU }}</button>
         </div>
       </div>
     </div>
@@ -23,6 +30,9 @@ import * as LocalConfig from './resources/successAnimationConfig.js';
 <style>
 .__success-animation {
   display: grid;
+}
+.wrapper {
+  min-width: 80%;
 }
 .checkmark {
   width: 100px;
@@ -43,12 +53,18 @@ import * as LocalConfig from './resources/successAnimationConfig.js';
   box-shadow: inset 0 0 0 var(--avocadoGreen);
   fill: #fff;
   animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+
 }
 .checkmark__check {
   transform-origin: 50% 50%;
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
   animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+h2 {
+  margin-top: 20px;
+  color: black;
 }
 @keyframes stroke {
   100% {

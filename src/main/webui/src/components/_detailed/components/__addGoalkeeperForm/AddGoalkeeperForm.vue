@@ -1,40 +1,22 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import {computed, onMounted, ref} from "vue";
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
+import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 
-const submitButtonDisabled = ref(true);
-const sumbmittedSuccessfully = ref(false);
-let inputFirstname;
-let inputLastname;
-let inputClub;
-let form;
-onMounted(() => {
-  inputFirstname = document.getElementById("firstname");
-  inputLastname = document.getElementById("lastname");
-  inputClub = document.getElementById("club");
-  form = document.querySelector('.form');
+const isNotSubmitted = ref(true);
+const firstname = ref('');
+const lastname = ref('');
+const club = ref('');
+//submit button is active when all mandatory fields are filled
+const isSubmitDisabled = computed(() => {
+  return !(firstname.value !== '' && lastname.value !== '' && club.value !== '');
 });
 
-function validateMandantoryFieldsFilled(event) {
-  if (event.target.value === "") {
-    submitButtonDisabled.value = true;
-  }
-  if (inputFirstname.value && inputClub.value && inputLastname.value) {
-    submitButtonDisabled.value = false;
-  }
-}
-
 function onSubmitClick() {
-  sumbmittedSuccessfully.value = true;
-  submitButtonDisabled.value = true;
+  isNotSubmitted.value = false;
 }
 
-function resetForm() {
-  sumbmittedSuccessfully.value = false;
-  form.reset();
-
-}
 </script>
 
 <template>
@@ -42,13 +24,13 @@ function resetForm() {
     <CurrentPageIndicator>
       {{ LocalConfig.CURRENT_PAGE }}
     </CurrentPageIndicator>
-    <div class="wrapper">
-      <form @submit="onSubmitClick" class="form">
+    <div v-if="isNotSubmitted" class="wrapper">
+      <form  class="form">
         <div class="column">
           <div class="input-box">
             <label>{{ LocalConfig.FORM_FIRSTNAME_LABEL }}*</label>
             <input
-                @input="validateMandantoryFieldsFilled"
+                v-model="firstname"
                 id="firstname"
                 type="text"
                 placeholder="Oliver"
@@ -58,7 +40,7 @@ function resetForm() {
           <div class="input-box">
             <label>{{ LocalConfig.FORM_LASTNAME_LABEL }}*</label>
             <input
-                @input="validateMandantoryFieldsFilled"
+                v-model="lastname"
                 id="lastname"
                 type="text"
                 placeholder="Kahn"
@@ -70,7 +52,7 @@ function resetForm() {
           <div class="input-box">
             <label>{{ LocalConfig.FORM_CLUB }}*</label>
             <input
-                @input="validateMandantoryFieldsFilled"
+                v-model="club"
                 id="club"
                 type="text"
                 placeholder="FC Bayern München"
@@ -86,24 +68,10 @@ function resetForm() {
           <label>{{ LocalConfig.FORM_NOTES }}</label>
           <input id="notes" type="text" placeholder="Wir brauchen Eier!" />
         </div>
-        <button :disabled="submitButtonDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
+        <button @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
       </form>
     </div>
-    <div v-if="sumbmittedSuccessfully" class="submit-successful">
-      <div class="success-animation">
-        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-          <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-        </svg>
-      </div>
-      <div class="success-options">
-        <h2>Torwart erfolgreich angelegt! </h2>
-        <div class="success-btn">
-          <button @click="resetForm" id="btn-new-keeper">Neuen Torwart anlegen </button>
-          <button>Ins Menü zurück</button>
-        </div>
-      </div>
-    </div>
+    <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
   </div>
 </template>
 
@@ -116,98 +84,6 @@ function resetForm() {
   max-width: 80%;
   min-width: 80%;
   background: var(--lightGrey);
-}
-
-.submit-successful {
-  padding-right: 20pt;
-  padding-left: 20pt;
-  width: 80%;
-  display: flex;
-  place-self: center;
-  align-items: center;
-}
-
-
-#btn-new-keeper {
-  margin-right: 20px;
-}
-
-.success-options {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.success-btn {
-  display: flex;
-  min-width: 100%;
-}
-
-.success-btn button {
-  flex: 1;
-  color: #fff;
-  font-size: 18pt;
-  font-weight: 400;
-  margin-top: 30px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-
-
-.success-animation {
-  margin: 20pt auto;
-}
-
-.checkmark {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  place-self: center;
-  stroke-width: 2;
-  stroke: var(--avocadoGreen);
-  stroke-miterlimit: 10;
-  box-shadow: inset 0px 0px 0px var(--avocadoGreen);
-  animation: fill 0.4s ease-in-out 0.4s forwards,scale 0.3s ease-in-out 0.9s both;
-}
-.checkmark__circle {
-  stroke-dasharray: 166;
-  stroke-dashoffset: 166;
-  stroke-width: 2;
-  stroke-miterlimit: 10;
-  box-shadow: inset 0px 0px 0px var(--avocadoGreen);
-  fill: #fff;
-  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-}
-
-.checkmark__check {
-  transform-origin: 50% 50%;
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
-}
-
-@keyframes stroke {
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes scale {
-  0%,
-  100% {
-    transform: none;
-  }
-
-  50% {
-    transform: scale3d(1.1, 1.1, 1);
-  }
-}
-
-@keyframes fill {
-  100% {
-    box-shadow: inset 0px 0px 0px 30px #4bb71b;
-  }
 }
 #notes {
   padding-top: 20px;
