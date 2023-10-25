@@ -1,0 +1,1 @@
+export const BUTTON_GO_TO_MENU = 'Ins Menü zurück';
