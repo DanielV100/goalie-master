@@ -7,8 +7,7 @@ import SuccessAnimation from "@/components/_globals/components/__successAnimatio
 </script>
 
 <template>
-<Header/>
-  <AddGoalkeeperForm/>
+<LoginForm/>
 </template>
 
 <style>
