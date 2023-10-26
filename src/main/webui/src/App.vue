@@ -4,6 +4,7 @@ import Header from "@/components/_globals/components/__header/Header.vue";
 import Overview from "@/components/_menu/components/__overview/Overview.vue";
 import AddGoalkeeperForm from "@/components/_detailed/components/__addGoalkeeperForm/AddGoalkeeperForm.vue";
 import {computed, ref} from "vue";
+import AddExerciseForm from "@/components/_detailed/components/__addExerciseForm/AddExerciseForm.vue";
 
 //defining the routes to the other pages
 const isShowingHeader = ref(false);
@@ -11,7 +12,8 @@ const isShowingHeader = ref(false);
 const ROUTES = {
   '/': LoginForm,
   '/menu': Overview,
-  '/add-goalkeeper': AddGoalkeeperForm
+  '/add-goalkeeper': AddGoalkeeperForm,
+  '/add-exercise': AddExerciseForm
 };
 
 const currentPath = ref(window.location.hash);

@@ -9,7 +9,8 @@ export const APP_NAME = "G⚽alieMaster";
 const ROUTES_MAP = {
     'LoginForm':'#/',
     'Overview':'#/menu',
-    'AddGoalkeeperForm':'#/add-goalkeeper'
+    'AddGoalkeeperForm':'#/add-goalkeeper',
+    'AddExerciseForm':'#/add-exercise'
 };
 
 /**

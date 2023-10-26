@@ -26,6 +26,10 @@ function addGoalkeeperClicked() {
   GlobalConfig.changeWindowToTargetRoute('AddGoalkeeperForm');
 }
 
+function addExerciseClicked() {
+  GlobalConfig.changeWindowToTargetRoute('AddExerciseForm');
+}
+
 
 
 </script>
@@ -39,7 +43,7 @@ function addGoalkeeperClicked() {
       </div>
       <div class="wrapper">
         <button class="custom-button">{{ LocalConfig.TO_DASHBOARD }}</button>
-        <button class="custom-button">{{ LocalConfig.ADD_EXERCISE }}</button>
+        <button @click="addExerciseClicked" class="custom-button">{{ LocalConfig.ADD_EXERCISE }}</button>
         <button class="custom-button">{{ LocalConfig.ADD_SESSION }}</button>
         <button @click="addGoalkeeperClicked" class="custom-button">{{ LocalConfig.ADD_GOALKEEPER }}</button>
       </div>
