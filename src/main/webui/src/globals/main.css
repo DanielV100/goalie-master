@@ -83,7 +83,7 @@ button:disabled {
 }
 
 button[class="deleteButton"] {
-    background: red;
+    background: #ff0000;
     padding: 0 15px;
     height: 100%;
 }

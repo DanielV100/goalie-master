@@ -1,7 +1,9 @@
 <script setup>
+
 import * as LocalConfig from './resources/addExerciseFormConfig.js';
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
+
 function addMaterialButtonClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
 }
@@ -9,6 +11,8 @@ function addMaterialButtonClicked(event) {
 function addDescriptionStepClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
 }
+
+
 </script>
 
 <template>
@@ -81,13 +85,14 @@ function addDescriptionStepClicked(event) {
               <div id="material_element" style="display: flex">
                 <input class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
+                    class="input"
                     type="text"
                     style="width: 60%;"
                     placeholder="Stangen"
                     list="materials"
                     required
                 />
-                <button class="deleteButton" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto" >-</button>
+                <button class="deleteButton" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
                 <datalist id="materials">
                   <option>Stangen</option>
                   <option>Hütchen</option>
@@ -103,9 +108,10 @@ function addDescriptionStepClicked(event) {
       </form>
       <div id="description_container">
         <form @submit="onSubmitClick" class="form" id="form">
-          <div id="description">
-            <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }} 1</label>
+          <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }}</label>
+          <div id="description" style="display: flex">
             <textarea class="input" id="textTest" rows="3"></textarea>
+            <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
           </div>
         </form>
       </div>

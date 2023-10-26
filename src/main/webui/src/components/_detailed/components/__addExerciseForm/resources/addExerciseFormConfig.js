@@ -6,7 +6,7 @@ export const FORM_NUMBER_OF_GOALKEEPER_LABEL = 'Anzahl der TH';
 export const FORM_DURATION_LABEL = 'Dauer';
 export const FORM_INTENSITY_LABEL = 'Intensität';
 export const FORM_MATERIAL_LABEL = 'Material';
-export const FORM_DESCRIPTION_LABEL = 'Schritt';
+export const FORM_DESCRIPTION_LABEL = 'Beschreibung der Übung';
 export const FORM_SKETCH_LABEL = 'Skizze hinzufügen';
 export const FORM_NOTES_LABEL = 'Notizen hinzufügen';
 
