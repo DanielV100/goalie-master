@@ -1,6 +1,14 @@
 <script setup>
 import * as LocalConfig from './resources/addExerciseFormConfig.js';
+import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
+function addMaterialButtonClicked(event) {
+  UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
+}
+
+function addDescriptionStepClicked(event) {
+  UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
+}
 </script>
 
 <template>
@@ -68,19 +76,18 @@ import CurrentPageIndicator from "@/components/_globals/components/__currentPage
             />
           </div>
           <div class="input-box" id="multi">
-            <div id="materialcontainer">
-              <label style="width: 100%">Materialien</label>
-              <div id="materialelement" style="display: flex">
-                <input class="input" type="number" style="width: 20%; margin-right: 8pt" placeholder="0" />
+            <div id="material_container">
+              <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
+              <div id="material_element" style="display: flex">
+                <input class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
-                    @input="validateMandantoryFieldsFilled"
-                    id="lastname"
                     type="text"
-                    style="width: 80%"
+                    style="width: 60%;"
                     placeholder="Stangen"
                     list="materials"
                     required
                 />
+                <button class="deleteButton" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto" >-</button>
                 <datalist id="materials">
                   <option>Stangen</option>
                   <option>Hütchen</option>
@@ -89,52 +96,47 @@ import CurrentPageIndicator from "@/components/_globals/components/__currentPage
                 </datalist>
               </div>
             </div>
-            <button type="button" @click="addMaterial">+</button>
+            <button type="button" @click="addMaterialButtonClicked">+</button>
           </div>
         </div>
         <br />
-
-
       </form>
-      <div id="describtionContainer">
+      <div id="description_container">
         <form @submit="onSubmitClick" class="form" id="form">
-          <div id="describtion">
-            <h2>Schritt 1</h2>
+          <div id="description">
+            <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }} 1</label>
             <textarea class="input" id="textTest" rows="3"></textarea>
           </div>
-
         </form>
       </div>
-      <button type="button" @click="cloneExistingFields($event, 'describtionContainer', 'describtion')">+</button>
-      <br />
-
-
+      <button id="duplicateDescriptionButton" @click="addDescriptionStepClicked">+</button>
+      <br>
       <br>
       <div>
         <div>
-          <input @input="check" type="checkbox" name="testCheck">
-          <label for="testCheck">Skizze hinzufügen</label>
+          <label class="form-control">
+            <input type="checkbox" name="checkbox-checked" />
+            {{ LocalConfig.FORM_SKETCH_LABEL }}
+          </label>
         </div>
-
       </div>
       <div v-if="addDrawing" id="soccerFieldContainer">
         <SoccerField />
       </div>
       <br>
-
-
       <div>
         <div>
-          <input @input="checkNotes" type="checkbox" name="testCheck">
-          <label for="testCheck">Noziz hinzufügen</label>
+          <label class="form-control">
+            <input type="checkbox" name="checkbox-checked" />
+            {{ LocalConfig.FORM_NOTES_LABEL }}
+          </label>
         </div>
       </div>
       <div v-if="addNote">
-        <h2>Schritt 1</h2>
+        <p>Schritt 1</p>
         <textarea class="input" id="textTest" rows="3"></textarea>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -154,11 +156,10 @@ import CurrentPageIndicator from "@/components/_globals/components/__currentPage
   width: 100%;
   margin-top: 8px;
 }
-
-hr + p {
-  font-size: 80pt;
-  color: black;
+#duplicateDescriptionButton {
+  width: 100%;
 }
+
 #soccerFieldContainer {
   display: grid;
   cursor: crosshair;
@@ -168,14 +169,6 @@ hr + p {
 #multi button {
   margin-top: 10pt;
 }
-
-
-
-
-
-
-
-
 
 
 </style>

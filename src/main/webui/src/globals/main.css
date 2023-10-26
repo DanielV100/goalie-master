@@ -82,6 +82,11 @@ button:disabled {
     cursor: not-allowed;
 }
 
+button[class="deleteButton"] {
+    background: red;
+    padding: 0 15px;
+    height: 100%;
+}
 /**** TEXT ****/
 p {
     font-size: var(--standardFontSize);
@@ -94,13 +99,9 @@ textarea {
     font-size: var(--standardFontSize);
     border-radius: var(--formInputBorderRadius);
     border: none;
+    background: var(--lightGrey);
 }
 
-textarea:hover {
-    border-width: var(--formInputBorderWidthOnHover);
-    border-color: var(--lightestGrey);
-    border-style: solid;
-}
 
 /**** INPUT FIELDS ****/
 
@@ -126,7 +127,8 @@ form[class="form"] div[class="input-box"] {
     margin-top: 40px;
 }
 form[class="form"] div[class="input-box"] input,
-form[class="form"] div[class="input-box"] select {
+form[class="form"] div[class="input-box"] select,
+textarea{
     position: relative;
     width: 100%;
     color: black;
@@ -141,11 +143,12 @@ form[class="form"] div[class="input-box"] select {
     height: 63%;
     border-radius: 4px;
 }
-form[class="form"] div[class="input-box"] label {
+label {
     color: var(--placeholderColor);
 }
 form[class="form"] div[class="input-box"] input:focus,
-form[class="form"] div[class="input-box"] select:focus {
+form[class="form"] div[class="input-box"] select:focus,
+textarea:focus{
     border-color: black;
 }
 form[class="form"] div[class="input-box"] input::placeholder {
@@ -158,6 +161,13 @@ form[class="form"] div[class="column"] {
 form[class="form"] button {
     width: 100%;
     margin-top: 30px;
+}
+
+label[class='form-control'] {
+    line-height: 1.1;
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: 0.5em;
 }
 
 @media screen and (max-width: 500px) {
@@ -189,5 +199,7 @@ div[class='wrapper'] {
     border-radius: 10px;
     padding: 20px 20px 10px 20px;
 }
+
+
 
 
