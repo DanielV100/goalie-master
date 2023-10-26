@@ -1,4 +1,5 @@
 <script setup>
+import * as GlobalConfig from '../../../../globals/gloablConfig.js'
 import * as LocalConfig from './resources/loaderAnimationConfig.js';
 import {ref} from "vue";
 
@@ -15,6 +16,7 @@ async function changeWaitingText() {
     waitingText.value = LocalConfig.WAITING_TEXTS[i];
     await delay(2000);
   }
+  GlobalConfig.changeWindowToTargetRoute('Overview');
 }
 changeWaitingText();
 </script>

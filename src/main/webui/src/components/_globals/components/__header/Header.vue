@@ -2,13 +2,17 @@
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 
 function logOutClicked() {
+  GlobalConfig.changeWindowToTargetRoute('LoginForm');
+}
 
+function logoClicked() {
+  GlobalConfig.changeWindowToTargetRoute('Overview');
 }
 </script>
 
 <template>
   <div class="__header">
-    <a href="#/dashboard" class="logo">{{ GlobalConfig.APP_NAME }}</a>
+    <a @click="logoClicked" class="logo">{{ GlobalConfig.APP_NAME }}</a>
     <div class="header-right">
       <i class='bx bx-user'></i>
       <i @click="logOutClicked" class='bx bx-log-out'></i>

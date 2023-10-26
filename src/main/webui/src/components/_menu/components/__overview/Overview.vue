@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
+import * as GlobalConfig from '../../../../globals/gloablConfig.js'
 import * as LocalConfig from './resources/overviewConfig.js';
 
 const username = "daniel.vollmer!";
@@ -22,11 +23,9 @@ async function writeUsernameInTypewriterStyle() {
 }
 
 function addGoalkeeperClicked() {
+  GlobalConfig.changeWindowToTargetRoute('AddGoalkeeperForm');
+}
 
-}
-function callPageForAddingNewGoalie() {
-  window.location = '#/addgoalie';
-}
 
 
 </script>

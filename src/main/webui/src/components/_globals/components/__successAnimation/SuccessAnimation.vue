@@ -1,13 +1,11 @@
 <script setup>
+import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 import * as LocalConfig from './resources/successAnimationConfig.js';
 
 function goToMenuButtonClicked() {
-  gotToMenu();
+  GlobalConfig.changeWindowToTargetRoute('Overview');
 }
 
-function gotToMenu() {
-  /* ToDO: Go to menu on click */
-}
 </script>
 
 <template>

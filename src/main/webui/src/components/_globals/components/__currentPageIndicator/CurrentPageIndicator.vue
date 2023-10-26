@@ -1,15 +1,8 @@
 <script setup>
+import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 function homeIconClicked() {
-  returnToOverviewPage();
+  GlobalConfig.changeWindowToTargetRoute('Overview');
 }
-
-function returnToOverviewPage() {
-  /**
-   * ToDo: Implement logic to return to overview pafe
-   */
-}
-
-
 </script>
 
 <template>
