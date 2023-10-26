@@ -87,6 +87,10 @@ button[class="deleteButton"] {
     padding: 0 15px;
     height: 100%;
 }
+button[class="deleteButton"]:hover {
+    background: #730000;
+
+}
 /**** TEXT ****/
 p {
     font-size: var(--standardFontSize);

@@ -1,8 +1,12 @@
 <script setup>
-
 import * as LocalConfig from './resources/addExerciseFormConfig.js';
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
+import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
+import {ref} from "vue";
+
+const isSketchCheckboxChecked = ref();
+const isNotesCheckboxChecked = ref();
 
 function addMaterialButtonClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
@@ -110,7 +114,7 @@ function addDescriptionStepClicked(event) {
         <form @submit="onSubmitClick" class="form" id="form">
           <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }}</label>
           <div id="description" style="display: flex">
-            <textarea class="input" id="textTest" rows="3"></textarea>
+            <textarea class="input" id="textTest" rows="2"></textarea>
             <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
           </div>
         </form>
@@ -121,25 +125,26 @@ function addDescriptionStepClicked(event) {
       <div>
         <div>
           <label class="form-control">
-            <input type="checkbox" name="checkbox-checked" />
+            <input type="checkbox" name="checkbox-checked" v-model="isSketchCheckboxChecked" />
             {{ LocalConfig.FORM_SKETCH_LABEL }}
           </label>
         </div>
       </div>
-      <div v-if="addDrawing" id="soccerFieldContainer">
+      <div v-if="isSketchCheckboxChecked" id="soccerFieldContainer">
         <SoccerField />
       </div>
       <br>
       <div>
         <div>
           <label class="form-control">
-            <input type="checkbox" name="checkbox-checked" />
+            <input type="checkbox" name="checkbox-checked" v-model="isNotesCheckboxChecked" />
             {{ LocalConfig.FORM_NOTES_LABEL }}
           </label>
         </div>
       </div>
-      <div v-if="addNote">
-        <p>Schritt 1</p>
+      <div v-if="isNotesCheckboxChecked">
+        <br>
+        <label>Notizen</label>
         <textarea class="input" id="textTest" rows="3"></textarea>
       </div>
     </div>
