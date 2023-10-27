@@ -21,6 +21,7 @@ const options= [
         placeholder="Wähle einen/mehrere Torhüter"
         label="name"
         track-by="name"
+        :limit="3"
     />
   </div>
 </template>

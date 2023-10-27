@@ -10,7 +10,8 @@ const ROUTES_MAP = {
     'LoginForm':'#/',
     'Overview':'#/menu',
     'AddGoalkeeperForm':'#/add-goalkeeper',
-    'AddExerciseForm':'#/add-exercise'
+    'AddExerciseForm':'#/add-exercise',
+    'CreateTrainingSessionForm':'#/create-training-session'
 };
 
 /**

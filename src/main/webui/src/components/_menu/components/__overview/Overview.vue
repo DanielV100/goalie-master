@@ -30,6 +30,9 @@ function addExerciseClicked() {
   GlobalConfig.changeWindowToTargetRoute('AddExerciseForm');
 }
 
+function createTrainingSessionClicked() {
+  GlobalConfig.changeWindowToTargetRoute('CreateTrainingSessionForm'); 
+}
 
 
 </script>
@@ -44,7 +47,7 @@ function addExerciseClicked() {
       <div class="wrapper">
         <button class="custom-button">{{ LocalConfig.TO_DASHBOARD }}</button>
         <button @click="addExerciseClicked" class="custom-button">{{ LocalConfig.ADD_EXERCISE }}</button>
-        <button class="custom-button">{{ LocalConfig.ADD_SESSION }}</button>
+        <button @click="createTrainingSessionClicked" class="custom-button">{{ LocalConfig.ADD_SESSION }}</button>
         <button @click="addGoalkeeperClicked" class="custom-button">{{ LocalConfig.ADD_GOALKEEPER }}</button>
       </div>
   </div>
