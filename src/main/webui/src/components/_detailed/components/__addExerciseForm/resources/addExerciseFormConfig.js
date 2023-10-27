@@ -1,4 +1,5 @@
 export const CURRENT_PAGE = 'Übung anlegen';
+export const SUCCESS_MESSAGE = 'Übung erfolgreich angelegt!';
 
 export const FORM_TITLE_LABEL = 'Titel';
 export const FORM_CATEGORY_LABEL = 'Kategorie';
@@ -8,7 +9,9 @@ export const FORM_INTENSITY_LABEL = 'Intensität';
 export const FORM_MATERIAL_LABEL = 'Material';
 export const FORM_DESCRIPTION_LABEL = 'Beschreibung der Übung';
 export const FORM_SKETCH_LABEL = 'Skizze hinzufügen';
-export const FORM_NOTES_LABEL = 'Notizen hinzufügen';
+export const FORM_ADD_NOTES_LABEL = 'Notizen hinzufügen';
+export const FORM_NOTES_LABEL = 'Notizen';
+export const FORM_CREATE_EXERCISE_BUTTON = 'Übung anlegen';
 
 /* Category Options */
 //Warm up

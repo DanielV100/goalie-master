@@ -3,10 +3,23 @@ import * as LocalConfig from './resources/addExerciseFormConfig.js';
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
+import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 
+const isNotSubmitted = ref(true);
 const isSketchCheckboxChecked = ref();
 const isNotesCheckboxChecked = ref();
+const title = ref('');
+const category = ref('');
+const numberOfGoalkeeper = ref('');
+const duration = ref('');
+const intensity = ref('');
+const materialCount = ref('');
+const material = ref('');
+
+const isSubmitDisabled = computed(() => {
+  return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '' && materialCount.value !== '' && material.value !== '' );
+});
 
 function addMaterialButtonClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
@@ -16,18 +29,21 @@ function addDescriptionStepClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
 }
 
-
+function submitButtonClicked() {
+  isNotSubmitted.value = false;
+}
 </script>
 
 <template>
   <div class="__add_exercise_form">
     <CurrentPageIndicator>{{ LocalConfig.CURRENT_PAGE }}</CurrentPageIndicator>
-    <div class="wrapper">
+    <div v-if="isNotSubmitted" class="wrapper">
       <form @submit="onSubmitClick" class="form">
         <div class="column">
           <div class="input-box">
             <label>{{ LocalConfig.FORM_TITLE_LABEL }}</label>
             <input
+                v-model="title"
                 id="firstname"
                 type="text"
                 placeholder="Hechten II"
@@ -36,7 +52,7 @@ function addDescriptionStepClicked(event) {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_CATEGORY_LABEL }}</label>
-            <select name="cars" id="cars">
+            <select v-model="category" name="cars" id="cars">
               <option value="others">Sonstige</option>
               <optgroup label="Aufwärmen">
                 <option value="coordination">{{ LocalConfig.CATEGORY_WARM_UP_COORDINATION }}</option>
@@ -56,6 +72,7 @@ function addDescriptionStepClicked(event) {
           <div class="input-box">
             <label>{{ LocalConfig.FORM_NUMBER_OF_GOALKEEPER_LABEL }}</label>
             <input
+                v-model="numberOfGoalkeeper"
                 type="number"
                 placeholder="2"
                 required
@@ -66,6 +83,7 @@ function addDescriptionStepClicked(event) {
           <div class="input-box">
             <label>{{ LocalConfig.FORM_DURATION_LABEL }}</label>
             <input
+                v-model="duration"
                 onfocus="(this.type = 'time')"
                 id="lastname"
                 type="text"
@@ -76,6 +94,7 @@ function addDescriptionStepClicked(event) {
           <div class="input-box">
             <label>{{ LocalConfig.FORM_INTENSITY_LABEL }}</label>
             <input
+                v-model="intensity"
                 type="number"
                 min="0"
                 max="5"
@@ -87,8 +106,9 @@ function addDescriptionStepClicked(event) {
             <div id="material_container">
               <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
               <div id="material_element" style="display: flex">
-                <input class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
+                <input v-model="material" class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
+                    v-model="materialCount"
                     class="input"
                     type="text"
                     style="width: 60%;"
@@ -119,7 +139,7 @@ function addDescriptionStepClicked(event) {
           </div>
         </form>
       </div>
-      <button id="duplicateDescriptionButton" @click="addDescriptionStepClicked">+</button>
+      <button @click="addDescriptionStepClicked">+</button>
       <br>
       <br>
       <div>
@@ -138,16 +158,18 @@ function addDescriptionStepClicked(event) {
         <div>
           <label class="form-control">
             <input type="checkbox" name="checkbox-checked" v-model="isNotesCheckboxChecked" />
-            {{ LocalConfig.FORM_NOTES_LABEL }}
+            {{ LocalConfig.FORM_ADD_NOTES_LABEL }}
           </label>
         </div>
       </div>
       <div v-if="isNotesCheckboxChecked">
         <br>
-        <label>Notizen</label>
+        <label>{{ LocalConfig.FORM_NOTES_LABEL }}</label>
         <textarea class="input" id="textTest" rows="3"></textarea>
       </div>
+      <button @click.prevent="submitButtonClicked" :disabled="isSubmitDisabled">{{ LocalConfig.FORM_CREATE_EXERCISE_BUTTON }}</button>
     </div>
+    <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
   </div>
 </template>
 
@@ -167,9 +189,6 @@ function addDescriptionStepClicked(event) {
   width: 100%;
   margin-top: 8px;
 }
-#duplicateDescriptionButton {
-  width: 100%;
-}
 
 #soccerFieldContainer {
   display: grid;
@@ -181,5 +200,7 @@ function addDescriptionStepClicked(event) {
   margin-top: 10pt;
 }
 
-
+button {
+  width: 100%;
+}
 </style>
