@@ -1,11 +1,13 @@
 <script setup>
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
-const obj= [
-  { noMat: '2', mat: 'Stangen' },
-  { noMat: '9', mat: 'Hütchen' },
-  { noMat: '3', mat: 'Bälle' },
-  { noMat: '1', mat: 'Tor' }
-]
+import {onMounted, ref} from "vue";
+import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
+const exerciseIDs = ref([]);
+
+function addExerciseButtonClicked() {
+  exerciseIDs.value.push(prompt('Inout'));
+}
+
 </script>
 
 <template>
@@ -28,10 +30,12 @@ const obj= [
         </tr>
       </table>
       <hr>
-      <EditExerciseForm title="dgdjsa" category="coordination" number-of-goalkeeper="2" duration="00:40" intensity="3" material="Stangen" material-count="2" :test-array="obj"></EditExerciseForm>
+      <div v-for="id in exerciseIDs" id="testArea">
+        <ViewExerciseForm :exercise-i-d="id"></ViewExerciseForm>
+      </div>
       <br>
       <hr>
-      <button>+</button>
+      <button @click="addExerciseButtonClicked">+</button>
     </div>
   </div>
 </template>

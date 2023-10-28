@@ -17,7 +17,10 @@ const intensity = ref('');
 const materialCount = ref('');
 const material = ref('');
 
+const numberOfMaterials = ref(['']);
+
 const isSubmitDisabled = computed(() => {
+  console.log(material.value);
   return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '' && materialCount.value !== '' && material.value !== '' );
 });
 
@@ -105,8 +108,8 @@ function submitButtonClicked() {
           <div class="input-box" id="multi">
             <div id="material_container">
               <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
-              <div id="material_element" style="display: flex">
-                <input v-model="material" class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
+              <div v-for="x in numberOfMaterials" id="material_element" style="display: flex">
+                <input  v-model="material" class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
                     v-model="materialCount"
                     class="input"

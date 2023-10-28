@@ -43,9 +43,12 @@ import EditExerciseForm from "@/components/_detailed/components/__addExerciseFor
       <br>
       <Accordion>Aufwärmen</Accordion>
       <br>
+      <br>
       <Accordion>Hauptteil</Accordion>
       <br>
+      <br>
       <Accordion>Abschluss</Accordion>
+      <br>
     </div>
   </div>
 </template>
