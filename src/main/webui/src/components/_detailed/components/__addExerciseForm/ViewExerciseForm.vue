@@ -6,80 +6,43 @@ import SoccerField from "@/components/_globals/components/__soccerField/SoccerFi
 import {computed, onBeforeMount, onMounted, ref} from "vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 
-//ToDo: Wie kann ich die Felder für die Materialien dynamsich erzeugen?
-//--> V-for mit const ref materialList (leider funktioniert dies noch nicht!)
-
-
-
-const isNotSubmitted = ref(true);
 const title = ref('');
 const category = ref('');
 const numberOfGoalkeeper = ref('');
 const duration = ref('');
 const intensity = ref('');
-const materialCount = ref('');
-const material = ref('');
+const materialList = ref([]);
+const descriptionList = ref([]);
 
-
-
-const materialList = ref({
-  "2" : "Stangen",
-  "9" : "Hütchen",
-  "1" : "Bälle",
-  "1" : "Tore"
-});
-
-
-const descriptionList = ref([
-    'This is a description',
-    'Lorem ipsum'
-]);
-
-let i = 0;
+let exerciseID;
 const props = defineProps({
-  title: String,
-  category: String,
-  numberOfGoalkeeper: String,
-  duration: String,
-  intensity: String,
-  material: String,
-  materialCount: String,
-  testArray:Object,
-  exerciseID:String
+  exerciseID: String
 });
 
 onMounted(() => {
-  title.value = props.title;
-  category.value = props.category;
-  numberOfGoalkeeper.value = props.numberOfGoalkeeper;
-  duration.value = props.duration;
-  intensity.value = props.intensity;
-  material.value = props.material;
-  materialCount.value = props.materialCount;
-  materialList.value = props.testArray;
-test();
+  exerciseID = props.exerciseID; 
+  fillFormFields();
 });
 
-
-function test() {
-
-  const materialElements = document.querySelectorAll('#material_element');
-  console.log(materialElements.length);
-  if(materialElements.length === 3) {
-    for (let valueKey in materialList.value) {
-      const materialElement = document.getElementById('material_element');
-      const clone = materialElement.cloneNode(true);
-      const inputs = clone.querySelectorAll('.input');
-      inputs.forEach((input) => (input.value = ''));
-      document.getElementById('material_container').appendChild(clone);
-    }
-  }
+/**
+ * This function fills the form with the data from the database.
+ */
+function fillFormFields() {
+  materialList.value = [
+    {numberOfMaterial: 2, material: 'Stangen'},
+    {numberOfMaterial: 1, material: 'Hütchen'},
+    {numberOfMaterial: 1, material: 'Hütchen'}
+  ];
+  descriptionList.value = [
+    'This is a description',
+    'Lorem ipsum'
+  ];
 }
 </script>
 
 <template>
   <div class="__edit_exercise_form">
-    <div v-if="isNotSubmitted" class="wrapper_edited">
+    <div class="wrapper_edited">
       <form class="form">
         <div class="column">
           <div class="input-box">
@@ -152,18 +115,9 @@ function test() {
           <div class="input-box" id="multi">
             <div id="material_container">
               <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
-              <div v-for="material in materialList" id="material_element" style="display: flex">
-                <input :disabled="true" :value="material" class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
-                <input
-                    :disabled="true"
-                    :value="materialList[material]"
-                    class="input"
-                    type="text"
-                    style="width: 75%;"
-                    placeholder="Stangen"
-                    list="materials"
-                    required
-                />
+              <div v-for="(material, index) in materialList" :key="index" id="material_element" style="display: flex">
+                <input :disabled="true" :value="material.numberOfMaterial" class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
+                <input :disabled="true" :value="material.material" class="input" type="text" />
               </div>
             </div>
           </div>
@@ -190,7 +144,6 @@ function test() {
         <textarea class="input" id="textTest" rows="3"></textarea>
       </div>
     </div>
-    <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
   </div>
 </template>
 

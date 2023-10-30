@@ -2,12 +2,34 @@
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
 import {onMounted, ref} from "vue";
 import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
+//ID's from the exercises to add
 const exerciseIDs = ref([]);
+const exerciseKeyfacts = ref([]);
+
 
 function addExerciseButtonClicked() {
   exerciseIDs.value.push(prompt('Inout'));
+
+  exerciseKeyfacts.value = [
+    {exerciseID: '1', exerciseName: 'Hechten II'},
+    {exerciseID: '2', exerciseName: 'Hechten III'},
+    {exerciseID: '3', exerciseName: 'Koordination'},
+  ]
 }
 
+function exerciseAccordionClicked(event) {
+  toggleExerciseAccordion(event);
+}
+function toggleExerciseAccordion(event) {
+  const exerciseView = event.target.nextSibling;
+  if(exerciseView.style.display === '') {
+    exerciseView.style.overflow = 'hidden';
+    exerciseView.style.display = 'none';
+  } else {
+    exerciseView.style.overflow = '';
+    exerciseView.style.display = '';
+  }
+}
 </script>
 
 <template>
@@ -29,18 +51,46 @@ function addExerciseButtonClicked() {
           </td>
         </tr>
       </table>
-      <hr>
-      <div v-for="id in exerciseIDs" id="testArea">
-        <ViewExerciseForm :exercise-i-d="id"></ViewExerciseForm>
+      <div v-for="(exercise, index) in exerciseKeyfacts" :key="index" id="testArea">
+        <br>
+        <div @click="exerciseAccordionClicked" class="exercise_accordion">
+          {{ exercise.exerciseName}}
+          <i class='bx bx-chevron-right'></i>
+        </div>
+        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="exercise.exerciseID"></ViewExerciseForm>
       </div>
       <br>
-      <hr>
       <button @click="addExerciseButtonClicked">+</button>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Style the buttons that are used to open and close the accordion panel */
+.exercise_accordion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--lightestGrey);
+  color: black;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+}
+
+.exercise_accordion i {
+  font-size: 1.5rem; /* Adjust the size of the icon */
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.exercise_accordion:hover {
+  background-color: #ccc;
+}
+
 .__accordion {
   width: 100%;
 }
