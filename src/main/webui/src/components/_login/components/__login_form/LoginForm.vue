@@ -3,20 +3,45 @@ import {computed, ref} from 'vue';
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 import * as LocalConfig from './resources/loginFormConfig.js';
 import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
+import axios from "axios";
 
 const username = ref('');
 const password = ref('');
 const isPasswordInvisible = ref(true);
 const isLoginFormVisible = ref(true);
-
 //Button is only clickable, when username and password is set
 const isLoginButtonDisabled = computed(() => {
-  console.log(username.value);
   return !(username.value !== '' && password.value !== '');
 });
+const isAuthorizedUser = async (hashedPassword) => {
+  try {
+    const userCredentials = {
+      username: username.value,
+      password: hashedPassword
+    };
+    const response = await axios.post('/login', userCredentials);
+    console.log(response);
+    setJwtTokenToLocalStorage(response.data);
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
 
-function loginButtonClicked() {
-  showLoaderAnimation();
+function setJwtTokenToLocalStorage(JwtToken) {
+  sessionStorage.setItem('jwttoken', JwtToken);
+}
+async function loginButtonClicked() {
+
+  const isAuthorized = await isAuthorizedUser(hashPassword());
+  if (isAuthorized) {
+    showLoaderAnimation();
+  }
+}
+
+function hashPassword() {
+  return password.value.toString() ;
 }
 
 /**
@@ -54,7 +79,7 @@ function setPasswordVisibility(type) {
 <template>
   <div class="__loginForm">
     <div v-if="isLoginFormVisible" class="wrapper">
-      <form action="">
+      <form>
         <h1>{{ GlobalConfig.APP_NAME }}</h1>
         <p class="dedication">{{ LocalConfig.DEDICATION_TEXT }}</p>
         <div class="input-box">
@@ -66,7 +91,7 @@ function setPasswordVisibility(type) {
           <i v-if="isPasswordInvisible" @click="passwordIconClicked"  class='bx bxs-lock-alt'></i>
           <i v-else @click="passwordIconClicked" class='bx bxs-lock-open-alt' ></i>
         </div>
-        <button type="submit" :disabled="isLoginButtonDisabled" @click="loginButtonClicked">Login</button>
+        <button :disabled="isLoginButtonDisabled" @click.prevent="loginButtonClicked">Login</button>
       </form>
     </div>
     <div v-else class="wrapper">

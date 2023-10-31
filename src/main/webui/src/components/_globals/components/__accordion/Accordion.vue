@@ -20,6 +20,11 @@ function addExerciseButtonClicked() {
 function exerciseAccordionClicked(event) {
   toggleExerciseAccordion(event);
 }
+
+/**
+ * Through toggling the exercises the website is better readable and has a better structure.
+ * @param event
+ */
 function toggleExerciseAccordion(event) {
   const exerciseView = event.target.nextSibling;
   if(exerciseView.style.display === '') {
