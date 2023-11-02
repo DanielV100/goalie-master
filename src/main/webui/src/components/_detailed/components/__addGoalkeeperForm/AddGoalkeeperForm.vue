@@ -1,20 +1,50 @@
 <script setup>
 import {computed, onMounted, ref} from "vue";
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
+import * as UtilityFunctions from "../../../../globals/utilityFunctions.js";
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
+import axios from "axios";
 
 const isNotSubmitted = ref(true);
 const firstname = ref('');
 const lastname = ref('');
+const birthday = ref();
 const club = ref('');
+const notes = ref('');
 //submit button is active when all mandatory fields are filled
 const isSubmitDisabled = computed(() => {
   return !(firstname.value !== '' && lastname.value !== '' && club.value !== '');
 });
 
-function onSubmitClick() {
-  isNotSubmitted.value = false;
+const isAddingGoalkeeperSuccessful = async () => {
+  try {
+    const goalkeeper = {
+      firstname: firstname.value,
+      lastname: lastname.value,
+      birthday: birthday.value,
+      club: club.value,
+      notes: notes.value
+    };
+    await axios.post('/goalkeeper/add', goalkeeper, {
+      headers: {
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function onSubmitClick() {
+  const isSuccessful = await isAddingGoalkeeperSuccessful();
+  if(isSuccessful) {
+    isNotSubmitted.value = false;
+  } else {
+
+  }
 }
 
 </script>
@@ -61,12 +91,12 @@ function onSubmitClick() {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_BIRTHDAY }}</label>
-            <input id="birthday" type="text" onfocus="(this.type = 'date')" placeholder="15.06.1969" />
+            <input v-model="birthday" id="birthday" type="text" onfocus="(this.type = 'date')" placeholder="15.06.1969" />
           </div>
         </div>
         <div class="input-box">
           <label>{{ LocalConfig.FORM_NOTES }}</label>
-          <input id="notes" type="text" placeholder="Wir brauchen Eier!" />
+          <input v-model="notes" id="notes" type="text" placeholder="Wir brauchen Eier!" />
         </div>
         <button @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
       </form>

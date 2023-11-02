@@ -1,7 +1,7 @@
 package dhbw.on.webdev.controller._login;
 
 import dhbw.on.webdev.model.UserCredentials;
-import dhbw.on.webdev.service._login.JwtTokenGenerator;
+import dhbw.on.webdev.service._login.JwtTokenService;
 import dhbw.on.webdev.service._login.UserService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.*;
@@ -15,7 +15,7 @@ public class LoginResource {
     @Inject
     UserService userService;
     @Inject
-    JwtTokenGenerator jwtTokenGenerator;
+    JwtTokenService jwtTokenService;
 
     @POST
     @PermitAll

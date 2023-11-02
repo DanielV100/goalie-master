@@ -2,7 +2,11 @@
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 
 function logOutClicked() {
+  deleteSessionStorage();
   GlobalConfig.changeWindowToTargetRoute('LoginForm');
+}
+function deleteSessionStorage() {
+  sessionStorage.clear();
 }
 
 function logoClicked() {

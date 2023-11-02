@@ -18,3 +18,7 @@ function deleteDeleteButtonsContainer(event) {
     const parentNode = event.target.parentNode;
     parentNode.innerHTML = '';
 }
+
+export function getJwtTokenFromSessionStorage() {
+    return sessionStorage.getItem('jwttoken');
+}

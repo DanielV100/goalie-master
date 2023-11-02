@@ -5,6 +5,7 @@ import * as LocalConfig from './resources/loginFormConfig.js';
 import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
 import axios from "axios";
 
+
 const username = ref('');
 const password = ref('');
 const isPasswordInvisible = ref(true);
@@ -13,6 +14,8 @@ const isLoginFormVisible = ref(true);
 const isLoginButtonDisabled = computed(() => {
   return !(username.value !== '' && password.value !== '');
 });
+
+//send username and password to server and look if response is ok
 const isAuthorizedUser = async (hashedPassword) => {
   try {
     const userCredentials = {
@@ -20,17 +23,22 @@ const isAuthorizedUser = async (hashedPassword) => {
       password: hashedPassword
     };
     const response = await axios.post('/login', userCredentials);
-    console.log(response);
     setJwtTokenToLocalStorage(response.data);
     return true;
   } catch (error) {
-    console.error(error);
+    errorHandling(error);
     return false;
   }
 }
 
 function setJwtTokenToLocalStorage(JwtToken) {
   sessionStorage.setItem('jwttoken', JwtToken);
+}
+
+function errorHandling(error) {
+  alert(error);
+  username.value = '';
+  password.value = ''
 }
 async function loginButtonClicked() {
 
@@ -79,15 +87,15 @@ function setPasswordVisibility(type) {
 <template>
   <div class="__loginForm">
     <div v-if="isLoginFormVisible" class="wrapper">
-      <form>
+      <form id="login_form">
         <h1>{{ GlobalConfig.APP_NAME }}</h1>
         <p class="dedication">{{ LocalConfig.DEDICATION_TEXT }}</p>
         <div class="input-box">
-          <input v-model="username" type="text" placeholder="Username" required>
+          <input v-model="username" type="text" placeholder="Benutzername" required>
           <i class='bx bxs-user'></i>
         </div>
         <div class="input-box">
-          <input v-model="password" id="password" type="password" placeholder="Password" required>
+          <input v-model="password" id="password" type="password" placeholder="Passwort" required>
           <i v-if="isPasswordInvisible" @click="passwordIconClicked"  class='bx bxs-lock-alt'></i>
           <i v-else @click="passwordIconClicked" class='bx bxs-lock-open-alt' ></i>
         </div>
