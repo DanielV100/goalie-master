@@ -40,7 +40,7 @@ public class Exercise {
     public String note;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "user_id")
     public User user;
 
 

@@ -27,7 +27,7 @@ public class Goalkeeper {
     public String notes;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "user_id")
     public User user;
 
 

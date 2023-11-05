@@ -56,7 +56,6 @@ function addDescriptionStepClicked(event) {
 }
 
 async function submitButtonClicked() {
-  console.log(getSketch());
   const isSuccessful = await isAddingExerciseSuccessful();
   if(isSuccessful) {
     isNotSubmitted.value = false;
