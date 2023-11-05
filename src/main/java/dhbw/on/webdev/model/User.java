@@ -26,5 +26,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     public List<Goalkeeper> goalkeepers;
 
+    @OneToMany(mappedBy = "user")
+    public List<Exercise> exercises;
+
 
 }

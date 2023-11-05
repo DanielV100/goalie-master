@@ -5,6 +5,7 @@ import CurrentPageIndicator from "@/components/_globals/components/__currentPage
 import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
 import {computed, ref} from "vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
+import axios from "axios";
 
 const isNotSubmitted = ref(true);
 const isSketchCheckboxChecked = ref();
@@ -14,16 +15,38 @@ const category = ref('');
 const numberOfGoalkeeper = ref('');
 const duration = ref('');
 const intensity = ref('');
-const materialCount = ref('');
-const material = ref('');
+const note = ref('');
 
-const numberOfMaterials = ref(['']);
+
 
 const isSubmitDisabled = computed(() => {
-  console.log(material.value);
-  return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '' && materialCount.value !== '' && material.value !== '' );
+  return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '');
 });
-
+const isAddingExerciseSuccessful = async () => {
+  try {
+    const exercise = {
+      sketchDataURL:getSketch(),
+      title: title.value,
+      category: category.value,
+      number_of_goalkeepers: numberOfGoalkeeper.value,
+      duration: duration.value,
+      intensity: intensity.value,
+      number_of_material: getNumbersOfMaterial(),
+      material: getAllMaterials(),
+      description_steps: getAllDescriptionSteps(),
+      note: note.value
+    };
+    await axios.post('/exercise/add', exercise, {
+      headers: {
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
 function addMaterialButtonClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
 }
@@ -32,8 +55,45 @@ function addDescriptionStepClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
 }
 
-function submitButtonClicked() {
-  isNotSubmitted.value = false;
+async function submitButtonClicked() {
+  console.log(getSketch());
+  const isSuccessful = await isAddingExerciseSuccessful();
+  if(isSuccessful) {
+    isNotSubmitted.value = false;
+  } else {
+
+  }
+}
+
+function getNumbersOfMaterial() {
+  const numberOfMaterialsInputFields = document.querySelectorAll('.number_of_material');
+  let numberOfMaterials = [];
+  numberOfMaterialsInputFields.forEach((inputField) => {
+    numberOfMaterials.push(inputField.value);
+  });
+  return numberOfMaterials;
+}
+
+function getAllMaterials() {
+  const materialInputFields = document.querySelectorAll('.material');
+  let materials = [];
+  materialInputFields.forEach((inputField) => {
+    materials.push(inputField.value);
+  });
+  return materials;
+}
+
+function getAllDescriptionSteps() {
+  const materialInputFields = document.querySelectorAll('.description_step');
+  let materials = [];
+  materialInputFields.forEach((inputField) => {
+    materials.push(inputField.value);
+  });
+  return materials;
+}
+
+function getSketch() {
+  return document.querySelector('canvas').toDataURL('image/png');
 }
 </script>
 
@@ -108,11 +168,10 @@ function submitButtonClicked() {
           <div class="input-box" id="multi">
             <div id="material_container">
               <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
-              <div v-for="x in numberOfMaterials" id="material_element" style="display: flex">
-                <input  v-model="material" class="input" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
+              <div id="material_element" style="display: flex">
+                <input class="input number_of_material" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
-                    v-model="materialCount"
-                    class="input"
+                    class="input material"
                     type="text"
                     style="width: 60%;"
                     placeholder="Stangen"
@@ -137,7 +196,7 @@ function submitButtonClicked() {
         <form @submit="onSubmitClick" class="form" id="form">
           <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }}</label>
           <div id="description" style="display: flex">
-            <textarea class="input" id="textTest" rows="2"></textarea>
+            <textarea class="input description_step" id="textTest" rows="2"></textarea>
             <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
           </div>
         </form>
@@ -168,7 +227,7 @@ function submitButtonClicked() {
       <div v-if="isNotesCheckboxChecked">
         <br>
         <label>{{ LocalConfig.FORM_NOTES_LABEL }}</label>
-        <textarea class="input" id="textTest" rows="3"></textarea>
+        <textarea class="input" v-model="note" id="textTest" rows="3"></textarea>
       </div>
       <button @click.prevent="submitButtonClicked" :disabled="isSubmitDisabled">{{ LocalConfig.FORM_CREATE_EXERCISE_BUTTON }}</button>
     </div>
