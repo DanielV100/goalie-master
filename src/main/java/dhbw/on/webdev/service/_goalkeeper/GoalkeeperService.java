@@ -21,9 +21,19 @@ public class GoalkeeperService {
     JwtTokenService jwtTokenService;
 
     @Transactional
+    /**
+     * Method for adding new goalkeeper to db.
+     */
     public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
-        goalkeeper.user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
-        goalkeeperRepository.persist(goalkeeper);
-        return Response.ok().build();
+        try {
+            //setting primary key to user id from JWT-token
+            goalkeeper.user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
+            goalkeeperRepository.persist(goalkeeper);
+            return Response.ok().build();
+        } catch (Exception exception) {
+            return Response.serverError().build();
+        }
+
+
     }
 }

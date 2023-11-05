@@ -12,6 +12,11 @@ public class JwtTokenService {
     @Inject
     JsonWebToken jsonWebToken;
 
+    /**
+     * Method for generating JWT, which is then saved in session storage
+     * @param userID
+     * @return JWT-token as string
+     */
     public String generateJwtToken(Long userID) {
         return Jwt.issuer("goalie-master-backend")
                 .subject("goalie-master-frontend")
@@ -23,7 +28,7 @@ public class JwtTokenService {
 
     /**
      * Gets userID from JWT-Token.
-     * @return
+     * @return user id as long
      */
     public long getUserIdFromJwtToken() {
         if (jsonWebToken != null) {
