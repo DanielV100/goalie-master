@@ -1,8 +1,5 @@
 package dhbw.on.webdev.model;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity
@@ -24,15 +21,21 @@ public class Exercise {
     public String duration;
     @Column(name = "intensity")
     public int intensity;
-    @Column(name = "number_of_material")
+
     @ElementCollection
-    public List<Integer> number_of_materials;
+    @CollectionTable(name = "materials", joinColumns = @JoinColumn(name = "exercises_id"))
     @Column(name = "material")
-    @ElementCollection
     public List<String> materials;
-    @Column(name = "description_steps")
+
     @ElementCollection
-    public List<String> description_steps;
+    @CollectionTable(name = "numbers_of_material", joinColumns = @JoinColumn(name = "exercises_id"))
+    @Column(name = "number_of_material")
+    public List<Integer> numbersOfMaterial;
+
+    @ElementCollection
+    @CollectionTable(name = "description_steps", joinColumns = @JoinColumn(name = "exercises_id"))
+    @Column(name = "description_step")
+    public List<String> descriptionSteps;
 
     @Column(name = "sketch", columnDefinition = "bytea")
     public byte[] sketch;
@@ -42,6 +45,5 @@ public class Exercise {
     @ManyToOne
     @JoinColumn(name = "user_id")
     public User user;
-
 
 }

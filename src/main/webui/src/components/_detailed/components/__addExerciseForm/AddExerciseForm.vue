@@ -25,15 +25,15 @@ const isSubmitDisabled = computed(() => {
 const isAddingExerciseSuccessful = async () => {
   try {
     const exercise = {
-      sketchDataURL:getSketch(),
+      sketchDataURL:getDataUrlFromSketch(),
       title: title.value,
       category: category.value,
       number_of_goalkeepers: numberOfGoalkeeper.value,
       duration: duration.value,
       intensity: intensity.value,
-      number_of_material: getNumbersOfMaterial(),
-      material: getAllMaterials(),
-      description_steps: getAllDescriptionSteps(),
+      materials:getValueListFromDomInputFields('.material'),
+      numbersOfMaterial:getValueListFromDomInputFields('.number_of_material'),
+      descriptionSteps: getValueListFromDomInputFields('.description_step'),
       note: note.value
     };
     await axios.post('/exercise/add', exercise, {
@@ -55,7 +55,12 @@ function addDescriptionStepClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
 }
 
+/**
+ * Click handler for submit button.
+ * @returns {Promise<void>}
+ */
 async function submitButtonClicked() {
+  UtilityFunctions.setLoadingCircleInSubmitButton();
   const isSuccessful = await isAddingExerciseSuccessful();
   if(isSuccessful) {
     isNotSubmitted.value = false;
@@ -64,35 +69,42 @@ async function submitButtonClicked() {
   }
 }
 
-function getNumbersOfMaterial() {
-  const numberOfMaterialsInputFields = document.querySelectorAll('.number_of_material');
-  let numberOfMaterials = [];
-  numberOfMaterialsInputFields.forEach((inputField) => {
-    numberOfMaterials.push(inputField.value);
-  });
-  return numberOfMaterials;
+/**
+ * This method generates a list of values from a list of input fields.
+ * Needed for e.g. the materials, because there can be more than just one material.
+ * @param selector
+ * @returns {*[]}
+ */
+function getValueListFromDomInputFields(selector) {
+  const inputFields = document.querySelectorAll(selector);
+  if(inputFields === null) {
+    return null;
+  } else {
+    let inputs = [];
+    inputFields.forEach((inputField) => {
+      const inputFieldValue = inputField.value;
+      //empty values would lead to NumberFormatException on serverside
+      if(inputFieldValue === '') {
+        return null;
+      } else {
+        inputs.push(inputField.value);
+      }
+    });
+    return inputs;
+  }
 }
 
-function getAllMaterials() {
-  const materialInputFields = document.querySelectorAll('.material');
-  let materials = [];
-  materialInputFields.forEach((inputField) => {
-    materials.push(inputField.value);
-  });
-  return materials;
-}
-
-function getAllDescriptionSteps() {
-  const materialInputFields = document.querySelectorAll('.description_step');
-  let materials = [];
-  materialInputFields.forEach((inputField) => {
-    materials.push(inputField.value);
-  });
-  return materials;
-}
-
-function getSketch() {
-  return document.querySelector('canvas').toDataURL('image/png');
+/**
+ * Getting data url from sketch (which is an HTML-canvas).
+ * @returns {string|null}
+ */
+function getDataUrlFromSketch() {
+  const sketch = document.querySelector('canvas');
+  if(sketch === null) {
+    return null;
+  } else {
+    return sketch.toDataURL('image/png')
+  }
 }
 </script>
 
@@ -228,7 +240,7 @@ function getSketch() {
         <label>{{ LocalConfig.FORM_NOTES_LABEL }}</label>
         <textarea class="input" v-model="note" id="textTest" rows="3"></textarea>
       </div>
-      <button @click.prevent="submitButtonClicked" :disabled="isSubmitDisabled">{{ LocalConfig.FORM_CREATE_EXERCISE_BUTTON }}</button>
+      <button class="submit"  @click.prevent="submitButtonClicked" :disabled="isSubmitDisabled">{{ LocalConfig.FORM_CREATE_EXERCISE_BUTTON }}</button>
     </div>
     <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
   </div>

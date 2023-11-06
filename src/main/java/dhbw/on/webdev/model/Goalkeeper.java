@@ -1,5 +1,6 @@
 package dhbw.on.webdev.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
@@ -26,7 +27,7 @@ public class Goalkeeper {
     @Nullable
     public String notes;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     public User user;
 

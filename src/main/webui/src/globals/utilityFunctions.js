@@ -22,3 +22,13 @@ function deleteDeleteButtonsContainer(event) {
 export function getJwtTokenFromSessionStorage() {
     return sessionStorage.getItem('jwttoken');
 }
+
+/**
+ * Setting loading circle into submit button.
+ * Optical indicator, that http-request is performed.
+ */
+export function setLoadingCircleInSubmitButton() {
+    const submitButton = document.querySelector('.submit');
+    submitButton.textContent = "";
+    submitButton.classList.add('loading');
+}

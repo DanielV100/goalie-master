@@ -9,7 +9,11 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
 
 @ApplicationScoped
 public class ExerciseService {
@@ -29,8 +33,12 @@ public class ExerciseService {
      */
     @Transactional
     public Response addNewExercise(Exercise exercise) {
-        exercise.user =  userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
-        exercise.sketch = convertDataUrlToByteArray(exercise.sketchDataURL);
+        exercise.user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
+        if(exercise.sketchDataURL == null) {
+            exercise.sketch = null;
+        } else {
+            exercise.sketch = convertDataUrlToByteArray(exercise.sketchDataURL);
+        }
         exerciseRepository.persist(exercise);
         return Response.ok().build();
     }
@@ -44,4 +52,36 @@ public class ExerciseService {
         return Base64.getDecoder().decode(dataURL.split(",")[1]);
         //System.out.println("data:image/png;base64," + Base64.getEncoder().encodeToString(sktech));
     }
+
+    /**
+     * Method for getting all exercises in db.
+     * @return all exercises in db.
+     */
+    public List<Exercise> getAllExercises() {
+        return hideUserInformationInResponse(exerciseRepository.listAll());
+    }
+
+    /**
+     * Method for getting all exercises of current user.
+     * @return list of exercises of current user.
+     */
+    public List<Exercise> getAllExercisesFromCurrentUser() {
+        return hideUserInformationInResponse(exerciseRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+    }
+
+    /**
+     * Sending plain user data to client could be a security risk, so set user data to null before passing to client.
+     * @param exercises
+     * @return list of exercises without userdata
+     */
+    private List<Exercise> hideUserInformationInResponse(List<Exercise> exercises) {
+        List<Exercise> exercisesWithNoUserData = new ArrayList<>();
+        for (Exercise exercise : exercises) {
+            exercise.user = null;
+            exercisesWithNoUserData.add(exercise);
+        }
+        return exercisesWithNoUserData;
+    }
+
+
 }

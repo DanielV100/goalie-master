@@ -39,6 +39,7 @@ const isAddingGoalkeeperSuccessful = async () => {
 }
 
 async function onSubmitClick() {
+  UtilityFunctions.setLoadingCircleInSubmitButton();
   const isSuccessful = await isAddingGoalkeeperSuccessful();
   if(isSuccessful) {
     isNotSubmitted.value = false;
@@ -98,7 +99,7 @@ async function onSubmitClick() {
           <label>{{ LocalConfig.FORM_NOTES }}</label>
           <input v-model="notes" id="notes" type="text" placeholder="Wir brauchen Eier!" />
         </div>
-        <button @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
+        <button class="submit" @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
       </form>
     </div>
     <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
