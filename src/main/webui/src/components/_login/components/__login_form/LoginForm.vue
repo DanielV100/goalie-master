@@ -2,6 +2,7 @@
 import {computed, ref} from 'vue';
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 import * as LocalConfig from './resources/loginFormConfig.js';
+import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
 import axios from "axios";
 
@@ -41,7 +42,7 @@ function errorHandling(error) {
   password.value = ''
 }
 async function loginButtonClicked() {
-
+  UtilityFunctions.setLoadingCircleInSubmitButton();
   const isAuthorized = await isAuthorizedUser(hashPassword());
   if (isAuthorized) {
     showLoaderAnimation();
@@ -99,7 +100,7 @@ function setPasswordVisibility(type) {
           <i v-if="isPasswordInvisible" @click="passwordIconClicked"  class='bx bxs-lock-alt'></i>
           <i v-else @click="passwordIconClicked" class='bx bxs-lock-open-alt' ></i>
         </div>
-        <button :disabled="isLoginButtonDisabled" @click.prevent="loginButtonClicked">Login</button>
+        <button class="submit" :disabled="isLoginButtonDisabled" @click.prevent="loginButtonClicked">Login</button>
       </form>
     </div>
     <div v-else class="wrapper">
