@@ -5,10 +5,12 @@ import * as LocalConfig from './resources/loginFormConfig.js';
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
 import axios from "axios";
-
+import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
 
 const username = ref('');
 const password = ref('');
+const errorMessage = ref('');
+const isErrorMessageShowing = ref(false);
 const isPasswordInvisible = ref(true);
 const isLoginFormVisible = ref(true);
 //Button is only clickable, when username and password is set
@@ -37,7 +39,7 @@ function setJwtTokenToLocalStorage(JwtToken) {
 }
 
 function errorHandling(error) {
-  alert(error);
+  errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.SUBMIT_BUTTON_TEXT);
   username.value = '';
   password.value = ''
 }
@@ -100,13 +102,14 @@ function setPasswordVisibility(type) {
           <i v-if="isPasswordInvisible" @click="passwordIconClicked"  class='bx bxs-lock-alt'></i>
           <i v-else @click="passwordIconClicked" class='bx bxs-lock-open-alt' ></i>
         </div>
-        <button class="submit" :disabled="isLoginButtonDisabled" @click.prevent="loginButtonClicked">Login</button>
+        <button class="submit" :disabled="isLoginButtonDisabled" @click.prevent="loginButtonClicked">{{ LocalConfig.SUBMIT_BUTTON_TEXT }}</button>
       </form>
     </div>
     <div v-else class="wrapper">
       <LoaderAnimation />
     </div>
   </div>
+  <ErrorDialog>{{ errorMessage }}</ErrorDialog>
 </template>
 
 <style>

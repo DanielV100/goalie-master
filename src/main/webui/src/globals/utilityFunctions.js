@@ -29,6 +29,46 @@ export function getJwtTokenFromSessionStorage() {
  */
 export function setLoadingCircleInSubmitButton() {
     const submitButton = document.querySelector('.submit');
-    submitButton.textContent = "";
+    submitButton.textContent = '';
     submitButton.classList.add('loading');
 }
+
+/**
+ * Method for unsetting the loading circle and writing standard text into submit buttons.
+ * @param buttonText
+ */
+export function unsetLoadingCircleInSubmitButton(buttonText) {
+    const submitButton = document.querySelector('.submit');
+    submitButton.textContent = buttonText;
+    submitButton.classList.remove('loading');
+}
+
+/**
+ * Central method for all kinds of error handling, which shall be seen by the user.
+ * Function calls error dialog, sets the submit button text back to standard and return error message.
+ * @param error
+ * @param submitButtonText
+ * @returns {string}
+ */
+export function errorHandling(error, submitButtonText) {
+    showErrorDialog();
+    unsetLoadingCircleInSubmitButton(submitButtonText);
+    return getErrorMessageFromHttpError(error);
+}
+function getErrorMessageFromHttpError(error) {
+    const errorAsString = String(error);
+    if (errorAsString.includes('401')) {
+        return 'Benutzername oder Passwort falsch.';
+    } else {
+        return 'Es ist ein unbekannter Fehler aufgetreten.';
+    }
+}
+
+function showErrorDialog() {
+    const errorDialog =   document.getElementById('errorDialog');
+    if(errorDialog !== null) {
+        errorDialog.showModal();
+    }
+}
+
+
