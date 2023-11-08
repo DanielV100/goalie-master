@@ -1,10 +1,46 @@
 <script setup>
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import * as LocalConfig from './resources/createTrainingSessionForm.js';
-import {onMounted} from "vue";
 import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
 import Accordion from "@/components/_globals/components/__accordion/Accordion.vue";
-import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
+import {onMounted, ref} from "vue";
+import axios from "axios";
+import * as UtilityFunctions from "@/globals/utilityFunctions";
+
+let goalkeepersFromDB = ref([]);
+onMounted(async () => {
+  let goalkeepers = await getGoalkeepersFromDB();
+  createGoalkeepersSelectable(goalkeepers);
+});
+
+/**
+ * The multiselect component needs an object of arrays as prop, which gets build in this method.
+ * @param goalkeepers
+ */
+function createGoalkeepersSelectable(goalkeepers) {
+  goalkeepers.forEach((goalkeeper) => {
+    goalkeepersFromDB.value.push({name:goalkeeper.firstname + ' ' + goalkeeper.lastname, id:goalkeeper.id});
+  })
+}
+
+/**
+ * Method makes http-request and gets goalkeepers from db.
+ * @returns {Promise<any|*[]>}
+ */
+async function getGoalkeepersFromDB() {
+  try {
+    const response = await axios.get('goalkeeper/get/specific', {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
 
 </script>
 
@@ -37,7 +73,7 @@ import EditExerciseForm from "@/components/_detailed/components/__addExerciseFor
         <br>
         <div>
           <label>{{ LocalConfig.FORM_CHOOSE_GOALKEEPER_LABEL }}</label>
-          <Multiselect/>
+          <Multiselect :multiselect-options="goalkeepersFromDB"/>
         </div>
       </form>
       <br>
