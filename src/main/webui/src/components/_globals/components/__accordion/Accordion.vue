@@ -1,6 +1,6 @@
 <script setup>
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
-import {onMounted, ref} from "vue";
+import {nextTick, onBeforeUpdate, onMounted, ref} from "vue";
 import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
 //ID's from the exercises to add
 const exerciseIDs = ref([]);
@@ -10,6 +10,8 @@ const props = defineProps({
 });
 const category = props.category;
 let exercises = ref([]);
+const exercisesKey = ref();
+const totalDuration = ref('00:00');
 
 
 function addExerciseButtonClicked() {
@@ -48,20 +50,43 @@ function modalBoxButtonClicked() {
 
 /**
  * Method for getting ID's from checked exercises (which user chose in modal box).
+ * exercisesKey is a trick to rerender the v-for. If it's not used, v-for won't update the way it should be.
  */
 function getIDsFromCheckedExercises() {
   let checkedExercises = [];
+  exercisesKey.value = 0;
+  totalDuration.value = '00:00';
   const modalCheckboxes = document.getElementsByClassName('modalCheckbox');
   for(let modalCheckbox of modalCheckboxes) {
+    exercisesKey.value -= 1;
+    const idTableRow = modalCheckbox.parentElement.nextSibling;
+    const titleTableRow = idTableRow.nextSibling;
+    const durationTableRow = titleTableRow.nextSibling.nextSibling;
+
     if(modalCheckbox.checked === true) {
-      const idTableRow = modalCheckbox.parentElement.nextSibling;
-      const titleTableRow = idTableRow.nextSibling;
+      exercisesKey.value += 1;
+      totalDuration.value = convertNumberToTime(convertTimeToNumber(totalDuration.value)+convertTimeToNumber(durationTableRow.textContent));
       checkedExercises.push({exerciseID: idTableRow.textContent, exerciseTitle: titleTableRow.textContent});
     }
   }
+  console.log('checked: ' + checkedExercises.length);
   exerciseKeyfacts.value = checkedExercises;
   document.getElementById("myModal").style.display = "none";
 }
+
+function convertTimeToNumber(timeString) {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function convertNumberToTime(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const formattedHours = String(hours).padStart(2, '0'); // Ensure two digits for hours
+  const formattedMinutes = String(minutes).padStart(2, '0'); // Ensure two digits for minutes
+  return `${formattedHours}:${formattedMinutes}`;
+}
+
 </script>
 
 <template>
@@ -75,7 +100,7 @@ function getIDsFromCheckedExercises() {
           </td>
           <td class="after_td_one">
             <label>Dauer</label>
-            <h2>00:00</h2>
+            <h2>{{ totalDuration }}</h2>
           </td>
           <td class="after_td_one">
             <label>Intensität</label>
@@ -83,7 +108,7 @@ function getIDsFromCheckedExercises() {
           </td>
         </tr>
       </table>
-      <div v-for="(exercise, index) in exerciseKeyfacts" :key="index" id="testArea">
+      <div v-for="(exercise) in exerciseKeyfacts" :key="exercisesKey" id="testArea">
         <br>
         <div @click="exerciseAccordionClicked" class="exercise_accordion">
           {{ exercise.exerciseTitle}}

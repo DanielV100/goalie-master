@@ -23,6 +23,7 @@ const props = defineProps({
 
 onMounted(() => {
   exerciseID = props.exerciseID;
+  console.log(exerciseID);
   fillFormFields();
 });
 
