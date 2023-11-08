@@ -35,13 +35,13 @@ const isAddingGoalkeeperSuccessful = async () => {
     });
     return true;
   } catch (error) {
-    errorHandling(error);
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+    resetForm();
     return false;
   }
 }
 
-function errorHandling(error) {
-  errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+function resetForm() {
   firstname.value = '';
   lastname.value = '';
   birthday.value = '';

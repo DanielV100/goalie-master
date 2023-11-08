@@ -6,6 +6,7 @@ import SoccerField from "@/components/_globals/components/__soccerField/SoccerFi
 import {computed, ref} from "vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 import axios from "axios";
+import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
 
 const isNotSubmitted = ref(true);
 const isSketchCheckboxChecked = ref();
@@ -16,6 +17,7 @@ const numberOfGoalkeeper = ref('');
 const duration = ref('');
 const intensity = ref('');
 const note = ref('');
+const errorMessage = ref('');
 
 
 
@@ -43,9 +45,24 @@ const isAddingExerciseSuccessful = async () => {
     });
     return true;
   } catch (error) {
-    console.log(error);
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.FORM_CREATE_EXERCISE_BUTTON);
+    resetForm();
     return false;
   }
+}
+
+/**
+ * Method sets all v-models from form empty.
+ */
+function resetForm() {
+  isSketchCheckboxChecked.value = false;
+  isNotesCheckboxChecked.value = false;
+  title.value = '';
+  category.value = '';
+  numberOfGoalkeeper.value = '';
+  duration.value = '';
+  intensity.value = '';
+  note.value = '';
 }
 function addMaterialButtonClicked(event) {
   UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
@@ -70,7 +87,7 @@ async function submitButtonClicked() {
 }
 
 /**
- * This method generates a list of values from a list of input fields.
+ * This method generates a list of values from a list of DOM input fields.
  * Needed for e.g. the materials, because there can be more than just one material.
  * @param selector
  * @returns {*[]}
@@ -244,6 +261,7 @@ function getDataUrlFromSketch() {
     </div>
     <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
   </div>
+  <ErrorDialog>{{ errorMessage }}</ErrorDialog>
 </template>
 
 <style scoped>

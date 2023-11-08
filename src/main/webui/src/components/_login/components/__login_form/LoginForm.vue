@@ -28,7 +28,8 @@ const isAuthorizedUser = async (hashedPassword) => {
     setJwtTokenToLocalStorage(response.data);
     return true;
   } catch (error) {
-    errorHandling(error);
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.SUBMIT_BUTTON_TEXT);
+    resetForm();
     return false;
   }
 }
@@ -37,8 +38,7 @@ function setJwtTokenToLocalStorage(JwtToken) {
   sessionStorage.setItem('jwttoken', JwtToken);
 }
 
-function errorHandling(error) {
-  errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.SUBMIT_BUTTON_TEXT);
+function resetForm() {
   username.value = '';
   password.value = ''
 }
