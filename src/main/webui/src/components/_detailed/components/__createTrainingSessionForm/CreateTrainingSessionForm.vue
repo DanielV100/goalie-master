@@ -83,9 +83,9 @@ function saveAllExercisesInSessionStorage(exercises) {
     }
   });
   sessionStorage.setItem('exercisesWarmUp', JSON.stringify(exerciseWarmUp));
-  sessionStorage.setItem('exerciseMain', JSON.stringify(exerciseMain));
-  sessionStorage.setItem('exerciseEnd', JSON.stringify(exerciseEnd));
-  sessionStorage.setItem('exerciseOther', JSON.stringify(exerciseOther));
+  sessionStorage.setItem('exercisesMain', JSON.stringify(exerciseMain));
+  sessionStorage.setItem('exercisesEnd', JSON.stringify(exerciseEnd));
+  sessionStorage.setItem('exercisesOther', JSON.stringify(exerciseOther));
 }
 
 </script>

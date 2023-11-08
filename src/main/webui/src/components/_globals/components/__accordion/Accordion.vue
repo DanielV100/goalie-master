@@ -9,16 +9,18 @@ const props = defineProps({
   category: String
 });
 const category = props.category;
+let exercises = ref([]);
 
 
 function addExerciseButtonClicked() {
-  exerciseIDs.value.push(prompt('Inout'));
-
-  exerciseKeyfacts.value = [
-    {exerciseID: '1', exerciseName: 'Hechten II'},
-    {exerciseID: '2', exerciseName: 'Hechten III'},
-    {exerciseID: '3', exerciseName: 'Koordination'},
-  ]
+  if(category === 'warmUp') {
+    exercises.value = JSON.parse(sessionStorage.getItem('exercisesWarmUp'));
+  } else if(category === 'main') {
+    exercises.value = JSON.parse(sessionStorage.getItem('exercisesMain'));
+  } else {
+    exercises.value = JSON.parse(sessionStorage.getItem('exercisesEnd'));
+  }
+  document.getElementById("myModal").style.display = "block";
 }
 
 function exerciseAccordionClicked(event) {
@@ -38,6 +40,27 @@ function toggleExerciseAccordion(event) {
     exerciseView.style.overflow = '';
     exerciseView.style.display = '';
   }
+}
+
+function modalBoxButtonClicked() {
+ getIDsFromCheckedExercises();
+}
+
+/**
+ * Method for getting ID's from checked exercises (which user chose in modal box).
+ */
+function getIDsFromCheckedExercises() {
+  let checkedExercises = [];
+  const modalCheckboxes = document.getElementsByClassName('modalCheckbox');
+  for(let modalCheckbox of modalCheckboxes) {
+    if(modalCheckbox.checked === true) {
+      const idTableRow = modalCheckbox.parentElement.nextSibling;
+      const titleTableRow = idTableRow.nextSibling;
+      checkedExercises.push({exerciseID: idTableRow.textContent, exerciseTitle: titleTableRow.textContent});
+    }
+  }
+  exerciseKeyfacts.value = checkedExercises;
+  document.getElementById("myModal").style.display = "none";
 }
 </script>
 
@@ -63,13 +86,66 @@ function toggleExerciseAccordion(event) {
       <div v-for="(exercise, index) in exerciseKeyfacts" :key="index" id="testArea">
         <br>
         <div @click="exerciseAccordionClicked" class="exercise_accordion">
-          {{ exercise.exerciseName}}
+          {{ exercise.exerciseTitle}}
           <i class='bx bx-chevron-right'></i>
         </div>
-        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="exercise.exerciseID"></ViewExerciseForm>
+        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="category"></ViewExerciseForm>
       </div>
       <br>
       <button @click="addExerciseButtonClicked">+</button>
+
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Modal Heading</h4>
+              <button type="button" class="close" id="closeModal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="table-container">
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th>Im Training</th>
+                    <th>ID</th>
+                    <th>Titel</th>
+                    <th>Kategorie</th>
+                    <th>Dauer</th>
+                    <th>Anzahl TH</th>
+                    <th>Intensität</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="exercise in exercises">
+                    <td>
+                      <input type="checkbox" class="modalCheckbox"/>
+                    </td>
+                    <td>{{ exercise.id }}</td>
+                    <td>{{ exercise.title }}</td>
+                    <td>{{ exercise.category }}</td>
+                    <td>{{ exercise.duration }}</td>
+                    <td>{{ exercise.numberOfGoalkeepers }}</td>
+                    <td>{{ exercise.intensity }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button @click="modalBoxButtonClicked" type="button" class="btn btn-danger" id="closeModal">Close</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -104,9 +180,6 @@ function toggleExerciseAccordion(event) {
   width: 100%;
 }
 
-.table-container {
-  overflow-x: auto;
-}
 .table-container table {
   width: 100%;
   border-collapse: collapse;
@@ -124,5 +197,109 @@ button {
   width: 100%;
 }
 
+.modal {
+  color: black;
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-dialog {
+  margin: 60px auto;
+  width: 80%;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close {
+  font-size: 30px;
+  font-weight: bold;
+  color: #000;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.close:focus {
+  outline: none;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.modal-footer {
+  text-align: right;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: max-content;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
 
 </style>
