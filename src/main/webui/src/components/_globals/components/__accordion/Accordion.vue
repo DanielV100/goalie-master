@@ -12,6 +12,7 @@ const category = props.category;
 let exercises = ref([]);
 const exercisesKey = ref();
 const totalDuration = ref('00:00');
+const totalIntensity = ref(0);
 
 
 function addExerciseButtonClicked() {
@@ -56,19 +57,25 @@ function getIDsFromCheckedExercises() {
   let checkedExercises = [];
   exercisesKey.value = 0;
   totalDuration.value = '00:00';
+  totalIntensity.value = 0;
+  let numberOfChecked = 0;
   const modalCheckboxes = document.getElementsByClassName('modalCheckbox');
   for(let modalCheckbox of modalCheckboxes) {
     exercisesKey.value -= 1;
     const idTableRow = modalCheckbox.parentElement.nextSibling;
     const titleTableRow = idTableRow.nextSibling;
     const durationTableRow = titleTableRow.nextSibling.nextSibling;
+    const intensityTableRow = durationTableRow.nextSibling.nextSibling;
 
     if(modalCheckbox.checked === true) {
+      numberOfChecked++;
       exercisesKey.value += 1;
       totalDuration.value = convertNumberToTime(convertTimeToNumber(totalDuration.value)+convertTimeToNumber(durationTableRow.textContent));
+      totalIntensity.value += Number(intensityTableRow.textContent);
       checkedExercises.push({exerciseID: idTableRow.textContent, exerciseTitle: titleTableRow.textContent});
     }
   }
+  totalIntensity.value = Math.trunc(totalIntensity.value/numberOfChecked);
   console.log('checked: ' + checkedExercises.length);
   exerciseKeyfacts.value = checkedExercises;
   document.getElementById("myModal").style.display = "none";
@@ -104,7 +111,7 @@ function convertNumberToTime(totalMinutes) {
           </td>
           <td class="after_td_one">
             <label>Intensität</label>
-            <h2>2/5</h2>
+            <h2>{{ totalIntensity }} /5</h2>
           </td>
         </tr>
       </table>
