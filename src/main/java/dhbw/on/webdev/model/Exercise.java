@@ -15,6 +15,8 @@ public class Exercise {
     public String title;
     @Column(name = "category")
     public String category;
+    @Column(name = "category_group")
+    public String categoryGroup;
     @Column(name = "number_of_goalkeepers")
     public int numberOfGoalkeepers;
     @Column(name = "duration")

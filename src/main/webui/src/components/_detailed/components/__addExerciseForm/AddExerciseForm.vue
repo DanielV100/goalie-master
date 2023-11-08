@@ -30,7 +30,8 @@ const isAddingExerciseSuccessful = async () => {
       sketchDataURL:getDataUrlFromSketch(),
       title: title.value,
       category: category.value,
-      number_of_goalkeepers: numberOfGoalkeeper.value,
+      categoryGroup: getCategoryGroup(),
+      numberOfGoalkeepers: numberOfGoalkeeper.value,
       duration: duration.value,
       intensity: intensity.value,
       materials:getValueListFromDomInputFields('.material'),
@@ -51,6 +52,14 @@ const isAddingExerciseSuccessful = async () => {
   }
 }
 
+function getCategoryGroup() {
+  const selectedOption = document.querySelector('select[name="categories"] option:checked');
+  if(selectedOption === null) {
+    return '';
+  } else {
+    return selectedOption.parentElement.label;
+  }
+}
 /**
  * Method sets all v-models from form empty.
  */
@@ -143,7 +152,7 @@ function getDataUrlFromSketch() {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_CATEGORY_LABEL }}</label>
-            <select v-model="category" name="cars" id="cars">
+            <select v-model="category" name="categories" id="cars">
               <option value="others">Sonstige</option>
               <optgroup label="Aufwärmen">
                 <option value="coordination">{{ LocalConfig.CATEGORY_WARM_UP_COORDINATION }}</option>
