@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {computed, ref} from "vue";
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
 import * as UtilityFunctions from "../../../../globals/utilityFunctions.js";
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";

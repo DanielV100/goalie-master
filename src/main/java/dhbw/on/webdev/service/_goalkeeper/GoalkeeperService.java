@@ -1,5 +1,6 @@
 package dhbw.on.webdev.service._goalkeeper;
 
+import dhbw.on.webdev.model.Exercise;
 import dhbw.on.webdev.model.Goalkeeper;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.UserRepository;
@@ -8,6 +9,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class GoalkeeperService {
@@ -33,7 +37,18 @@ public class GoalkeeperService {
         } catch (Exception exception) {
             return Response.serverError().build();
         }
+    }
 
+    public List<Goalkeeper> getAllGoalkeepersFromCurrentUser() {
+        return hideUserInformationInResponse(goalkeeperRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+    }
 
+    private List<Goalkeeper> hideUserInformationInResponse(List<Goalkeeper> goalkeepers) {
+        List<Goalkeeper> goalkeepersWithNoUserData = new ArrayList<>();
+        for (Goalkeeper goalkeeper : goalkeepers) {
+            goalkeeper.user = null;
+            goalkeepersWithNoUserData.add(goalkeeper);
+        }
+        return goalkeepersWithNoUserData;
     }
 }

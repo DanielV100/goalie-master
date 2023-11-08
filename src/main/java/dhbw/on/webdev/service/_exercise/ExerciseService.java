@@ -82,6 +82,4 @@ public class ExerciseService {
         }
         return exercisesWithNoUserData;
     }
-
-
 }

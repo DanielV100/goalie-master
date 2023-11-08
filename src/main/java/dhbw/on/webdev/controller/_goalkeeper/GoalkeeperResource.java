@@ -4,14 +4,13 @@ import dhbw.on.webdev.model.Goalkeeper;
 import dhbw.on.webdev.service._goalkeeper.GoalkeeperService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+
+import java.util.List;
 
 @Path("/goalkeeper")
 @SecurityScheme(
@@ -30,5 +29,13 @@ public class GoalkeeperResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
         return goalkeeperService.addNewGoalkeeper(goalkeeper);
+    }
+
+    @GET
+    @Path("/get/specific")
+    @RolesAllowed("user")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Goalkeeper> getAllGoalkeepersFromCurrentUser() {
+        return goalkeeperService.getAllGoalkeepersFromCurrentUser();
     }
 }
