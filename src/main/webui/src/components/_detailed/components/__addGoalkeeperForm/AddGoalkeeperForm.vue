@@ -5,6 +5,7 @@ import * as UtilityFunctions from "../../../../globals/utilityFunctions.js";
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 import axios from "axios";
+import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
 
 const isNotSubmitted = ref(true);
 const firstname = ref('');
@@ -12,6 +13,7 @@ const lastname = ref('');
 const birthday = ref();
 const club = ref('');
 const notes = ref('');
+const errorMessage = ref('');
 //submit button is active when all mandatory fields are filled
 const isSubmitDisabled = computed(() => {
   return !(firstname.value !== '' && lastname.value !== '' && club.value !== '');
@@ -33,9 +35,18 @@ const isAddingGoalkeeperSuccessful = async () => {
     });
     return true;
   } catch (error) {
-    console.log(error);
+    errorHandling(error);
     return false;
   }
+}
+
+function errorHandling(error) {
+  errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+  firstname.value = '';
+  lastname.value = '';
+  birthday.value = '';
+  club.value = '';
+  notes.value = '';
 }
 
 async function onSubmitClick() {
@@ -43,8 +54,6 @@ async function onSubmitClick() {
   const isSuccessful = await isAddingGoalkeeperSuccessful();
   if(isSuccessful) {
     isNotSubmitted.value = false;
-  } else {
-
   }
 }
 
@@ -104,6 +113,7 @@ async function onSubmitClick() {
     </div>
     <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
   </div>
+  <ErrorDialog>{{ errorMessage }}</ErrorDialog>
 </template>
 
 <style scoped>

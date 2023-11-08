@@ -10,7 +10,6 @@ import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDia
 const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
-const isErrorMessageShowing = ref(false);
 const isPasswordInvisible = ref(true);
 const isLoginFormVisible = ref(true);
 //Button is only clickable, when username and password is set
