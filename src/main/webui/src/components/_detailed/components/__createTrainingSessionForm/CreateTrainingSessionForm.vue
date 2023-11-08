@@ -11,6 +11,9 @@ let goalkeepersFromDB = ref([]);
 onMounted(async () => {
   let goalkeepers = await getGoalkeepersFromDB();
   createGoalkeepersSelectable(goalkeepers);
+
+  let exercises = await getAllExercisesFromDB();
+  saveAllExercisesInSessionStorage(exercises);
 });
 
 /**
@@ -40,6 +43,49 @@ async function getGoalkeepersFromDB() {
     console.error(error);
     return [];
   }
+}
+
+async function getAllExercisesFromDB() {
+  try {
+    const response = await axios.get('exercise/get/specific', {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+/**
+ * Filters exercises by category group and saves them in session storage.
+ * Saving in session storage is faster than requesting db.
+ * @param exercises
+ */
+function saveAllExercisesInSessionStorage(exercises) {
+  let exerciseWarmUp = [];
+  let exerciseMain = [];
+  let exerciseEnd = [];
+  let exerciseOther = [];
+  exercises.forEach((exercise) => {
+    if(exercise.categoryGroup.toLowerCase() === 'aufwärmen') {
+      exerciseWarmUp.push(exercise);
+    } else if(exercise.categoryGroup.toLowerCase() === 'hauptteil') {
+      exerciseMain.push(exercise);
+    } else if(exercise.categoryGroup.toLowerCase() === 'schluss') {
+      exerciseEnd.push(exercise);
+    } else {
+      exerciseOther.push(exercise);
+    }
+  });
+  sessionStorage.setItem('exercisesWarmUp', JSON.stringify(exerciseWarmUp));
+  sessionStorage.setItem('exerciseMain', JSON.stringify(exerciseMain));
+  sessionStorage.setItem('exerciseEnd', JSON.stringify(exerciseEnd));
+  sessionStorage.setItem('exerciseOther', JSON.stringify(exerciseOther));
 }
 
 </script>
@@ -77,13 +123,13 @@ async function getGoalkeepersFromDB() {
         </div>
       </form>
       <br>
-      <Accordion>Aufwärmen</Accordion>
+      <Accordion category="warmUp">Aufwärmen</Accordion>
       <br>
       <br>
-      <Accordion>Hauptteil</Accordion>
+      <Accordion category="main">Hauptteil</Accordion>
       <br>
       <br>
-      <Accordion>Abschluss</Accordion>
+      <Accordion category="end">Abschluss</Accordion>
       <br>
     </div>
   </div>

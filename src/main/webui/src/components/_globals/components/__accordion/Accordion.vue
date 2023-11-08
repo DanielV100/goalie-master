@@ -5,6 +5,10 @@ import ViewExerciseForm from "@/components/_detailed/components/__addExerciseFor
 //ID's from the exercises to add
 const exerciseIDs = ref([]);
 const exerciseKeyfacts = ref([]);
+const props = defineProps({
+  category: String
+});
+const category = props.category;
 
 
 function addExerciseButtonClicked() {
