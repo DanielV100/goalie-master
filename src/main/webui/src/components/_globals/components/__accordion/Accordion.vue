@@ -54,9 +54,9 @@ function modalBoxButtonClicked() {
  * exercisesKey is a trick to rerender the v-for. If it's not used, v-for won't update the way it should be.
  */
 function getIDsFromCheckedExercises() {
+  resetAccordion();
+  let randomExerciseKey = generateRandomExerciseKey(exercisesKey.value);
   let checkedExercises = [];
-  totalDuration.value = '00:00';
-  totalIntensity.value = 0;
   let numberOfChecked = 0;
   const modalCheckboxes = document.getElementsByClassName('modalCheckbox');
   for(let modalCheckbox of modalCheckboxes) {
@@ -65,32 +65,46 @@ function getIDsFromCheckedExercises() {
     const durationTableRow = titleTableRow.nextSibling.nextSibling;
     const intensityTableRow = durationTableRow.nextSibling.nextSibling;
     if(modalCheckbox.checked === true) {
-      exercisesKey.value = generateRandomExerciseKey();
       numberOfChecked++;
+      exercisesKey.value = randomExerciseKey;
       totalDuration.value = convertNumberToTime(convertTimeToNumber(totalDuration.value)+convertTimeToNumber(durationTableRow.textContent));
       totalIntensity.value += Number(intensityTableRow.textContent);
       checkedExercises.push({exerciseID: idTableRow.textContent, exerciseTitle: titleTableRow.textContent});
     }
   }
-  totalIntensity.value = Math.round(totalIntensity.value/numberOfChecked);
-  console.log('checked: ' + checkedExercises.length);
+  calculateTotalIntensity(numberOfChecked);
   exerciseKeyfacts.value = checkedExercises;
   document.getElementById("myModal").style.display = "none";
+}
+
+function calculateTotalIntensity(numberOfCheckedExercises) {
+  totalIntensity.value = Math.round(totalIntensity.value/numberOfCheckedExercises);
+}
+
+function resetAccordion() {
+  totalDuration.value = '00:00';
+  totalIntensity.value = 0;
+}
+
+
+
+/**
+ * Needed to make unique ids for the v-for (forcing re-rendering).
+ * @returns {number}
+ */
+function generateRandomExerciseKey(exerciseKey) {
+  let randomExerciseKey = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  if(exerciseKey === randomExerciseKey) {
+    return randomExerciseKey-1;
+  } else {
+    return randomExerciseKey;
+  }
 }
 
 function convertTimeToNumber(timeString) {
   const [hours, minutes] = timeString.split(':').map(Number);
   return hours * 60 + minutes;
 }
-
-/**
- * Needed to make unique ids for the v-for (forcing re-rendering).
- * @returns {number}
- */
-function generateRandomExerciseKey() {
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-}
-
 function convertNumberToTime(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
@@ -137,7 +151,7 @@ function convertNumberToTime(totalMinutes) {
 
             <!-- Modal Header -->
             <div class="modal-header">
-              <h4 class="modal-title">Modal Heading</h4>
+              <h4 class="modal-title">Übungen auswählen</h4>
               <button type="button" class="close" id="closeModal">&times;</button>
             </div>
 
@@ -259,15 +273,24 @@ button {
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+}
+
+.modal-title {
+  flex: 1; /* Takes up remaining space */
+  margin: 0; /* Remove any default margin */
 }
 
 .close {
+  margin-left: 10px; /* Adjust as needed */
+}
+
+
+.close {
+  flex: 1;
   font-size: 30px;
   font-weight: bold;
   color: #000;

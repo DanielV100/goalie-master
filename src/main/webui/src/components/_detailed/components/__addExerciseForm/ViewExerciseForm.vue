@@ -14,6 +14,8 @@ const intensity = ref('');
 const materialList = ref([]);
 const descriptionList = ref([]);
 const sketchDataUrl = ref();
+const note = ref();
+const isNoteNotEmpty = ref(false);
 
 let exerciseID;
 const props = defineProps({
@@ -34,7 +36,6 @@ function fillFormFields() {
   let exercises = JSON.parse(sessionStorage.getItem('exercisesWarmUp'));
   exercises.forEach((exercise)=> {
     if(exercise.id === exerciseID) {
-      console.log('Test');
       let test = [];
       for(let i = 0; i < exercise.numbersOfMaterial.length; i++) {
         test.push({numberOfMaterial: exercise.numbersOfMaterial[i], material: exercise.materials[i]});
@@ -46,6 +47,12 @@ function fillFormFields() {
       intensity.value = exercise.intensity;
       descriptionList.value = exercise.descriptionSteps;
       materialList.value = test;
+      if (exercise.note === null || exercise.note === '') {
+        isNoteNotEmpty.value = false;
+      } else {
+        isNoteNotEmpty.value = true;
+        note.value = exercise.note;
+      }
       byteArrayToDataURL(exercise.sketch)
     }
   });
@@ -159,10 +166,10 @@ function byteArrayToDataURL(byteArray) {
         <img :src="sketchDataUrl"/>
       </div>
       <br>
-      <div>
+      <div v-if="isNoteNotEmpty">
         <br>
         <label>{{ LocalConfig.FORM_NOTES_LABEL }}</label>
-        <textarea class="input" id="textTest" rows="3"></textarea>
+        <textarea :value="note" class="input" id="textTest" rows="3"></textarea>
       </div>
     </div>
   </div>
