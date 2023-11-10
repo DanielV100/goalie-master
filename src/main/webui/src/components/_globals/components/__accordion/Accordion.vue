@@ -129,7 +129,7 @@ function convertNumberToTime(totalMinutes) {
           </td>
           <td class="after_td_one">
             <label>Intensität</label>
-            <h2>{{ totalIntensity }} /5</h2>
+            <h2>{{ totalIntensity }}/5</h2>
           </td>
         </tr>
       </table>
@@ -142,7 +142,7 @@ function convertNumberToTime(totalMinutes) {
         <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="props.category" :exercises="exercises"></ViewExerciseForm>
       </div>
       <br>
-      <button @click="addExerciseButtonClicked">+</button>
+      <button class="addExerciseButton" @click="addExerciseButtonClicked">+</button>
 
       <div class="modal" :id="props.modalID">
         <div class="modal-dialog">
@@ -217,6 +217,9 @@ function convertNumberToTime(totalMinutes) {
   transition: 0.4s;
 }
 
+.addExerciseButton {
+  margin-top: 0;
+}
 .exercise_accordion i {
   font-size: 1.5rem; /* Adjust the size of the icon */
 }
@@ -297,6 +300,7 @@ button {
   background: none;
   cursor: pointer;
 }
+
 
 .close:focus {
   outline: none;

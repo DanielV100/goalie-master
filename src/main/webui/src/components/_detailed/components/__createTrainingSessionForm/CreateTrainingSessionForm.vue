@@ -5,7 +5,6 @@
  * Otherwise, the states of the three accordions appear interfering and some stupid things happen.
  * @TimeToFindOut: 120min.
  */
-
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import * as LocalConfig from './resources/createTrainingSessionForm.js';
 import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
