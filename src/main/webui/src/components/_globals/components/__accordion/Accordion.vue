@@ -16,14 +16,12 @@ const totalIntensity = ref(0);
 
 const testKey = ref();
 
-function addExerciseButtonClicked(event) {
-  console.log(exercises.value);
+function addExerciseButtonClicked() {
   getExercisesFromSessionStorage();
   document.getElementById(props.modalID).style.display = "block";
 }
 
 function getExercisesFromSessionStorage() {
-  testKey.value = generateRandomExerciseKey(testKey.value);
   exercises.value = UtilityFunctions.getExercisesFromSessionStorage(props.category);
 }
 
@@ -59,7 +57,7 @@ function getIDsFromCheckedExercises() {
   let randomExerciseKey = generateRandomExerciseKey(exercisesKey.value);
   let checkedExercises = [];
   let numberOfChecked = 0;
-  const modalCheckboxes = document.getElementsByClassName('modalCheckbox');
+  const modalCheckboxes = document.getElementsByClassName(props.modalID);
   for(let modalCheckbox of modalCheckboxes) {
     const idTableRow = modalCheckbox.parentElement.nextSibling;
     const titleTableRow = idTableRow.nextSibling;
@@ -174,7 +172,7 @@ function convertNumberToTime(totalMinutes) {
                   <tbody>
                   <tr v-for="exercise in exercises">
                     <td>
-                      <input type="checkbox" class="modalCheckbox"/>
+                      <input type="checkbox" :class="props.modalID"/>
                     </td>
                     <td>{{ exercise.id }}</td>
                     <td>{{ exercise.title }}</td>
