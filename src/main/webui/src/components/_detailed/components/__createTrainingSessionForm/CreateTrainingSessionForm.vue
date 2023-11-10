@@ -123,13 +123,13 @@ function saveAllExercisesInSessionStorage(exercises) {
         </div>
       </form>
       <br>
-      <Accordion category="warmUp" id="test1">Aufwärmen</Accordion>
+      <Accordion category="warmUp" modal-i-d="_warmup">Aufwärmen</Accordion>
       <br>
       <br>
-      <Accordion category="main" id="test2">Hauptteil</Accordion>
+      <Accordion category="main" modal-i-d="_main">Hauptteil</Accordion>
       <br>
       <br>
-      <Accordion category="end" id="test3">Abschluss</Accordion>
+      <Accordion category="end" modal-i-d="_end">Abschluss</Accordion>
       <br>
     </div>
   </div>

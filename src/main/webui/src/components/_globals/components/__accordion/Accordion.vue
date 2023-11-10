@@ -1,13 +1,13 @@
 <script setup>
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
-import {nextTick, onBeforeUpdate, onMounted, ref} from "vue";
+import {nextTick, onActivated, onBeforeUpdate, onMounted, ref} from "vue";
 import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 //ID's from the exercises to add
-const exerciseIDs = ref([]);
 const exerciseKeyfacts = ref([]);
 const props = defineProps({
-  category: String
+  category: String,
+  modalID: String,
 });
 let exercises = ref([]);
 const exercisesKey = ref();
@@ -16,17 +16,15 @@ const totalIntensity = ref(0);
 
 const testKey = ref();
 
-
 function addExerciseButtonClicked(event) {
+  console.log(exercises.value);
   getExercisesFromSessionStorage();
-  document.getElementById("myModal").style.display = "block";
+  document.getElementById(props.modalID).style.display = "block";
 }
 
 function getExercisesFromSessionStorage() {
-  exercises.value = [];
   testKey.value = generateRandomExerciseKey(testKey.value);
   exercises.value = UtilityFunctions.getExercisesFromSessionStorage(props.category);
-  console.log(exercises.value);
 }
 
 function exerciseAccordionClicked(event) {
@@ -77,7 +75,7 @@ function getIDsFromCheckedExercises() {
   }
   calculateTotalIntensity(numberOfChecked);
   exerciseKeyfacts.value = checkedExercises;
-  document.getElementById("myModal").style.display = "none";
+  document.getElementById(props.modalID).style.display = "none";
 }
 
 function calculateTotalIntensity(numberOfCheckedExercises) {
@@ -146,9 +144,9 @@ function convertNumberToTime(totalMinutes) {
         <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="props.category"></ViewExerciseForm>
       </div>
       <br>
-      <button :id="props.category" @click="addExerciseButtonClicked">+</button>
+      <button @click="addExerciseButtonClicked">+</button>
 
-      <div class="modal" id="myModal">
+      <div class="modal" :id="props.modalID">
         <div class="modal-dialog">
           <div class="modal-content">
 
