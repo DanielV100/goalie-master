@@ -9,7 +9,6 @@ const exerciseKeyfacts = ref([]);
 const props = defineProps({
   category: String
 });
-const category = props.category;
 let exercises = ref([]);
 const exercisesKey = ref();
 const totalDuration = ref('00:00');
@@ -22,7 +21,7 @@ function addExerciseButtonClicked() {
 }
 
 function getExercisesFromSessionStorage() {
-  exercises.value = UtilityFunctions.getExercisesFromSessionStorage(category);
+  exercises.value = UtilityFunctions.getExercisesFromSessionStorage(props.category);
 }
 
 function exerciseAccordionClicked(event) {
@@ -139,7 +138,7 @@ function convertNumberToTime(totalMinutes) {
           {{ exercise.exerciseTitle}}
           <i class='bx bx-chevron-right'></i>
         </div>
-        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="category"></ViewExerciseForm>
+        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="props.category"></ViewExerciseForm>
       </div>
       <br>
       <button @click="addExerciseButtonClicked">+</button>
