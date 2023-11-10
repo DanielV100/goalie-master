@@ -1,9 +1,9 @@
 package dhbw.on.webdev.model;
 
-import jakarta.annotation.Nullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -13,19 +13,30 @@ public class TrainingSession {
     @GeneratedValue
     public long id;
 
-    @Column(name = "t_title")
     public String tTitle;
 
-    @Column(name = "t_date")
-    public LocalDate tDate;
+    public LocalDate date;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "goalkeeper_id")
-    public Goalkeeper goalkeeper;
+    public String tNotes;
 
-    @ElementCollection
-    @CollectionTable(name = "training_sessions_goalkeepers", joinColumns = @JoinColumn(name = "training_sessions_id"))
-    @Column(name = "goalkeeper_id")
-    private List<Long> goalkeeperIds;
+    @ManyToMany
+    @JoinTable(
+            name = "training_session_goalkeepers",
+            joinColumns = @JoinColumn(name = "training_sessions_id"),
+            inverseJoinColumns = @JoinColumn(name = "goalkeepers_id")
+    )
+    public List<Goalkeeper> goalkeepers;
 
+    @Transient
+    public List<Long> goalkeeperIds;
+
+    @ManyToMany
+    @JoinTable(
+            name = "training_session_exercises",
+            joinColumns = @JoinColumn(name = "training_sessions_id"),
+            inverseJoinColumns = @JoinColumn(name = "exercises_id")
+    )
+    public List<Exercise> exercises;
+    @Transient
+    public List<Long> exerciseIds;
 }

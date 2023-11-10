@@ -1,0 +1,39 @@
+package dhbw.on.webdev.controller._training_session;
+
+import dhbw.on.webdev.model.TrainingSession;
+import dhbw.on.webdev.service._training_session.TrainingSessionService;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+
+import java.util.List;
+
+@Path("/training_session")
+@SecurityScheme(
+        scheme = "bearer",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT"
+)
+public class TrainingSessionResource {
+    @Inject
+    TrainingSessionService trainingSessionService;
+    @GET
+    @Path("/get")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<TrainingSession> getTest() {
+        return trainingSessionService.getTest();
+    }
+
+    @POST
+    @Path("/create")
+    @RolesAllowed("user")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createNewTrainingSession(TrainingSession trainingSession) {
+        return trainingSessionService.createNewTrainingSession(trainingSession);
+    }
+}

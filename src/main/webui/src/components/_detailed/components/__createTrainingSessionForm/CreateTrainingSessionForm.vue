@@ -9,19 +9,56 @@ import CurrentPageIndicator from "@/components/_globals/components/__currentPage
 import * as LocalConfig from './resources/createTrainingSessionForm.js';
 import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
 import Accordion from "@/components/_globals/components/__accordion/Accordion.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import axios from "axios";
 import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
+const title = ref('');
+const date = ref('');
+const note = ref('');
+const goalkeepersNameAndId = ref([]);
 
-let goalkeepersFromDB = ref([]);
 onMounted(async () => {
-  let goalkeepers = await getGoalkeepersFromDB();
-  createGoalkeepersSelectable(goalkeepers);
+  let goalkeepersFromDB = await getGoalkeepersFromDB();
+  createGoalkeepersSelectable(goalkeepersFromDB);
 
   let exercises = await getAllExercisesFromDB();
   SessionStorageFunctions.saveAllExercisesInSessionStorage(exercises);
 });
+
+const isSubmitDisabled = computed(() => {
+  return !(title.value !== '' && date.value !== '');
+});
+
+const isCreatingTrainingSessionSuccessful = async () => {
+  try {
+    const trainingSession = {
+      tTitle: title.value,
+      tDate: date.value,
+      tNotes: note.value,
+      goalkeeperIds: getGoalkeeperIds(goalkeepers),
+      exerciseIds: notes.value
+    };
+    await axios.post('/training_session/create', trainingSession, {
+      headers: {
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+    resetForm();
+    return false;
+  }
+}
+async function onSubmitClick() {
+  console.log(test.value);
+  UtilityFunctions.setLoadingCircleInSubmitButton();
+  //const isSuccessful = await isCreatingTrainingSessionSuccessful();
+  if(isSuccessful) {
+    isNotSubmitted.value = false;
+  }
+}
 
 /**
  * The multiselect component needs an object of arrays as prop, which gets build in this method.
@@ -29,8 +66,16 @@ onMounted(async () => {
  */
 function createGoalkeepersSelectable(goalkeepers) {
   goalkeepers.forEach((goalkeeper) => {
-    goalkeepersFromDB.value.push({name:goalkeeper.firstname + ' ' + goalkeeper.lastname, id:goalkeeper.id});
+    goalkeepersNameAndId.value.push({name:goalkeeper.firstname + ' ' + goalkeeper.lastname, id:goalkeeper.id});
   })
+}
+
+function getGoalkeeperIds(goalkeepers) {
+  let goalkeeperIds = [];
+  goalkeepers.forEach((goalkeeper) => {
+    goalkeeperIds.push(goalkeeper.id);
+  })
+  return goalkeeperIds;
 }
 
 /**
@@ -67,6 +112,10 @@ async function getAllExercisesFromDB() {
     return [];
   }
 }
+
+function optionSelected(value, id) {
+  console.log(value.label);
+}
 </script>
 
 <template>
@@ -87,7 +136,7 @@ async function getAllExercisesFromDB() {
           <div class="input-box">
             <label>{{ LocalConfig.FORM_DATE_LABEL }}</label>
             <input
-                v-model="title"
+                v-model="date"
                 id="firstname"
                 type="text"
                 placeholder="Hechten II"
@@ -98,7 +147,7 @@ async function getAllExercisesFromDB() {
         <br>
         <div>
           <label>{{ LocalConfig.FORM_CHOOSE_GOALKEEPER_LABEL }}</label>
-          <Multiselect :multiselect-options="goalkeepersFromDB"/>
+          <Multiselect @select="optionSelected" :multiselect-options="goalkeepersNameAndId"/>
         </div>
       </form>
       <br>
@@ -115,6 +164,7 @@ async function getAllExercisesFromDB() {
         <label>Notizen</label>
         <textarea class="input" v-model="note" id="textTest" rows="3"></textarea>
       </div>
+      <button class="submit" @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_CREATE_TRAINING_SESSION }}</button>
     </div>
   </div>
 </template>

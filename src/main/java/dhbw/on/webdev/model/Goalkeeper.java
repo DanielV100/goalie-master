@@ -32,7 +32,7 @@ public class Goalkeeper {
     @JoinColumn(name = "user_id")
     public User user;
 
-    @OneToMany(mappedBy = "goalkeeper")
+    @ManyToMany(mappedBy = "goalkeepers")
     @JsonIgnore
     @Transient
     public List<TrainingSession> trainingSessions;

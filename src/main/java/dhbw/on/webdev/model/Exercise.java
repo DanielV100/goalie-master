@@ -1,4 +1,5 @@
 package dhbw.on.webdev.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -48,4 +49,8 @@ public class Exercise {
     @JoinColumn(name = "user_id")
     public User user;
 
+    @ManyToMany(mappedBy = "exercises")
+    @JsonIgnore
+    @Transient
+    public List<TrainingSession> trainingSessions;
 }
