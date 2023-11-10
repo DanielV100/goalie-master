@@ -14,14 +14,19 @@ const exercisesKey = ref();
 const totalDuration = ref('00:00');
 const totalIntensity = ref(0);
 
+const testKey = ref();
 
-function addExerciseButtonClicked() {
+
+function addExerciseButtonClicked(event) {
   getExercisesFromSessionStorage();
   document.getElementById("myModal").style.display = "block";
 }
 
 function getExercisesFromSessionStorage() {
+  exercises.value = [];
+  testKey.value = generateRandomExerciseKey(testKey.value);
   exercises.value = UtilityFunctions.getExercisesFromSessionStorage(props.category);
+  console.log(exercises.value);
 }
 
 function exerciseAccordionClicked(event) {
@@ -132,7 +137,7 @@ function convertNumberToTime(totalMinutes) {
           </td>
         </tr>
       </table>
-      <div v-for="(exercise) in exerciseKeyfacts" :key="exercisesKey" id="testArea">
+      <div v-for="exercise in exerciseKeyfacts" :key="exercisesKey" id="testArea">
         <br>
         <div @click="exerciseAccordionClicked" class="exercise_accordion">
           {{ exercise.exerciseTitle}}
@@ -141,7 +146,7 @@ function convertNumberToTime(totalMinutes) {
         <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="props.category"></ViewExerciseForm>
       </div>
       <br>
-      <button @click="addExerciseButtonClicked">+</button>
+      <button :id="props.category" @click="addExerciseButtonClicked">+</button>
 
       <div class="modal" id="myModal">
         <div class="modal-dialog">

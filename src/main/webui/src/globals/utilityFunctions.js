@@ -77,7 +77,7 @@ export function getExercisesFromSessionStorage(category) {
         exercises = JSON.parse(sessionStorage.getItem('exercisesWarmUp'));
     } else if(category === 'main') {
         exercises = JSON.parse(sessionStorage.getItem('exercisesMain'));
-    } else {
+    } else if(category === 'end'){
         exercises = JSON.parse(sessionStorage.getItem('exercisesEnd'));
     }
     return exercises;
