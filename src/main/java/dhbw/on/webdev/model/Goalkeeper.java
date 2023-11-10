@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "goalkeepers")
@@ -30,6 +31,11 @@ public class Goalkeeper {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     public User user;
+
+    @OneToMany(mappedBy = "goalkeeper")
+    @JsonIgnore
+    @Transient
+    public List<TrainingSession> trainingSessions;
 
 
 }
