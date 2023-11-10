@@ -18,26 +18,22 @@ const note = ref();
 const isNoteNotEmpty = ref(false);
 const isDescriptionNotEmpty = ref(false);
 
-let exerciseID;
 const props = defineProps({
   category: String,
-  exerciseID: Number
+  exerciseID: Number,
+  exercises: Object
 });
 onMounted(() => {
-  exerciseID = props.exerciseID;
-  console.log(exerciseID);
-  console.log(props.category);
-  fillFormFields(UtilityFunctions.getExercisesFromSessionStorage(props.category));
+  fillFormFields();
 });
 
 
 /**
  * This function fills the form with the data from the database.
  */
-function fillFormFields(exercises) {
-  console.log(exercises);
-  exercises.forEach((exercise)=> {
-    if(exercise.id === exerciseID) {
+function fillFormFields() {
+  props.exercises.forEach((exercise)=> {
+    if(exercise.id === props.exerciseID) {
       let test = [];
       for(let i = 0; i < exercise.numbersOfMaterial.length; i++) {
         test.push({numberOfMaterial: exercise.numbersOfMaterial[i], material: exercise.materials[i]});

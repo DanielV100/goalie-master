@@ -2,7 +2,7 @@
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
 import {nextTick, onActivated, onBeforeUpdate, onMounted, ref} from "vue";
 import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
-import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
+import * as SessionStorageFunctions from '../../../../globals/sessionStorageUtilitiyFunctions.js';
 //ID's from the exercises to add
 const exerciseKeyfacts = ref([]);
 const props = defineProps({
@@ -22,7 +22,7 @@ function addExerciseButtonClicked() {
 }
 
 function getExercisesFromSessionStorage() {
-  exercises.value = UtilityFunctions.getExercisesFromSessionStorage(props.category);
+  exercises.value = SessionStorageFunctions.getExercisesFromSessionStorage(props.category);
 }
 
 function exerciseAccordionClicked(event) {
@@ -139,7 +139,7 @@ function convertNumberToTime(totalMinutes) {
           {{ exercise.exerciseTitle}}
           <i class='bx bx-chevron-right'></i>
         </div>
-        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="props.category"></ViewExerciseForm>
+        <ViewExerciseForm style="overflow: hidden; display: none" :exercise-i-d="Number(exercise.exerciseID)" :category="props.category" :exercises="exercises"></ViewExerciseForm>
       </div>
       <br>
       <button @click="addExerciseButtonClicked">+</button>

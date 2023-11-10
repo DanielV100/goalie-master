@@ -71,16 +71,6 @@ function showErrorDialog() {
     }
 }
 
-export function getExercisesFromSessionStorage(category) {
-    let exercises = [];
-    if(category === 'warmUp') {
-        exercises = JSON.parse(sessionStorage.getItem('exercisesWarmUp'));
-    } else if(category === 'main') {
-        exercises = JSON.parse(sessionStorage.getItem('exercisesMain'));
-    } else if(category === 'end'){
-        exercises = JSON.parse(sessionStorage.getItem('exercisesEnd'));
-    }
-    return exercises;
-}
+
 
 

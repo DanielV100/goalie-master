@@ -1,13 +1,12 @@
 <script setup>
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
+import * as SessionStorageFunctions from '../../../../globals/sessionStorageUtilitiyFunctions.js';
 
 function logOutClicked() {
-  deleteSessionStorage();
+  SessionStorageFunctions.clearSessionStorage();
   GlobalConfig.changeWindowToTargetRoute('LoginForm');
 }
-function deleteSessionStorage() {
-  sessionStorage.clear();
-}
+
 
 function logoClicked() {
   GlobalConfig.changeWindowToTargetRoute('Overview');

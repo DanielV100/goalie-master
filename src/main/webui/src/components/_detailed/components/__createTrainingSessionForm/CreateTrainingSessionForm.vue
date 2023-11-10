@@ -1,4 +1,11 @@
+
 <script setup>
+/**
+ * @Important: Calling the accordions is only working correctly with passing a modalID.
+ * Otherwise, the states of the three accordions appear interfering and some stupid things happen.
+ * @TimeToFindOut: 120min.
+ */
+
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import * as LocalConfig from './resources/createTrainingSessionForm.js';
 import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
@@ -6,6 +13,7 @@ import Accordion from "@/components/_globals/components/__accordion/Accordion.vu
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import * as UtilityFunctions from "@/globals/utilityFunctions";
+import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 
 let goalkeepersFromDB = ref([]);
 onMounted(async () => {
@@ -13,7 +21,7 @@ onMounted(async () => {
   createGoalkeepersSelectable(goalkeepers);
 
   let exercises = await getAllExercisesFromDB();
-  saveAllExercisesInSessionStorage(exercises);
+  SessionStorageFunctions.saveAllExercisesInSessionStorage(exercises);
 });
 
 /**
@@ -60,34 +68,6 @@ async function getAllExercisesFromDB() {
     return [];
   }
 }
-
-/**
- * Filters exercises by category group and saves them in session storage.
- * Saving in session storage is faster than requesting db.
- * @param exercises
- */
-function saveAllExercisesInSessionStorage(exercises) {
-  let exerciseWarmUp = [];
-  let exerciseMain = [];
-  let exerciseEnd = [];
-  let exerciseOther = [];
-  exercises.forEach((exercise) => {
-    if(exercise.categoryGroup.toLowerCase() === 'aufwärmen') {
-      exerciseWarmUp.push(exercise);
-    } else if(exercise.categoryGroup.toLowerCase() === 'hauptteil') {
-      exerciseMain.push(exercise);
-    } else if(exercise.categoryGroup.toLowerCase() === 'schluss') {
-      exerciseEnd.push(exercise);
-    } else {
-      exerciseOther.push(exercise);
-    }
-  });
-  sessionStorage.setItem('exercisesWarmUp', JSON.stringify(exerciseWarmUp));
-  sessionStorage.setItem('exercisesMain', JSON.stringify(exerciseMain));
-  sessionStorage.setItem('exercisesEnd', JSON.stringify(exerciseEnd));
-  sessionStorage.setItem('exercisesOther', JSON.stringify(exerciseOther));
-}
-
 </script>
 
 <template>
@@ -131,6 +111,11 @@ function saveAllExercisesInSessionStorage(exercises) {
       <br>
       <Accordion category="end" modal-i-d="_end">Abschluss</Accordion>
       <br>
+      <div>
+        <br>
+        <label>Notizen</label>
+        <textarea class="input" v-model="note" id="textTest" rows="3"></textarea>
+      </div>
     </div>
   </div>
 </template>
