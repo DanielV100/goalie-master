@@ -16,24 +16,26 @@ const descriptionList = ref([]);
 const sketchDataUrl = ref();
 const note = ref();
 const isNoteNotEmpty = ref(false);
+const isDescriptionNotEmpty = ref(false);
 
 let exerciseID;
 const props = defineProps({
   category: String,
   exerciseID: Number
 });
-
 onMounted(() => {
   exerciseID = props.exerciseID;
   console.log(exerciseID);
-  fillFormFields();
+  console.log(props.category);
+  fillFormFields(UtilityFunctions.getExercisesFromSessionStorage(props.category));
 });
+
 
 /**
  * This function fills the form with the data from the database.
  */
-function fillFormFields() {
-  let exercises = JSON.parse(sessionStorage.getItem('exercisesWarmUp'));
+function fillFormFields(exercises) {
+  console.log(exercises);
   exercises.forEach((exercise)=> {
     if(exercise.id === exerciseID) {
       let test = [];
@@ -45,9 +47,14 @@ function fillFormFields() {
       numberOfGoalkeeper.value = exercise.numberOfGoalkeepers;
       duration.value = exercise.duration;
       intensity.value = exercise.intensity;
-      descriptionList.value = exercise.descriptionSteps;
+      if(exercise.descriptionSteps === null || exercise.descriptionSteps.length === 0) {
+        isDescriptionNotEmpty.value = false;
+      } else {
+        isDescriptionNotEmpty.value = true;
+        descriptionList.value = exercise.descriptionSteps;
+      }
       materialList.value = test;
-      if (exercise.note === null || exercise.note === '') {
+      if(exercise.note === null || exercise.note === '') {
         isNoteNotEmpty.value = false;
       } else {
         isNoteNotEmpty.value = true;
@@ -61,7 +68,7 @@ function byteArrayToDataURL(byteArray) {
   let blob = new Blob([new Uint8Array(byteArray)], { type: 'image/png' });
   var reader = new FileReader();
   reader.onloadend = function() {
-    var dataURL = reader.result; // This will be a Data URL
+    var dataURL = reader.result;
     sketchDataUrl.value = dataURL;
   };
   reader.readAsDataURL(blob);
@@ -152,7 +159,7 @@ function byteArrayToDataURL(byteArray) {
         </div>
         <br />
       </form>
-      <div id="description_container">
+      <div v-if="isDescriptionNotEmpty" id="description_container">
         <form @submit="onSubmitClick" class="form" id="form">
           <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }}</label>
           <div v-for="description in descriptionList" id="description" style="display: flex">

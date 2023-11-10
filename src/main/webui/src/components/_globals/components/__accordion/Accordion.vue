@@ -2,6 +2,7 @@
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
 import {nextTick, onBeforeUpdate, onMounted, ref} from "vue";
 import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
+import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 //ID's from the exercises to add
 const exerciseIDs = ref([]);
 const exerciseKeyfacts = ref([]);
@@ -16,14 +17,12 @@ const totalIntensity = ref(0);
 
 
 function addExerciseButtonClicked() {
-  if(category === 'warmUp') {
-    exercises.value = JSON.parse(sessionStorage.getItem('exercisesWarmUp'));
-  } else if(category === 'main') {
-    exercises.value = JSON.parse(sessionStorage.getItem('exercisesMain'));
-  } else {
-    exercises.value = JSON.parse(sessionStorage.getItem('exercisesEnd'));
-  }
+  getExercisesFromSessionStorage();
   document.getElementById("myModal").style.display = "block";
+}
+
+function getExercisesFromSessionStorage() {
+  exercises.value = UtilityFunctions.getExercisesFromSessionStorage(category);
 }
 
 function exerciseAccordionClicked(event) {
