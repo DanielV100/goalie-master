@@ -14,7 +14,6 @@ const exercisesKey = ref();
 const totalDuration = ref('00:00');
 const totalIntensity = ref(0);
 
-const testKey = ref();
 
 function addExerciseButtonClicked() {
   getExercisesFromSessionStorage();

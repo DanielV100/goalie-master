@@ -27,6 +27,7 @@ onMounted(async () => {
 });
 
 const isSubmitDisabled = computed(() => {
+  console.log(date.value);
   return !(title.value !== '' && date.value !== '');
 });
 
@@ -36,8 +37,8 @@ const isCreatingTrainingSessionSuccessful = async () => {
       tTitle: title.value,
       tDate: date.value,
       tNotes: note.value,
-      goalkeeperIds: getGoalkeeperIds(goalkeepers),
-      exerciseIds: notes.value
+      goalkeeperIds: getGoalkeeperIds(getSelectedGoalkeepers()),
+      exerciseIds: getIdsFromCheckedExercises()
     };
     await axios.post('/training_session/create', trainingSession, {
       headers: {
@@ -46,17 +47,17 @@ const isCreatingTrainingSessionSuccessful = async () => {
     });
     return true;
   } catch (error) {
-    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
-    resetForm();
+   //errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+    //resetForm();
     return false;
   }
 }
 async function onSubmitClick() {
-  console.log(test.value);
   UtilityFunctions.setLoadingCircleInSubmitButton();
-  //const isSuccessful = await isCreatingTrainingSessionSuccessful();
+  const isSuccessful = await isCreatingTrainingSessionSuccessful();
   if(isSuccessful) {
-    isNotSubmitted.value = false;
+    console.log(isSuccessful);
+    //isNotSubmitted.value = false;
   }
 }
 
@@ -70,12 +71,42 @@ function createGoalkeepersSelectable(goalkeepers) {
   })
 }
 
+/**
+ * Getting ids from selected goalkeepers via name comparison.
+ * This has to be changed, when duplicate names are allowed.
+ * @param goalkeepers
+ * @returns {*[]}
+ */
 function getGoalkeeperIds(goalkeepers) {
   let goalkeeperIds = [];
   goalkeepers.forEach((goalkeeper) => {
-    goalkeeperIds.push(goalkeeper.id);
-  })
+    goalkeepersNameAndId.value.forEach((goalkeepersNameAndIdElement) => {
+      if(goalkeepersNameAndIdElement.name === goalkeeper) {
+        goalkeeperIds.push(goalkeepersNameAndIdElement.id);
+      }
+    });
+  });
   return goalkeeperIds;
+}
+
+
+/**
+ * Unfortunately '@selected' is not working for multiselect.
+ * @see https://vue-multiselect.js.org/#sub-events
+ * So, selected goalkeepers are get via dom manipulation.
+ * @returns {*[]}
+ */
+function getSelectedGoalkeepers() {
+  let selectedGoalkeepers = [];
+  const multiselectSelected = document.querySelector('.multiselect__tags-wrap').children;
+  if(multiselectSelected === null || multiselectSelected === undefined) {
+    return [];
+  } else {
+    for (const multiselectSelectedElement of multiselectSelected) {
+      selectedGoalkeepers.push(multiselectSelectedElement.innerText);
+    }
+  }
+  return  selectedGoalkeepers;
 }
 
 /**
@@ -113,8 +144,17 @@ async function getAllExercisesFromDB() {
   }
 }
 
-function optionSelected(value, id) {
-  console.log(value.label);
+function getIdsFromCheckedExercises() {
+  let exercisesIds = [];
+  const checkedCheckboxes = document.querySelectorAll('input:checked');
+  if(checkedCheckboxes === null || checkedCheckboxes === undefined) {
+    return [];
+  } else {
+    checkedCheckboxes.forEach((checkbox) => {
+      exercisesIds.push(checkbox.parentElement.nextSibling.innerText);
+    });
+  }
+  return exercisesIds;
 }
 </script>
 
@@ -135,19 +175,13 @@ function optionSelected(value, id) {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_DATE_LABEL }}</label>
-            <input
-                v-model="date"
-                id="firstname"
-                type="text"
-                placeholder="Hechten II"
-                required
-            />
+            <input v-model="date" id="date" type="text" onfocus="(this.type = 'date')" placeholder="01.01.2022" required/>
           </div>
         </div>
         <br>
         <div>
           <label>{{ LocalConfig.FORM_CHOOSE_GOALKEEPER_LABEL }}</label>
-          <Multiselect @select="optionSelected" :multiselect-options="goalkeepersNameAndId"/>
+          <Multiselect :multiselect-options="goalkeepersNameAndId"/>
         </div>
       </form>
       <br>

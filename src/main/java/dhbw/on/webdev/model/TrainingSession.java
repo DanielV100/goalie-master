@@ -15,7 +15,7 @@ public class TrainingSession {
 
     public String tTitle;
 
-    public LocalDate date;
+    public LocalDate tDate;
 
     public String tNotes;
 
