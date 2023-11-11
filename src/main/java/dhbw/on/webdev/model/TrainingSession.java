@@ -13,7 +13,7 @@ public class TrainingSession {
     @GeneratedValue
     public long id;
 
-    public String tTitle;
+    public String title;
 
     public LocalDate tDate;
 
@@ -39,4 +39,8 @@ public class TrainingSession {
     public List<Exercise> exercises;
     @Transient
     public List<Long> exerciseIds;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    public User user;
 }

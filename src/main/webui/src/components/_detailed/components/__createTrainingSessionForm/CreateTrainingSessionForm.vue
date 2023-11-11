@@ -13,17 +13,17 @@ import {computed, onMounted, ref} from "vue";
 import axios from "axios";
 import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
+import * as GetRequestFunctions from "@/globals/getRequestUtilityFunctions.js";
 const title = ref('');
 const date = ref('');
 const note = ref('');
 const goalkeepersNameAndId = ref([]);
 
 onMounted(async () => {
-  let goalkeepersFromDB = await getGoalkeepersFromDB();
+  let goalkeepersFromDB = await GetRequestFunctions.getGoalkeepersFromDB();
   createGoalkeepersSelectable(goalkeepersFromDB);
 
-  let exercises = await getAllExercisesFromDB();
-  SessionStorageFunctions.saveAllExercisesInSessionStorage(exercises);
+  let exercises = await GetRequestFunctions.getAllExercisesFromDB();
 });
 
 const isSubmitDisabled = computed(() => {
@@ -34,7 +34,7 @@ const isSubmitDisabled = computed(() => {
 const isCreatingTrainingSessionSuccessful = async () => {
   try {
     const trainingSession = {
-      tTitle: title.value,
+      title: title.value,
       tDate: date.value,
       tNotes: note.value,
       goalkeeperIds: getGoalkeeperIds(getSelectedGoalkeepers()),
@@ -109,40 +109,6 @@ function getSelectedGoalkeepers() {
   return  selectedGoalkeepers;
 }
 
-/**
- * Method makes http-request and gets goalkeepers from db.
- * @returns {Promise<any|*[]>}
- */
-async function getGoalkeepersFromDB() {
-  try {
-    const response = await axios.get('goalkeeper/get/specific', {
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
-
-async function getAllExercisesFromDB() {
-  try {
-    const response = await axios.get('exercise/get/specific', {
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
-      }
-    });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
 
 function getIdsFromCheckedExercises() {
   let exercisesIds = [];

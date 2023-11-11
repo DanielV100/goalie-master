@@ -22,10 +22,11 @@ public class TrainingSessionResource {
     @Inject
     TrainingSessionService trainingSessionService;
     @GET
-    @Path("/get")
+    @Path("/get/specific")
+    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<TrainingSession> getTest() {
-        return trainingSessionService.getTest();
+    public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
+        return trainingSessionService.getAllTrainingSessionsFromCurrentUser();
     }
 
     @POST

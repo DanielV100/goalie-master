@@ -11,7 +11,8 @@ const ROUTES_MAP = {
     'Overview':'#/menu',
     'AddGoalkeeperForm':'#/add-goalkeeper',
     'AddExerciseForm':'#/add-exercise',
-    'CreateTrainingSessionForm':'#/create-training-session'
+    'CreateTrainingSessionForm':'#/create-training-session',
+    'GeneralOverview':'#/general-overview'
 };
 
 /**

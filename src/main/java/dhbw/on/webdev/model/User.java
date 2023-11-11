@@ -34,5 +34,10 @@ public class User {
     @Transient
     public List<Exercise> exercises;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    @Transient
+    public List<TrainingSession> trainingSessions;
+
 
 }

@@ -24,6 +24,7 @@ export function saveAllExercisesInSessionStorage(exercises) {
     let exerciseMain = [];
     let exerciseEnd = [];
     let exerciseOther = [];
+    let exercisesAll = [];
     exercises.forEach((exercise) => {
         if(exercise.categoryGroup.toLowerCase() === 'aufwärmen') {
             exerciseWarmUp.push(exercise);
@@ -34,9 +35,34 @@ export function saveAllExercisesInSessionStorage(exercises) {
         } else {
             exerciseOther.push(exercise);
         }
+        exercisesAll.push(exercise);
     });
     sessionStorage.setItem('exercisesWarmUp', JSON.stringify(exerciseWarmUp));
     sessionStorage.setItem('exercisesMain', JSON.stringify(exerciseMain));
     sessionStorage.setItem('exercisesEnd', JSON.stringify(exerciseEnd));
     sessionStorage.setItem('exercisesOther', JSON.stringify(exerciseOther));
+    sessionStorage.setItem('exercisesAll', JSON.stringify(exercisesAll));
 }
+
+export function getAllTrainingSessionFromSessionStorage() {
+    return JSON.parse(sessionStorage.getItem('trainingSessionAll'));
+}
+
+export function saveAllTrainingSessionInSessionStorage(trainingSessions) {
+    sessionStorage.setItem('trainingSessionAll', JSON.stringify(trainingSessions));
+}
+
+export function getAllExercisesFromSessionStorage() {
+    return JSON.parse(sessionStorage.getItem('exercisesAll'));
+}
+
+
+export function saveAllGoalkeepersInSessionStorage(goalkeepers) {
+    sessionStorage.setItem('goalkeepersAll', JSON.stringify(goalkeepers));
+}
+
+export function getAllGoalkeepersFromSessionStorage() {
+    return JSON.parse(sessionStorage.getItem('goalkeepersAll'));
+}
+
+

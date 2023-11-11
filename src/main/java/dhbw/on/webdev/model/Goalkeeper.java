@@ -32,6 +32,8 @@ public class Goalkeeper {
     @JoinColumn(name = "user_id")
     public User user;
 
+    @Transient
+    public String title = firstname + " " + lastname;
     @ManyToMany(mappedBy = "goalkeepers")
     @JsonIgnore
     @Transient

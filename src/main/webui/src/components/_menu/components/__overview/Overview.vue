@@ -34,6 +34,9 @@ function createTrainingSessionClicked() {
   GlobalConfig.changeWindowToTargetRoute('CreateTrainingSessionForm'); 
 }
 
+function toGeneralOverviewClicked() {
+  GlobalConfig.changeWindowToTargetRoute('GeneralOverview');
+}
 
 </script>
 
@@ -45,7 +48,7 @@ function createTrainingSessionClicked() {
         <h2>{{ LocalConfig.WELCOME_MESSAGE }} </h2>
       </div>
       <div class="wrapper">
-        <button class="custom-button">{{ LocalConfig.TO_DASHBOARD }}</button>
+        <button @click="toGeneralOverviewClicked" class="custom-button">{{ LocalConfig.TO_DASHBOARD }}</button>
         <button @click="addExerciseClicked" class="custom-button">{{ LocalConfig.ADD_EXERCISE }}</button>
         <button @click="createTrainingSessionClicked" class="custom-button">{{ LocalConfig.ADD_SESSION }}</button>
         <button @click="addGoalkeeperClicked" class="custom-button">{{ LocalConfig.ADD_GOALKEEPER }}</button>

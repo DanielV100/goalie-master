@@ -116,7 +116,7 @@ function convertNumberToTime(totalMinutes) {
 <template>
   <div class="__accordion">
     <div class="table-container">
-      <table>
+      <table class="accordion_table">
         <tr>
           <td style="width: 50%">
             <label>Kategorie</label>
@@ -222,7 +222,9 @@ function convertNumberToTime(totalMinutes) {
 .exercise_accordion i {
   font-size: 1.5rem; /* Adjust the size of the icon */
 }
-
+.accordion_table td {
+  border: none;
+}
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .exercise_accordion:hover {
   background-color: #ccc;
@@ -309,29 +311,6 @@ button {
   margin-bottom: 20px;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th, .table td {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-}
-
-.table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-.table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
 .modal-footer {
   text-align: right;
 }
@@ -341,27 +320,6 @@ button {
   overflow-x: auto;
 }
 
-.table {
-  width: max-content;
-  border-collapse: collapse;
-}
 
-.table th, .table td {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-}
-
-.table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-.table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table tbody tr:hover {
-  background-color: #f1f1f1;
-}
 
 </style>
