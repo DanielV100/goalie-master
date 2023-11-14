@@ -64,7 +64,7 @@ public class ExerciseService {
         if(exercise.getSketchDataURL() == null) {
             exercise.setSketch(null);
         } else {
-            exercise.setSketch(convertDataUrlToByteArray(exercise.getSketchDataURL()));
+            exercise.setSketch(serviceHelper.convertDataUrlToByteArray(exercise.getSketchDataURL()));
         }
         try {
             exerciseRepository.persist(exercise);
@@ -88,7 +88,7 @@ public class ExerciseService {
         if(exercise != null) {
             //sketch must be set here, otherwise helper method have to be edited
             if(updatedExercise.getSketchDataURL() != null) {
-                exercise.setSketch(convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
+                exercise.setSketch(serviceHelper.convertDataUrlToByteArray(exercise.getSketchDataURL()));
             } else {
                 Log.warn("No data url found");
             }
@@ -119,15 +119,8 @@ public class ExerciseService {
 
 
 
-    /**
-     * Sketch is saved a bytea and not as text - so this method converts incoming data url to byte array.
-     * @param dataURL from client
-     * @return data url as byte array
-     */
-    private byte[] convertDataUrlToByteArray(String dataURL) {
-        return Base64.getDecoder().decode(dataURL.split(",")[1]);
-        //System.out.println("data:image/png;base64," + Base64.getEncoder().encodeToString(sktech));
-    }
+
+
 
     /**
      * Sending plain user data to client could be a security risk, so set user data to null before passing to client.

@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Base64;
 
 /**
  * This helper class contains several helper methods for the service classes.
@@ -77,6 +78,20 @@ public class ServiceHelper {
             return user;
         } else {
             Log.error("User not found");
+            return null;
+        }
+    }
+
+    /**
+     * Method for converting a data url (e.g. from sketch) to a byte array
+     * @param dataURL from client
+     * @return data url as byte array
+     */
+    public byte[] convertDataUrlToByteArray(String dataURL) {
+        if(dataURL != null) {
+            return Base64.getDecoder().decode(dataURL.split(",")[1]);
+        } else {
+            Log.warn("Data url is null");
             return null;
         }
     }
