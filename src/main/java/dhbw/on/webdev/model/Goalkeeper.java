@@ -32,8 +32,6 @@ public class Goalkeeper {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Transient
-    private String title = firstname + " " + lastname;
     @ManyToMany(mappedBy = "goalkeepers")
     @JsonIgnore
     @Transient
@@ -95,14 +93,6 @@ public class Goalkeeper {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public List<TrainingSession> getTrainingSessions() {

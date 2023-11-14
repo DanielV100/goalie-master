@@ -8,6 +8,7 @@ import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.TrainingSessionRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
+import dhbw.on.webdev.service.helper.ServiceHelper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,7 @@ public class TrainingSessionService {
     @Inject
     GoalkeeperRepository goalkeeperRepository;
 
+
     @Inject
     ExerciseRepository exerciseRepository;
 
@@ -37,7 +39,6 @@ public class TrainingSessionService {
     public Response createNewTrainingSession(TrainingSession trainingSession) {
         trainingSession.exercises = new ArrayList<>();
         trainingSession.goalkeepers = new ArrayList<>();
-
         for(long goalkeeperId : trainingSession.goalkeeperIds) {
             //new instance needed, otherwise it's a detached entity
             Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
@@ -61,10 +62,10 @@ public class TrainingSessionService {
         for(TrainingSession trainingSession : trainingSessions) {
             List<Goalkeeper> goalkeepers = trainingSession.goalkeepers;
             for(Goalkeeper goalkeeper : goalkeepers) {
-                goalkeeper.user = null;
-                goalkeeper.birthday = null;
-                goalkeeper.club = null;
-                goalkeeper.notes = null;
+                goalkeeper.setUser(null);
+                goalkeeper.setBirthday(null);
+                goalkeeper.setClub(null);
+                goalkeeper.setNotes(null);
             }
             List<Exercise> exercises = trainingSession.exercises;
             for(Exercise exercise : exercises) {

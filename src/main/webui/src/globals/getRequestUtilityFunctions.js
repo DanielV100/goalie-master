@@ -38,7 +38,6 @@ export async function getGoalkeepersFromDB() {
     }
 }
 
-
 export async function getAllTrainingSessions() {
     try {
         const response = await axios.get('training_session/get/specific', {

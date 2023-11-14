@@ -50,10 +50,11 @@ public class GoalkeeperResource {
     }
 
     @DELETE
-    @Path("/delete")
+    @Path("/delete/{id}")
+    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteGoalkeeper(long goalkeeperId) {
+    public Response deleteGoalkeeper(@PathParam("id") long goalkeeperId) {
         return goalkeeperService.deleteGoalkeeper(goalkeeperId);
     }
 }

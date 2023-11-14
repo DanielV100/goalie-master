@@ -4,9 +4,11 @@ import axios from "axios";
 import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 import * as GetRequestFunctions from "@/globals/getRequestUtilityFunctions.js";
+import * as DeleteRequestFunctions from "@/globals/deleteRequestUtilityFunctions.js";
 
 const isTrainingSession = ref(true);
 const isExercise = ref(false);
+const isGoalkeeper = ref(false);
 //elements --> training session, exercises or goalkeeper (depends on nav bar)
 const elements = ref();
 onMounted(async () => {
@@ -19,21 +21,49 @@ onMounted(async () => {
 function trainingSessionsClicked() {
   isTrainingSession.value = true;
   isExercise.value = false;
+  isGoalkeeper.value = false;
   elements.value = SessionStorageFunctions.getAllTrainingSessionFromSessionStorage();
+}
+function deleteTrainingSession(id) {
+  DeleteRequestFunctions.deleteEntityById('training-session', id);
 }
 
 function exercisesClicked() {
   isTrainingSession.value = false;
   isExercise.value = true;
+  isGoalkeeper.value = false;
   elements.value = SessionStorageFunctions.getAllExercisesFromSessionStorage();
+}
+function deleteExercise(id) {
+  DeleteRequestFunctions.deleteEntityById('exercise', id);
 }
 
 function goalkeeperClicked() {
   isExercise.value = false;
   isTrainingSession.value = false;
+  isGoalkeeper.value = true;
   elements.value = SessionStorageFunctions.getAllGoalkeepersFromSessionStorage();
 }
 
+function deleteGoalkeeper(id) {
+  DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
+}
+
+function deleteItemClicked(event) {
+  if (confirm('Are you sure?')) {
+    const idElement = event.target.parentElement.parentElement.firstChild;
+    const id = idElement.innerText;
+    if(isTrainingSession.value === true) {
+
+    }
+    if(isExercise.value === true) {
+
+    }
+    if(isGoalkeeper.value === true) {
+      deleteGoalkeeper(id);
+    }
+  }
+}
 
 </script>
 
@@ -48,9 +78,11 @@ function goalkeeperClicked() {
         <thead>
         <tr>
           <th>ID</th>
-          <th>Titel</th>
+          <th v-if="isTrainingSession || isExercise">Titel</th>
           <th v-if="isTrainingSession">Datum</th>
           <th v-if="isExercise">Dauer</th>
+          <th v-if="isGoalkeeper">Vorname</th>
+          <th v-if="isGoalkeeper">Nachname</th>
           <th></th>
           <th></th>
         </tr>
@@ -58,11 +90,13 @@ function goalkeeperClicked() {
         <tbody>
         <tr v-for="element in elements">
           <td>{{ element.id }}</td>
-          <td>{{ element.title }}</td>
+          <td v-if="isTrainingSession || isExercise">{{ element.title }}</td>
           <td v-if="isTrainingSession">{{ element.tDate }}</td>
           <td v-if="isExercise">{{ element.duration }}</td>
+          <td v-if="isGoalkeeper">{{ element.firstname }}</td>
+          <td v-if="isGoalkeeper">{{ element.firstname }}</td>
           <td class="edit"><i class='bx bxs-edit-alt'></i></td>
-          <td class="edit delete"><i class='bx bxs-trash-alt' ></i></td>
+          <td class="edit delete"><i @click="deleteItemClicked" class='bx bxs-trash-alt' ></i></td>
         </tr>
         </tbody>
     </table>
