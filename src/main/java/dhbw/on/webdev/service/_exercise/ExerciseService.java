@@ -82,4 +82,11 @@ public class ExerciseService {
         }
         return exercisesWithNoUserData;
     }
+
+    @Transactional
+    public Response deleteExercise(long exerciseId) {
+        exerciseRepository.deleteById(exerciseId);
+        return Response.accepted().build();
+    }
+
 }

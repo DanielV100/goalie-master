@@ -37,4 +37,13 @@ public class TrainingSessionResource {
     public Response createNewTrainingSession(TrainingSession trainingSession) {
         return trainingSessionService.createNewTrainingSession(trainingSession);
     }
+
+    @DELETE
+    @Path("/delete/{id}")
+    @RolesAllowed("user")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteTrainingSession(@PathParam("id") long trainingSessionId) {
+        return trainingSessionService.deleteTrainingSession(trainingSessionId);
+    }
 }

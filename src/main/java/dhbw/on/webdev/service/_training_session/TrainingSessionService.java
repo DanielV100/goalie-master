@@ -74,4 +74,11 @@ public class TrainingSessionService {
         }
         return trainingSessions;
     }
+
+    @Transactional
+    public Response deleteTrainingSession(long trainingSessionId) {
+        goalkeeperRepository.deleteById(trainingSessionId);
+        return Response.accepted().build();
+    }
+
 }

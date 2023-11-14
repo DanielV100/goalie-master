@@ -25,7 +25,7 @@ function trainingSessionsClicked() {
   elements.value = SessionStorageFunctions.getAllTrainingSessionFromSessionStorage();
 }
 function deleteTrainingSession(id) {
-  DeleteRequestFunctions.deleteEntityById('training-session', id);
+  DeleteRequestFunctions.deleteEntityById('training_session', id);
 }
 
 function exercisesClicked() {
@@ -54,10 +54,10 @@ function deleteItemClicked(event) {
     const idElement = event.target.parentElement.parentElement.firstChild;
     const id = idElement.innerText;
     if(isTrainingSession.value === true) {
-
+      deleteTrainingSession(id);
     }
     if(isExercise.value === true) {
-
+      deleteExercise(id);
     }
     if(isGoalkeeper.value === true) {
       deleteGoalkeeper(id);

@@ -47,4 +47,13 @@ public class ExerciseResource {
     public List<Exercise> getAllExercisesFromCurrentUser() {
         return exerciseService.getAllExercisesFromCurrentUser();
     }
+
+    @DELETE
+    @Path("/delete/{id}")
+    @RolesAllowed("user")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteExercise(@PathParam("id") long exerciseId) {
+        return exerciseService.deleteExercise(exerciseId);
+    }
 }
