@@ -1,6 +1,10 @@
 package dhbw.on.webdev.service.helper;
 
+import dhbw.on.webdev.model.User;
+import dhbw.on.webdev.repository.UserRepository;
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +14,11 @@ import java.lang.reflect.Method;
  * This helper class contains several helper methods for the service classes.
  * @author daniel
  */
+@ApplicationScoped
 public class ServiceHelper {
+    @Inject
+    UserRepository userRepository;
+
     /**
      * This is a generic method for updating every fields from existing entities.
      * It's done via reflection and by copying fields from source to target.
@@ -19,7 +27,7 @@ public class ServiceHelper {
      * @param source entity from the client via put-request
      * @param target entity to override/update from db
      */
-    public static <T> boolean updateEntity(T source, T target) {
+    public  <T> boolean updateEntity(T source, T target) {
         if (source == null || target == null) {
             Log.warn("Source entity or target entity is null");
             return false;
@@ -55,5 +63,21 @@ public class ServiceHelper {
             }
         }
         return true;
+    }
+
+    /**
+     * Try to get user from user repo and return it.
+     * @param id from user in db
+     * @return User or null
+     */
+    public User getCurrentUser(long id) {
+        User user = userRepository.findById(id);
+        if(user != null) {
+            Log.error("User found: " + user);
+            return user;
+        } else {
+            Log.error("User not found");
+            return null;
+        }
     }
 }

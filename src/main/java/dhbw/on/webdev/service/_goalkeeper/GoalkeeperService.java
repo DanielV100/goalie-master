@@ -6,9 +6,11 @@ import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Lob;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
@@ -31,6 +33,9 @@ public class GoalkeeperService {
 
     @Inject
     JwtTokenService jwtTokenService;
+
+    @Inject
+    ServiceHelper serviceHelper;
 
 
     @Transactional
@@ -63,13 +68,21 @@ public class GoalkeeperService {
     }
 
     @Transactional
-    public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
-        if(ServiceHelper.updateEntity(goalkeeper, goalkeeperRepository.findById(goalkeeper.getId()))) {
-            goalkeeperRepository.flush();
-            return Response.accepted().build();
-        } else  {
-            return Response.serverError().build();
+    public Response updateExistingGoalkeeper(Goalkeeper updatedGoalkeeper) {
+        Goalkeeper goalkeeper = goalkeeperRepository.findById(updatedGoalkeeper.getId());
+        if(goalkeeper != null) {
+            if(serviceHelper.updateEntity(updatedGoalkeeper, goalkeeper)) {
+                goalkeeperRepository.flush();
+                return Response.accepted().build();
+            } else  {
+                Log.error("Updating entity failed");
+                return Response.serverError().build();
+            }
+        } else {
+            Log.error("Goalkeeper not found for Id" + updatedGoalkeeper.getId());
+            return Response.status(404).build();
         }
+
     }
 
     @Transactional

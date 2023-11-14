@@ -1,22 +1,23 @@
 package dhbw.on.webdev.service._exercise;
 
 import dhbw.on.webdev.model.Exercise;
-import dhbw.on.webdev.model.Goalkeeper;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 
+/**
+ * This service class provides all exercise-entity-related services.
+ * @author daniel
+ */
 @ApplicationScoped
 public class ExerciseService {
     @Inject
@@ -28,11 +29,14 @@ public class ExerciseService {
     @Inject
     JwtTokenService jwtTokenService;
 
+    @Inject
+    ServiceHelper serviceHelper;
+
     /**** GET-REQUEST-SERVICES ****/
 
     /**
      * Method for getting all exercises in db.
-     * @return all exercises in db.
+     * @return all exercises in db as list
      */
     public List<Exercise> getAllExercises() {
         return hideUserInformationInResponse(exerciseRepository.listAll());
@@ -51,18 +55,23 @@ public class ExerciseService {
     /**
      * Adding new exercise to db.
      * @param exercise comes from client
-     * @return http-response
+     * @return http-response ok or server error
      */
     @Transactional
     public Response addNewExercise(Exercise exercise) {
-        exercise.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
+        exercise.setUser(serviceHelper.getCurrentUser(jwtTokenService.getUserIdFromJwtToken()));
         if(exercise.getSketchDataURL() == null) {
             exercise.setSketch(null);
         } else {
             exercise.setSketch(convertDataUrlToByteArray(exercise.getSketchDataURL()));
         }
-        exerciseRepository.persist(exercise);
-        return Response.ok().build();
+        try {
+            exerciseRepository.persist(exercise);
+            return Response.ok().build();
+        } catch (Exception exception) {
+            Log.error("Error while trying to persist entity");
+            return Response.serverError().build();
+        }
     }
 
     /**** PUT-REQUEST-SERVICES ****/
@@ -73,16 +82,19 @@ public class ExerciseService {
             //sketch must be set here, otherwise helper method have to be edited
             if(updatedExercise.getSketchDataURL() != null) {
                 exercise.setSketch(convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
+            } else {
+                Log.warn("No data url found");
             }
-            if(ServiceHelper.updateEntity(updatedExercise, exercise)) {
+            if(serviceHelper.updateEntity(updatedExercise, exercise)) {
                 exerciseRepository.flush();
-                return Response.accepted().build();
-            }
-            else {
+                return Response.ok().build();
+            } else {
                 return Response.serverError().build();
             }
+        } else {
+            Log.error("Exercise not found for Id:" + updatedExercise.getId());
+            return Response.status(404).build();
         }
-        return Response.serverError().build();
     }
 
 
