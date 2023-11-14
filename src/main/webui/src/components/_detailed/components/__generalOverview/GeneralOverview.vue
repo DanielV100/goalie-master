@@ -5,12 +5,19 @@ import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 import * as GetRequestFunctions from "@/globals/getRequestUtilityFunctions.js";
 import * as DeleteRequestFunctions from "@/globals/deleteRequestUtilityFunctions.js";
+import AddGoalkeeperForm from "@/components/_detailed/components/__addGoalkeeperForm/AddGoalkeeperForm.vue";
+import EntityEditor from "@/components/_detailed/components/__entityEditor/EntityEditor.vue";
 
 const isTrainingSession = ref(true);
 const isExercise = ref(false);
 const isGoalkeeper = ref(false);
 //elements --> training session, exercises or goalkeeper (depends on nav bar)
 const elements = ref();
+
+const entityId = ref(26);
+const entityType = ref('goalkeeper');
+
+const isShowingOverview = ref(true);
 onMounted( () => {
   init();
 });
@@ -64,8 +71,7 @@ async function refreshAfterGoalkeeperDeleted() {
 
 async function deleteItemClicked(event) {
   if (confirm('Are you sure?')) {
-    const idElement = event.target.parentElement.parentElement.firstChild;
-    const id = idElement.innerText;
+    const id = getIdFromClickedElement(event);
     if(isTrainingSession.value === true) {
       await deleteTrainingSession(id);
       await refreshAfterTrainingSessionDeleted();
@@ -82,10 +88,24 @@ async function deleteItemClicked(event) {
   }
 }
 
+function updateItemClicked(event) {
+  const id = getIdFromClickedElement(event);
+  if(isGoalkeeper.value === true) {
+    entityType.value = 'goalkeeper';
+  }
+  entityId.value = id;
+  isShowingOverview.value = false;
+}
+
+function getIdFromClickedElement(event) {
+  const idElement = event.target.parentElement.parentElement.firstChild;
+  return idElement.innerText;
+}
+
 </script>
 
 <template>
-  <div class="__general_overview">
+  <div v-if="isShowingOverview" class="__general_overview">
     <div class="top_navigation_buttons">
       <button @click="trainingSessionsClicked">Trainings</button>
       <button @click="exercisesClicked">Übungen</button>
@@ -111,13 +131,14 @@ async function deleteItemClicked(event) {
           <td v-if="isTrainingSession">{{ element.tDate }}</td>
           <td v-if="isExercise">{{ element.duration }}</td>
           <td v-if="isGoalkeeper">{{ element.firstname }}</td>
-          <td v-if="isGoalkeeper">{{ element.firstname }}</td>
-          <td class="edit"><i class='bx bxs-edit-alt'></i></td>
+          <td v-if="isGoalkeeper">{{ element.lastname }}</td>
+          <td class="edit"><i @click="updateItemClicked" class='bx bxs-edit-alt'></i></td>
           <td class="edit delete"><i @click="deleteItemClicked" class='bx bxs-trash-alt' ></i></td>
         </tr>
         </tbody>
     </table>
   </div>
+  <EntityEditor v-else :entity-id="Number(entityId)" :entity-type="entityType" />
 </template>
 
 <style scoped>

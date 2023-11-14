@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref} from "vue";
+import {computed, ref, defineProps} from "vue";
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
 import * as UtilityFunctions from "../../../../globals/utilityFunctions.js";
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
@@ -19,16 +19,40 @@ const isSubmitDisabled = computed(() => {
   return !(firstname.value !== '' && lastname.value !== '' && club.value !== '');
 });
 
+const props = defineProps({
+  isEditView: Boolean,
+  id: Number,
+  firstname: String,
+  lastname: String,
+  birthday: String,
+  club: String,
+  notes: String
+});
+
+if(props.isEditView) {
+  firstname.value = props.firstname;
+  lastname.value = props.lastname;
+  birthday.value = props.birthday;
+  club.value = props.club;
+  notes.value = props.notes;
+}
 const isAddingGoalkeeperSuccessful = async () => {
   try {
-    const goalkeeper = {
-      firstname: firstname.value,
-      lastname: lastname.value,
-      birthday: birthday.value,
-      club: club.value,
-      notes: notes.value
-    };
-    await axios.post('/goalkeeper/add', goalkeeper, {
+    await axios.post('/goalkeeper/add', createGoalkeeperArrayForHttpRequest(), {
+      headers: {
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+    resetForm();
+    return false;
+  }
+}
+const isUpdatingGoalkeeperSuccessful = async () => {
+  try {
+    await axios.put('/goalkeeper/update', createGoalkeeperArrayForHttpRequest(), {
       headers: {
         Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
       }
@@ -51,10 +75,29 @@ function resetForm() {
 
 async function onSubmitClick() {
   UtilityFunctions.setLoadingCircleInSubmitButton();
-  const isSuccessful = await isAddingGoalkeeperSuccessful();
+  let isSuccessful;
+  if(props.isEditView) {
+    isSuccessful = await isUpdatingGoalkeeperSuccessful();
+  } else {
+    isSuccessful = await isAddingGoalkeeperSuccessful();
+  }
   if(isSuccessful) {
     isNotSubmitted.value = false;
   }
+}
+
+function createGoalkeeperArrayForHttpRequest() {
+  const goalkeeper = {
+    firstname: firstname.value,
+    lastname: lastname.value,
+    birthday: birthday.value,
+    club: club.value,
+    notes: notes.value
+  };
+  if(props.isEditView === true) {
+    goalkeeper['id'] = props.id;
+  }
+  return goalkeeper;
 }
 
 

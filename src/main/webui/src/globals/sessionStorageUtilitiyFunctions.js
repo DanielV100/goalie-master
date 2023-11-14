@@ -65,4 +65,18 @@ export function getAllGoalkeepersFromSessionStorage() {
     return JSON.parse(sessionStorage.getItem('goalkeepersAll'));
 }
 
+/**
+ * Used for editing an entity.
+ * @param obj
+ * @param id
+ * @returns {*}
+ */
+export function getSessionStorageElementById(obj, id) {
+    for (const element of obj) {
+        if (element.id === id) {
+            return element;
+        }
+    }
+}
+
 
