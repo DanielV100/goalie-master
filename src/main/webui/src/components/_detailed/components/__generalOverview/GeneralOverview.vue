@@ -11,11 +11,15 @@ const isExercise = ref(false);
 const isGoalkeeper = ref(false);
 //elements --> training session, exercises or goalkeeper (depends on nav bar)
 const elements = ref();
-onMounted(async () => {
+onMounted( () => {
+  init();
+});
+
+async function init() {
   elements.value = await GetRequestFunctions.getAllTrainingSessions();
   let tmp = await GetRequestFunctions.getAllExercisesFromDB();
   tmp = await GetRequestFunctions.getGoalkeepersFromDB();
-});
+}
 
 
 function trainingSessionsClicked() {
@@ -24,8 +28,11 @@ function trainingSessionsClicked() {
   isGoalkeeper.value = false;
   elements.value = SessionStorageFunctions.getAllTrainingSessionFromSessionStorage();
 }
-function deleteTrainingSession(id) {
-  DeleteRequestFunctions.deleteEntityById('training_session', id);
+async function deleteTrainingSession(id) {
+  await DeleteRequestFunctions.deleteEntityById('training_session', id);
+}
+async function refreshAfterTrainingSessionDeleted() {
+  elements.value = await GetRequestFunctions.getAllExercisesFromDB();
 }
 
 function exercisesClicked() {
@@ -34,8 +41,11 @@ function exercisesClicked() {
   isGoalkeeper.value = false;
   elements.value = SessionStorageFunctions.getAllExercisesFromSessionStorage();
 }
-function deleteExercise(id) {
-  DeleteRequestFunctions.deleteEntityById('exercise', id);
+async function deleteExercise(id) {
+  await DeleteRequestFunctions.deleteEntityById('exercise', id);
+}
+async function refreshAfterExerciseDeleted() {
+  elements.value = await GetRequestFunctions.getAllExercisesFromDB();
 }
 
 function goalkeeperClicked() {
@@ -45,22 +55,29 @@ function goalkeeperClicked() {
   elements.value = SessionStorageFunctions.getAllGoalkeepersFromSessionStorage();
 }
 
-function deleteGoalkeeper(id) {
-  DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
+async function deleteGoalkeeper(id) {
+  await DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
+}
+async function refreshAfterGoalkeeperDeleted() {
+  elements.value = await GetRequestFunctions.getGoalkeepersFromDB();
 }
 
-function deleteItemClicked(event) {
+async function deleteItemClicked(event) {
   if (confirm('Are you sure?')) {
     const idElement = event.target.parentElement.parentElement.firstChild;
     const id = idElement.innerText;
     if(isTrainingSession.value === true) {
-      deleteTrainingSession(id);
+      await deleteTrainingSession(id);
+      await refreshAfterTrainingSessionDeleted();
     }
     if(isExercise.value === true) {
-      deleteExercise(id);
+      await deleteExercise(id);
+      await refreshAfterExerciseDeleted();
+
     }
     if(isGoalkeeper.value === true) {
-      deleteGoalkeeper(id);
+      await deleteGoalkeeper(id);
+      await refreshAfterGoalkeeperDeleted();
     }
   }
 }
