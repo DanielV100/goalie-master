@@ -9,6 +9,7 @@ import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -75,6 +76,12 @@ public class ExerciseService {
     }
 
     /**** PUT-REQUEST-SERVICES ****/
+
+    /**
+     * Method for updating an existing exercise.
+     * @param updatedExercise entity from client
+     * @return Response ok, server error, or 404
+     */
     @Transactional
     public Response updateExistingExercise(Exercise updatedExercise) {
         Exercise exercise = exerciseRepository.findById(updatedExercise.getId());
@@ -102,8 +109,12 @@ public class ExerciseService {
 
     @Transactional
     public Response deleteExercise(long exerciseId) {
-        exerciseRepository.deleteById(exerciseId);
-        return Response.accepted().build();
+        if(exerciseRepository.deleteById(exerciseId)) {
+            return Response.ok().build();
+        } else {
+            Log.error("Exercise not found by Id: " + exerciseId);
+            return Response.status(404).build();
+        }
     }
 
 
