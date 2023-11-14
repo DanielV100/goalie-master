@@ -20,6 +20,8 @@ const note = ref('');
 const errorMessage = ref('');
 const materialList = ref([]);
 const descriptionList = ref([]);
+const sketchDataUrl = ref();
+
 const props = defineProps({
   isEditView: Boolean,
   id: Number,
@@ -31,7 +33,8 @@ const props = defineProps({
   note: String,
   materials: Object,
   numbersOfMaterial: Object,
-  descriptionSteps: Object
+  descriptionSteps: Object,
+  sketch: Object
 });
 
 onBeforeMount(() => {
@@ -51,28 +54,24 @@ function init() {
     }
     materialList.value = test;
     descriptionList.value = props.descriptionSteps;
+    byteArrayToDataURL(props.sketch)
   }
 }
-
+function byteArrayToDataURL(byteArray) {
+  let blob = new Blob([new Uint8Array(byteArray)], { type: 'image/png' });
+  var reader = new FileReader();
+  reader.onloadend = function() {
+    var dataURL = reader.result;
+    sketchDataUrl.value = dataURL;
+  };
+  reader.readAsDataURL(blob);
+}
 const isSubmitDisabled = computed(() => {
   return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '');
 });
 const isAddingExerciseSuccessful = async () => {
   try {
-    const exercise = {
-      sketchDataURL:getDataUrlFromSketch(),
-      title: title.value,
-      category: category.value,
-      categoryGroup: getCategoryGroup(),
-      numberOfGoalkeepers: numberOfGoalkeeper.value,
-      duration: duration.value,
-      intensity: intensity.value,
-      materials:getValueListFromDomInputFields('.material'),
-      numbersOfMaterial:getValueListFromDomInputFields('.number_of_material'),
-      descriptionSteps: getValueListFromDomInputFields('.description_step'),
-      note: note.value
-    };
-    await axios.post('/exercise/add', exercise, {
+    await axios.post('/exercise/add', createExerciseForHttpRequest(), {
       headers: {
         Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
       }
@@ -85,6 +84,20 @@ const isAddingExerciseSuccessful = async () => {
   }
 }
 
+const isUpdatingExerciseSuccessful = async () => {
+  try {
+    await axios.put('/exercise/update', createExerciseForHttpRequest(), {
+      headers: {
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.FORM_CREATE_EXERCISE_BUTTON);
+    resetForm();
+    return false;
+  }
+}
 function getCategoryGroup() {
   const selectedOption = document.querySelector('select[name="categories"] option:checked');
   if(selectedOption === null) {
@@ -120,12 +133,37 @@ function addDescriptionStepClicked(event) {
  */
 async function submitButtonClicked() {
   UtilityFunctions.setLoadingCircleInSubmitButton();
-  const isSuccessful = await isAddingExerciseSuccessful();
+  let isSuccessful;
+  if(props.isEditView) {
+    isSuccessful = await isUpdatingExerciseSuccessful();
+  } else {
+    isSuccessful = await isAddingExerciseSuccessful();
+  }
   if(isSuccessful) {
     isNotSubmitted.value = false;
   } else {
 
   }
+}
+
+function createExerciseForHttpRequest() {
+  const exercise = {
+    sketchDataURL:getDataUrlFromSketch(),
+    title: title.value,
+    category: category.value,
+    categoryGroup: getCategoryGroup(),
+    numberOfGoalkeepers: numberOfGoalkeeper.value,
+    duration: duration.value,
+    intensity: intensity.value,
+    materials:getValueListFromDomInputFields('.material'),
+    numbersOfMaterial:getValueListFromDomInputFields('.number_of_material'),
+    descriptionSteps: getValueListFromDomInputFields('.description_step'),
+    note: note.value
+  };
+  if(props.isEditView === true) {
+    exercise['id'] = props.id;
+  }
+  return exercise;
 }
 
 /**
@@ -304,6 +342,9 @@ function getDataUrlFromSketch() {
             {{ LocalConfig.FORM_SKETCH_LABEL }}
           </label>
         </div>
+      </div>
+      <div>
+        <img v-if="!isSketchCheckboxChecked" id="sketchImage" :src="sketchDataUrl"/>
       </div>
       <div v-if="isSketchCheckboxChecked" id="soccerFieldContainer">
         <SoccerField />

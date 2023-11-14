@@ -68,7 +68,12 @@ public class ExerciseService {
     /**** PUT-REQUEST-SERVICES ****/
     @Transactional
     public Response updateExistingExercise(Exercise updatedExercise) {
-        ServiceHelper.updateEntity(updatedExercise, exerciseRepository.findById(updatedExercise.getId()));
+        Exercise exercise = exerciseRepository.findById(updatedExercise.getId());
+        //sketch must be set here, otherwise helper method have to be edited
+        if(updatedExercise.getSketchDataURL() != null) {
+            exercise.setSketch(convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
+        }
+        ServiceHelper.updateEntity(updatedExercise, exercise);
         exerciseRepository.flush();
         return Response.accepted().build();
     }

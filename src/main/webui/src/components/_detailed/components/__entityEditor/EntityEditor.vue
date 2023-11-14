@@ -26,7 +26,7 @@ function init() {
 <template>
   <div class="__entity_editor">
     <AddGoalkeeperForm v-if="props.entityType === 'goalkeeper'" :is-edit-view="true" :id="props.entityId" :firstname="entityToEdit.firstname" :lastname="entityToEdit.lastname" :birthday="entityToEdit.birthday" :club="entityToEdit.club" :notes="entityToEdit.notes"/>
-    <AddExerciseForm v-if="props.entityType === 'exercise'" :is-edit-view="true" :id="props.entityId" :title="entityToEdit.title" :category="entityToEdit.category" :number-of-goalkeeper="entityToEdit.numberOfGoalkeepers" :duration="entityToEdit.duration" :intensity="entityToEdit.intensity" :note="entityToEdit.note" :materials="entityToEdit.materials" :numbers-of-material="entityToEdit.numbersOfMaterial" :description-steps="entityToEdit.descriptionSteps"/>
+    <AddExerciseForm v-if="props.entityType === 'exercise'" :is-edit-view="true" :id="props.entityId" :title="entityToEdit.title" :category="entityToEdit.category" :number-of-goalkeeper="entityToEdit.numberOfGoalkeepers" :duration="entityToEdit.duration" :intensity="entityToEdit.intensity" :note="entityToEdit.note" :materials="entityToEdit.materials" :numbers-of-material="entityToEdit.numbersOfMaterial" :description-steps="entityToEdit.descriptionSteps" :sketch="entityToEdit.sketch"/>
   </div>
 </template>
 
