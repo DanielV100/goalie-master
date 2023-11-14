@@ -42,10 +42,18 @@ public class GoalkeeperResource {
 
     @PUT
     @Path("/update")
-//    @RolesAllowed("user")
+    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
         return goalkeeperService.updateExistingGoalkeeper(goalkeeper);
+    }
+
+    @DELETE
+    @Path("/delete")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteGoalkeeper(long goalkeeperId) {
+        return goalkeeperService.deleteGoalkeeper(goalkeeperId);
     }
 }

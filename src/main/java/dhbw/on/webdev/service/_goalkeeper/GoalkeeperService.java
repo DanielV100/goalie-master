@@ -69,5 +69,11 @@ public class GoalkeeperService {
         return Response.accepted().build();
     }
 
+    @Transactional
+    public Response deleteGoalkeeper(long goalkeeperId) {
+        goalkeeperRepository.deleteById(goalkeeperId);
+        return Response.accepted().build();
+    }
+
 
 }
