@@ -64,9 +64,12 @@ public class GoalkeeperService {
 
     @Transactional
     public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
-        ServiceHelper.updateEntity(goalkeeper, goalkeeperRepository.findById(goalkeeper.getId()));
-        goalkeeperRepository.flush();
-        return Response.accepted().build();
+        if(ServiceHelper.updateEntity(goalkeeper, goalkeeperRepository.findById(goalkeeper.getId()))) {
+            goalkeeperRepository.flush();
+            return Response.accepted().build();
+        } else  {
+            return Response.serverError().build();
+        }
     }
 
     @Transactional

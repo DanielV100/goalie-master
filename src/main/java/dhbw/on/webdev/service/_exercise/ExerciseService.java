@@ -69,13 +69,20 @@ public class ExerciseService {
     @Transactional
     public Response updateExistingExercise(Exercise updatedExercise) {
         Exercise exercise = exerciseRepository.findById(updatedExercise.getId());
-        //sketch must be set here, otherwise helper method have to be edited
-        if(updatedExercise.getSketchDataURL() != null) {
-            exercise.setSketch(convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
+        if(exercise != null) {
+            //sketch must be set here, otherwise helper method have to be edited
+            if(updatedExercise.getSketchDataURL() != null) {
+                exercise.setSketch(convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
+            }
+            if(ServiceHelper.updateEntity(updatedExercise, exercise)) {
+                exerciseRepository.flush();
+                return Response.accepted().build();
+            }
+            else {
+                return Response.serverError().build();
+            }
         }
-        ServiceHelper.updateEntity(updatedExercise, exercise);
-        exerciseRepository.flush();
-        return Response.accepted().build();
+        return Response.serverError().build();
     }
 
 
