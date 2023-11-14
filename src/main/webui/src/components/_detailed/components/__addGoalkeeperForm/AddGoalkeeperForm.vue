@@ -14,6 +14,8 @@ const birthday = ref();
 const club = ref('');
 const notes = ref('');
 const errorMessage = ref('');
+const submitButtonText = ref(LocalConfig.BUTTON_ADD_GOALKEEPER);
+const successMessage = ref(LocalConfig.SUCCESS_MESSAGE);
 //submit button is active when all mandatory fields are filled
 const isSubmitDisabled = computed(() => {
   return !(firstname.value !== '' && lastname.value !== '' && club.value !== '');
@@ -35,6 +37,8 @@ if(props.isEditView) {
   birthday.value = props.birthday;
   club.value = props.club;
   notes.value = props.notes;
+  submitButtonText.value = "Torhüter aktualisieren"
+  successMessage.value = "Torhüter erfolgreich bearbeitet!";
 }
 const isAddingGoalkeeperSuccessful = async () => {
   try {
@@ -152,10 +156,10 @@ function createGoalkeeperArrayForHttpRequest() {
           <label>{{ LocalConfig.FORM_NOTES }}</label>
           <input v-model="notes" id="notes" type="text" placeholder="Wir brauchen Eier!" />
         </div>
-        <button class="submit" @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_ADD_GOALKEEPER }}</button>
+        <button class="submit" @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ submitButtonText }}</button>
       </form>
     </div>
-    <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
+    <SuccessAnimation v-else>{{ successMessage }}</SuccessAnimation>
   </div>
   <ErrorDialog>{{ errorMessage }}</ErrorDialog>
 </template>
