@@ -5,13 +5,21 @@ import dhbw.on.webdev.model.Goalkeeper;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
+import dhbw.on.webdev.service.helper.ServiceHelper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 @ApplicationScoped
 public class GoalkeeperService {
@@ -24,6 +32,7 @@ public class GoalkeeperService {
     @Inject
     JwtTokenService jwtTokenService;
 
+
     @Transactional
     /**
      * Method for adding new goalkeeper to db.
@@ -31,10 +40,11 @@ public class GoalkeeperService {
     public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
         try {
             //setting primary key to user id from JWT-token
-            goalkeeper.user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
+            goalkeeper.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
             goalkeeperRepository.persist(goalkeeper);
             return Response.ok().build();
         } catch (Exception exception) {
+            System.out.println(exception);
             return Response.serverError().build();
         }
     }
@@ -46,9 +56,18 @@ public class GoalkeeperService {
     private List<Goalkeeper> hideUserInformationInResponse(List<Goalkeeper> goalkeepers) {
         List<Goalkeeper> goalkeepersWithNoUserData = new ArrayList<>();
         for (Goalkeeper goalkeeper : goalkeepers) {
-            goalkeeper.user = null;
+            goalkeeper.setUser(null);
             goalkeepersWithNoUserData.add(goalkeeper);
         }
         return goalkeepersWithNoUserData;
     }
+
+    @Transactional
+    public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
+        ServiceHelper.updateEntity(goalkeeper, goalkeeperRepository.findById(goalkeeper.getId()));
+        goalkeeperRepository.flush();
+        return Response.accepted().build();
+    }
+
+
 }

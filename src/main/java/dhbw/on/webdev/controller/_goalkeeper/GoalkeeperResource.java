@@ -1,6 +1,7 @@
 package dhbw.on.webdev.controller._goalkeeper;
 
 import dhbw.on.webdev.model.Goalkeeper;
+import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.service._goalkeeper.GoalkeeperService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -37,5 +38,14 @@ public class GoalkeeperResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Goalkeeper> getAllGoalkeepersFromCurrentUser() {
         return goalkeeperService.getAllGoalkeepersFromCurrentUser();
+    }
+
+    @PUT
+    @Path("/update")
+//    @RolesAllowed("user")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
+        return goalkeeperService.updateExistingGoalkeeper(goalkeeper);
     }
 }
