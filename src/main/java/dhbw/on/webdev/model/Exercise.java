@@ -7,50 +7,168 @@ import java.util.List;
 @Table(name = "exercises")
 public class Exercise {
     @Transient
-    public String sketchDataURL;
+    private String sketchDataURL;
 
     @Id
     @GeneratedValue
-    public long id;
-    @Column(name = "title")
-    public String title;
-    @Column(name = "category")
-    public String category;
+    private long id;
+    private String title;
+
+    private String category;
     @Column(name = "category_group")
-    public String categoryGroup;
+    private String categoryGroup;
     @Column(name = "number_of_goalkeepers")
-    public int numberOfGoalkeepers;
-    @Column(name = "duration")
-    public String duration;
-    @Column(name = "intensity")
-    public int intensity;
+    private int numberOfGoalkeepers;
+    private String duration;
+
+    private int intensity;
 
     @ElementCollection
     @CollectionTable(name = "materials", joinColumns = @JoinColumn(name = "exercises_id"))
     @Column(name = "material")
-    public List<String> materials;
+    private List<String> materials;
 
     @ElementCollection
     @CollectionTable(name = "numbers_of_material", joinColumns = @JoinColumn(name = "exercises_id"))
     @Column(name = "number_of_material")
-    public List<Integer> numbersOfMaterial;
+    private List<Integer> numbersOfMaterial;
 
     @ElementCollection
     @CollectionTable(name = "description_steps", joinColumns = @JoinColumn(name = "exercises_id"))
     @Column(name = "description_step")
-    public List<String> descriptionSteps;
+    private List<String> descriptionSteps;
 
-    @Column(name = "sketch", columnDefinition = "bytea")
-    public byte[] sketch;
-    @Column(name = "note")
-    public String note;
+    @Column(columnDefinition = "bytea")
+    private byte[] sketch;
+
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 
     @ManyToMany(mappedBy = "exercises")
     @JsonIgnore
     @Transient
-    public List<TrainingSession> trainingSessions;
+    private List<TrainingSession> trainingSessions;
+
+    public String getSketchDataURL() {
+        return sketchDataURL;
+    }
+
+    public void setSketchDataURL(String sketchDataURL) {
+        this.sketchDataURL = sketchDataURL;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getCategoryGroup() {
+        return categoryGroup;
+    }
+
+    public void setCategoryGroup(String categoryGroup) {
+        this.categoryGroup = categoryGroup;
+    }
+
+    public int getNumberOfGoalkeepers() {
+        return numberOfGoalkeepers;
+    }
+
+    public void setNumberOfGoalkeepers(int numberOfGoalkeepers) {
+        this.numberOfGoalkeepers = numberOfGoalkeepers;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public int getIntensity() {
+        return intensity;
+    }
+
+    public void setIntensity(int intensity) {
+        this.intensity = intensity;
+    }
+
+    public List<String> getMaterials() {
+        return materials;
+    }
+
+    public void setMaterials(List<String> materials) {
+        this.materials = materials;
+    }
+
+    public List<Integer> getNumbersOfMaterial() {
+        return numbersOfMaterial;
+    }
+
+    public void setNumbersOfMaterial(List<Integer> numbersOfMaterial) {
+        this.numbersOfMaterial = numbersOfMaterial;
+    }
+
+    public List<String> getDescriptionSteps() {
+        return descriptionSteps;
+    }
+
+    public void setDescriptionSteps(List<String> descriptionSteps) {
+        this.descriptionSteps = descriptionSteps;
+    }
+
+    public byte[] getSketch() {
+        return sketch;
+    }
+
+    public void setSketch(byte[] sketch) {
+        this.sketch = sketch;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<TrainingSession> getTrainingSessions() {
+        return trainingSessions;
+    }
+
+    public void setTrainingSessions(List<TrainingSession> trainingSessions) {
+        this.trainingSessions = trainingSessions;
+    }
 }

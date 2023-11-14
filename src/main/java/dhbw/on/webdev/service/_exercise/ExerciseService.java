@@ -1,9 +1,11 @@
 package dhbw.on.webdev.service._exercise;
 
 import dhbw.on.webdev.model.Exercise;
+import dhbw.on.webdev.model.Goalkeeper;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
+import dhbw.on.webdev.service.helper.ServiceHelper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -26,32 +28,7 @@ public class ExerciseService {
     @Inject
     JwtTokenService jwtTokenService;
 
-    /**
-     * Adding new exercise to db.
-     * @param exercise comes from client
-     * @return http-response
-     */
-    @Transactional
-    public Response addNewExercise(Exercise exercise) {
-        exercise.user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
-        if(exercise.sketchDataURL == null) {
-            exercise.sketch = null;
-        } else {
-            exercise.sketch = convertDataUrlToByteArray(exercise.sketchDataURL);
-        }
-        exerciseRepository.persist(exercise);
-        return Response.ok().build();
-    }
-
-    /**
-     * Sketch is saved a bytea and not as text - so this method converts incoming data url to byte array.
-     * @param dataURL from client
-     * @return data url as byte array
-     */
-    private byte[] convertDataUrlToByteArray(String dataURL) {
-        return Base64.getDecoder().decode(dataURL.split(",")[1]);
-        //System.out.println("data:image/png;base64," + Base64.getEncoder().encodeToString(sktech));
-    }
+    /**** GET-REQUEST-SERVICES ****/
 
     /**
      * Method for getting all exercises in db.
@@ -69,6 +46,54 @@ public class ExerciseService {
         return hideUserInformationInResponse(exerciseRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
     }
 
+    /**** POST-REQUEST-SERVICES ****/
+
+    /**
+     * Adding new exercise to db.
+     * @param exercise comes from client
+     * @return http-response
+     */
+    @Transactional
+    public Response addNewExercise(Exercise exercise) {
+        exercise.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
+        if(exercise.getSketchDataURL() == null) {
+            exercise.setSketch(null);
+        } else {
+            exercise.setSketch(convertDataUrlToByteArray(exercise.getSketchDataURL()));
+        }
+        exerciseRepository.persist(exercise);
+        return Response.ok().build();
+    }
+
+    /**** PUT-REQUEST-SERVICES ****/
+    @Transactional
+    public Response updateExistingExercise(Exercise updatedExercise) {
+        ServiceHelper.updateEntity(updatedExercise, exerciseRepository.findById(updatedExercise.getId()));
+        exerciseRepository.flush();
+        return Response.accepted().build();
+    }
+
+
+    /**** DELETE-REQUEST-SERVICES ****/
+
+    @Transactional
+    public Response deleteExercise(long exerciseId) {
+        exerciseRepository.deleteById(exerciseId);
+        return Response.accepted().build();
+    }
+
+
+
+    /**
+     * Sketch is saved a bytea and not as text - so this method converts incoming data url to byte array.
+     * @param dataURL from client
+     * @return data url as byte array
+     */
+    private byte[] convertDataUrlToByteArray(String dataURL) {
+        return Base64.getDecoder().decode(dataURL.split(",")[1]);
+        //System.out.println("data:image/png;base64," + Base64.getEncoder().encodeToString(sktech));
+    }
+
     /**
      * Sending plain user data to client could be a security risk, so set user data to null before passing to client.
      * @param exercises
@@ -77,16 +102,12 @@ public class ExerciseService {
     private List<Exercise> hideUserInformationInResponse(List<Exercise> exercises) {
         List<Exercise> exercisesWithNoUserData = new ArrayList<>();
         for (Exercise exercise : exercises) {
-            exercise.user = null;
+            exercise.setUser(null);
             exercisesWithNoUserData.add(exercise);
         }
         return exercisesWithNoUserData;
     }
 
-    @Transactional
-    public Response deleteExercise(long exerciseId) {
-        exerciseRepository.deleteById(exerciseId);
-        return Response.accepted().build();
-    }
+
 
 }
