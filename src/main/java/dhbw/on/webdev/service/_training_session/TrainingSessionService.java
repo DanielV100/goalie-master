@@ -69,7 +69,7 @@ public class TrainingSessionService {
             }
             List<Exercise> exercises = trainingSession.exercises;
             for(Exercise exercise : exercises) {
-                exercise.user = null;
+                exercise.setUser(null);
             }
         }
         return trainingSessions;

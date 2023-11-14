@@ -93,6 +93,9 @@ function updateItemClicked(event) {
   if(isGoalkeeper.value === true) {
     entityType.value = 'goalkeeper';
   }
+  if(isExercise.value === true) {
+    entityType.value = 'exercise';
+  }
   entityId.value = id;
   isShowingOverview.value = false;
 }

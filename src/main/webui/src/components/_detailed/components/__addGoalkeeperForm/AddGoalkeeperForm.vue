@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref, defineProps} from "vue";
+import {computed, ref, defineProps, onBeforeMount} from "vue";
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
 import * as UtilityFunctions from "../../../../globals/utilityFunctions.js";
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
@@ -31,15 +31,18 @@ const props = defineProps({
   notes: String
 });
 
-if(props.isEditView) {
-  firstname.value = props.firstname;
-  lastname.value = props.lastname;
-  birthday.value = props.birthday;
-  club.value = props.club;
-  notes.value = props.notes;
-  submitButtonText.value = "Torhüter aktualisieren"
-  successMessage.value = "Torhüter erfolgreich bearbeitet!";
-}
+onBeforeMount(() => {
+  if(props.isEditView) {
+    firstname.value = props.firstname;
+    lastname.value = props.lastname;
+    birthday.value = props.birthday;
+    club.value = props.club;
+    notes.value = props.notes;
+    submitButtonText.value = "Torhüter aktualisieren"
+    successMessage.value = "Torhüter erfolgreich bearbeitet!";
+  }
+});
+
 const isAddingGoalkeeperSuccessful = async () => {
   try {
     await axios.post('/goalkeeper/add', createGoalkeeperArrayForHttpRequest(), {

@@ -3,7 +3,7 @@ import * as LocalConfig from './resources/addExerciseFormConfig.js';
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
-import {computed, ref} from "vue";
+import {computed, onBeforeMount, ref} from "vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 import axios from "axios";
 import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
@@ -18,8 +18,41 @@ const duration = ref('');
 const intensity = ref('');
 const note = ref('');
 const errorMessage = ref('');
+const materialList = ref([]);
+const descriptionList = ref([]);
+const props = defineProps({
+  isEditView: Boolean,
+  id: Number,
+  title: String,
+  category: String,
+  numberOfGoalkeeper: String,
+  duration: String,
+  intensity: String,
+  note: String,
+  materials: Object,
+  numbersOfMaterial: Object,
+  descriptionSteps: Object
+});
 
-
+onBeforeMount(() => {
+  init();
+});
+function init() {
+  if(props.isEditView) {
+    title.value = props.title;
+    category.value = props.category;
+    numberOfGoalkeeper.value = props.numberOfGoalkeeper;
+    duration.value = props.duration;
+    intensity.value = props.intensity;
+    note.value = props.note;
+    let test = [];
+    for(let i = 0; i < props.numbersOfMaterial.length; i++) {
+      test.push({numberOfMaterial: props.numbersOfMaterial[i], material: props.materials[i]});
+    }
+    materialList.value = test;
+    descriptionList.value = props.descriptionSteps;
+  }
+}
 
 const isSubmitDisabled = computed(() => {
   return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '');
@@ -205,8 +238,27 @@ function getDataUrlFromSketch() {
           <div class="input-box" id="multi">
             <div id="material_container">
               <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
-              <div id="material_element" style="display: flex">
-                <input class="input number_of_material" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
+              <div v-if="props.isEditView"  v-for="(material, index) in materialList" id="material_element" style="display: flex">
+                <input :value="material.numberOfMaterial" class="input number_of_material" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
+                <input
+                    :value="material.material"
+                    class="input material"
+                    type="text"
+                    style="width: 60%;"
+                    placeholder="Stangen"
+                    list="materials"
+                    required
+                />
+                <button class="deleteButton" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
+                <datalist id="materials">
+                  <option>Stangen</option>
+                  <option>Hütchen</option>
+                  <option>Bälle</option>
+                  <option>Pylonen</option>
+                </datalist>
+              </div>
+              <div v-else id="material_element" style="display: flex">
+                <input  class="input number_of_material" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
                     class="input material"
                     type="text"
@@ -232,7 +284,11 @@ function getDataUrlFromSketch() {
       <div id="description_container">
         <form @submit="onSubmitClick" class="form" id="form">
           <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }}</label>
-          <div id="description" style="display: flex">
+          <div v-if="props.isEditView" v-for="description in descriptionList"  id="description" style="display: flex">
+            <textarea :value="description" class="input description_step" id="textTest" rows="2"></textarea>
+            <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
+          </div>
+          <div v-else  id="description" style="display: flex">
             <textarea class="input description_step" id="textTest" rows="2"></textarea>
             <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
           </div>
