@@ -96,6 +96,9 @@ function updateItemClicked(event) {
   if(isExercise.value === true) {
     entityType.value = 'exercise';
   }
+  if(isTrainingSession.value === true) {
+    entityType.value = 'training-session';
+  }
   entityId.value = id;
   isShowingOverview.value = false;
 }

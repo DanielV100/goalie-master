@@ -9,7 +9,7 @@ import CurrentPageIndicator from "@/components/_globals/components/__currentPage
 import * as LocalConfig from './resources/createTrainingSessionForm.js';
 import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
 import Accordion from "@/components/_globals/components/__accordion/Accordion.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onBeforeMount, onMounted, ref} from "vue";
 import axios from "axios";
 import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
@@ -18,6 +18,27 @@ const title = ref('');
 const date = ref('');
 const note = ref('');
 const goalkeepersNameAndId = ref([]);
+
+const props = defineProps({
+  isEditView: Boolean,
+  id: Number,
+  title: String,
+  date: String,
+  note: String,
+  exercisesIds: Object,
+  goalkeepersIds: Object,
+});
+
+onBeforeMount(() => {
+  init();
+})
+function init() {
+  if(props.isEditView) {
+    title.value = props.title;
+    date.value = props.date;
+    note.value = props.note;
+  }
+}
 
 onMounted(async () => {
   let goalkeepersFromDB = await GetRequestFunctions.getGoalkeepersFromDB();
