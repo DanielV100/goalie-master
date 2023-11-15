@@ -9,6 +9,7 @@ import dhbw.on.webdev.repository.TrainingSessionRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -35,20 +36,23 @@ public class TrainingSessionService {
     @Inject
     JwtTokenService jwtTokenService;
 
+    @Inject
+    ServiceHelper serviceHelper;
+
     @Transactional
     public Response createNewTrainingSession(TrainingSession trainingSession) {
-        trainingSession.exercises = new ArrayList<>();
-        trainingSession.goalkeepers = new ArrayList<>();
-        for(long goalkeeperId : trainingSession.goalkeeperIds) {
+        trainingSession.setExercises(new ArrayList<>());
+        trainingSession.setGoalkeepers(new ArrayList<>());
+        for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
             //new instance needed, otherwise it's a detached entity
             Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
-            trainingSession.goalkeepers.add(goalkeeper);
+            trainingSession.getGoalkeepers().add(goalkeeper);
         }
-        for(long exerciseId : trainingSession.exerciseIds) {
+        for(long exerciseId : trainingSession.getExerciseIds()) {
             Exercise exercise = exerciseRepository.findById(exerciseId);
-            trainingSession.exercises.add(exercise);
+            trainingSession.getExercises().add(exercise);
         }
-        trainingSession.user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
+        trainingSession.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
         trainingSessionRepository.persist(trainingSession);
         return Response.ok().build();
     }
@@ -60,14 +64,14 @@ public class TrainingSessionService {
     //Wieso User von Goalkeeper und Exercises nicht gleich bei der Abfrage bereinigen?
     private List<TrainingSession> clearUnnecessaryDataForResponse(List<TrainingSession> trainingSessions) {
         for(TrainingSession trainingSession : trainingSessions) {
-            List<Goalkeeper> goalkeepers = trainingSession.goalkeepers;
+            List<Goalkeeper> goalkeepers = trainingSession.getGoalkeepers();
             for(Goalkeeper goalkeeper : goalkeepers) {
                 goalkeeper.setUser(null);
                 goalkeeper.setBirthday(null);
                 goalkeeper.setClub(null);
                 goalkeeper.setNotes(null);
             }
-            List<Exercise> exercises = trainingSession.exercises;
+            List<Exercise> exercises = trainingSession.getExercises();
             for(Exercise exercise : exercises) {
                 exercise.setUser(null);
             }
@@ -81,4 +85,39 @@ public class TrainingSessionService {
         return Response.accepted().build();
     }
 
+    @Transactional
+    public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
+        TrainingSession trainingSession = trainingSessionRepository.findById(updatedTrainingSession.getId());
+        if(trainingSession != null) {
+            //sketch must be set here, otherwise helper method have to be edited
+            if(updatedTrainingSession.getExerciseIds() != null) {
+                trainingSession.setExercises(new ArrayList<>());
+                for(long exerciseId : trainingSession.getExerciseIds()) {
+                    Exercise exercise = exerciseRepository.findById(exerciseId);
+                    trainingSession.getExercises().add(exercise);
+                }
+            } else {
+                Log.warn("No exercises found");
+            }
+            if(updatedTrainingSession.getGoalkeepers() != null) {
+                trainingSession.setGoalkeepers(new ArrayList<>());
+                for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
+                    //new instance needed, otherwise it's a detached entity
+                    Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
+                    trainingSession.getGoalkeepers().add(goalkeeper);
+                }
+            } else {
+                Log.warn("No goalkeepers found");
+            }
+            if(serviceHelper.updateEntity(updatedTrainingSession, trainingSession)) {
+                exerciseRepository.flush();
+                return Response.ok().build();
+            } else {
+                return Response.serverError().build();
+            }
+        } else {
+            Log.error("Exercise not found for Id:" + updatedTrainingSession.getId());
+            return Response.status(404).build();
+        }
+    }
 }

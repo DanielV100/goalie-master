@@ -35,8 +35,8 @@ const isCreatingTrainingSessionSuccessful = async () => {
   try {
     const trainingSession = {
       title: title.value,
-      tDate: date.value,
-      tNotes: note.value,
+      date: date.value,
+      notes: note.value,
       goalkeeperIds: getGoalkeeperIds(getSelectedGoalkeepers()),
       exerciseIds: getIdsFromCheckedExercises()
     };

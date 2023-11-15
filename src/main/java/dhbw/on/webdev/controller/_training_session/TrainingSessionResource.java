@@ -1,5 +1,6 @@
 package dhbw.on.webdev.controller._training_session;
 
+import dhbw.on.webdev.model.Exercise;
 import dhbw.on.webdev.model.TrainingSession;
 import dhbw.on.webdev.service._training_session.TrainingSessionService;
 import jakarta.annotation.security.RolesAllowed;
@@ -36,6 +37,15 @@ public class TrainingSessionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createNewTrainingSession(TrainingSession trainingSession) {
         return trainingSessionService.createNewTrainingSession(trainingSession);
+    }
+
+    @PUT
+    @Path("/update")
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
+        return trainingSessionService.updateExistingTrainingSession(updatedTrainingSession);
     }
 
     @DELETE

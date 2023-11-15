@@ -131,7 +131,7 @@ function getIdFromClickedElement(event) {
         <tr v-for="element in elements">
           <td>{{ element.id }}</td>
           <td v-if="isTrainingSession || isExercise">{{ element.title }}</td>
-          <td v-if="isTrainingSession">{{ element.tDate }}</td>
+          <td v-if="isTrainingSession">{{ element.date }}</td>
           <td v-if="isExercise">{{ element.duration }}</td>
           <td v-if="isGoalkeeper">{{ element.firstname }}</td>
           <td v-if="isGoalkeeper">{{ element.lastname }}</td>

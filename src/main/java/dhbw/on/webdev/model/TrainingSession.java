@@ -11,13 +11,13 @@ import java.util.List;
 public class TrainingSession {
     @Id
     @GeneratedValue
-    public long id;
+    private long id;
 
-    public String title;
+    private String title;
 
-    public LocalDate tDate;
+    private LocalDate date;
 
-    public String tNotes;
+    private String notes;
 
     @ManyToMany
     @JoinTable(
@@ -25,10 +25,10 @@ public class TrainingSession {
             joinColumns = @JoinColumn(name = "training_sessions_id"),
             inverseJoinColumns = @JoinColumn(name = "goalkeepers_id")
     )
-    public List<Goalkeeper> goalkeepers;
+    private List<Goalkeeper> goalkeepers;
 
     @Transient
-    public List<Long> goalkeeperIds;
+    private List<Long> goalkeeperIds;
 
     @ManyToMany
     @JoinTable(
@@ -36,11 +36,83 @@ public class TrainingSession {
             joinColumns = @JoinColumn(name = "training_sessions_id"),
             inverseJoinColumns = @JoinColumn(name = "exercises_id")
     )
-    public List<Exercise> exercises;
+    private List<Exercise> exercises;
     @Transient
-    public List<Long> exerciseIds;
+    private List<Long> exerciseIds;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public List<Goalkeeper> getGoalkeepers() {
+        return goalkeepers;
+    }
+
+    public void setGoalkeepers(List<Goalkeeper> goalkeepers) {
+        this.goalkeepers = goalkeepers;
+    }
+
+    public List<Long> getGoalkeeperIds() {
+        return goalkeeperIds;
+    }
+
+    public void setGoalkeeperIds(List<Long> goalkeeperIds) {
+        this.goalkeeperIds = goalkeeperIds;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
+    }
+
+    public List<Long> getExerciseIds() {
+        return exerciseIds;
+    }
+
+    public void setExerciseIds(List<Long> exerciseIds) {
+        this.exerciseIds = exerciseIds;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

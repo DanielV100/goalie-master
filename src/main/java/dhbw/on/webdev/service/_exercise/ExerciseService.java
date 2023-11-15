@@ -118,10 +118,6 @@ public class ExerciseService {
     }
 
 
-
-
-
-
     /**
      * Sending plain user data to client could be a security risk, so set user data to null before passing to client.
      * @param exercises
@@ -135,7 +131,4 @@ public class ExerciseService {
         }
         return exercisesWithNoUserData;
     }
-
-
-
 }
