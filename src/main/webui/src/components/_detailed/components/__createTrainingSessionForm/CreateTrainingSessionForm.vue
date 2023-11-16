@@ -18,6 +18,7 @@ const title = ref('');
 const date = ref('');
 const note = ref('');
 const goalkeepersNameAndId = ref([]);
+const selectedGoalkeepers = ref([]);
 
 const props = defineProps({
   isEditView: Boolean,
@@ -25,8 +26,10 @@ const props = defineProps({
   title: String,
   date: String,
   note: String,
-  exercisesIds: Object,
-  goalkeepersIds: Object,
+  exercisesIdsWarmUp: Object,
+  exercisesIdsMain: Object,
+  exercisesIdsEnd: Object,
+  goalkeepersIds: Object
 });
 
 onBeforeMount(() => {
@@ -54,14 +57,7 @@ const isSubmitDisabled = computed(() => {
 
 const isCreatingTrainingSessionSuccessful = async () => {
   try {
-    const trainingSession = {
-      title: title.value,
-      date: date.value,
-      notes: note.value,
-      goalkeeperIds: getGoalkeeperIds(getSelectedGoalkeepers()),
-      exerciseIds: getIdsFromCheckedExercises()
-    };
-    await axios.post('/training_session/create', trainingSession, {
+    await axios.post('/training_session/create', createTrainingSessionObjectForResponse(), {
       headers: {
         Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
       }
@@ -73,9 +69,43 @@ const isCreatingTrainingSessionSuccessful = async () => {
     return false;
   }
 }
+
+const isUpdatingExistingTrainingSessionSuccessful = async () => {
+  try {
+    await axios.put('/training_session/update', createTrainingSessionObjectForResponse(), {
+      headers: {
+        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    //errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+    //resetForm();
+    return false;
+  }
+}
+
+function createTrainingSessionObjectForResponse() {
+  const trainingSession = {
+    title: title.value,
+    date: date.value,
+    notes: note.value,
+    goalkeeperIds: getGoalkeeperIds(getSelectedGoalkeepers()),
+    exerciseIds: getIdsFromCheckedExercises()
+  };
+  if(props.isEditView) {
+    trainingSession['id'] = props.id;
+  }
+  return trainingSession;
+}
 async function onSubmitClick() {
   UtilityFunctions.setLoadingCircleInSubmitButton();
-  const isSuccessful = await isCreatingTrainingSessionSuccessful();
+  let isSuccessful;
+  if(props.isEditView) {
+    isSuccessful = await isUpdatingExistingTrainingSessionSuccessful();
+  } else {
+    isSuccessful = await isCreatingTrainingSessionSuccessful();
+  }
   if(isSuccessful) {
     console.log(isSuccessful);
     //isNotSubmitted.value = false;
@@ -88,8 +118,15 @@ async function onSubmitClick() {
  */
 function createGoalkeepersSelectable(goalkeepers) {
   goalkeepers.forEach((goalkeeper) => {
+    if(props.isEditView) {
+      for (let id of props.goalkeepersIds) {
+        if(goalkeeper.id == id) {
+          selectedGoalkeepers.value.push({name:goalkeeper.firstname + ' ' + goalkeeper.lastname, id:goalkeeper.id});
+        }
+      }
+    }
     goalkeepersNameAndId.value.push({name:goalkeeper.firstname + ' ' + goalkeeper.lastname, id:goalkeeper.id});
-  })
+  });
 }
 
 /**
@@ -107,6 +144,7 @@ function getGoalkeeperIds(goalkeepers) {
       }
     });
   });
+  console.log(goalkeeperIds);
   return goalkeeperIds;
 }
 
@@ -168,17 +206,17 @@ function getIdsFromCheckedExercises() {
         <br>
         <div>
           <label>{{ LocalConfig.FORM_CHOOSE_GOALKEEPER_LABEL }}</label>
-          <Multiselect :multiselect-options="goalkeepersNameAndId"/>
+          <Multiselect :preselected-values="selectedGoalkeepers" :multiselect-options="goalkeepersNameAndId"/>
         </div>
       </form>
       <br>
-      <Accordion category="warmUp" modal-i-d="_warmup">Aufwärmen</Accordion>
+      <Accordion :is-edit-view="props.isEditView" :exercises-ids="props.exercisesIdsWarmUp" category="warmUp" modal-i-d="_warmup">Aufwärmen</Accordion>
       <br>
       <br>
-      <Accordion category="main" modal-i-d="_main">Hauptteil</Accordion>
+      <Accordion :is-edit-view="props.isEditView" :exercises-ids="props.exercisesIdsMain" category="main" modal-i-d="_main">Hauptteil</Accordion>
       <br>
       <br>
-      <Accordion category="end" modal-i-d="_end">Abschluss</Accordion>
+      <Accordion :is-edit-view="props.isEditView" :exercises-ids="props.exercisesIdsEnd" category="end" modal-i-d="_end">Abschluss</Accordion>
       <br>
       <div>
         <br>

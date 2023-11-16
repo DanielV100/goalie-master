@@ -89,19 +89,18 @@ public class TrainingSessionService {
     public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
         TrainingSession trainingSession = trainingSessionRepository.findById(updatedTrainingSession.getId());
         if(trainingSession != null) {
-            //sketch must be set here, otherwise helper method have to be edited
             if(updatedTrainingSession.getExerciseIds() != null) {
                 trainingSession.setExercises(new ArrayList<>());
-                for(long exerciseId : trainingSession.getExerciseIds()) {
+                for(long exerciseId : updatedTrainingSession.getExerciseIds()) {
                     Exercise exercise = exerciseRepository.findById(exerciseId);
                     trainingSession.getExercises().add(exercise);
                 }
             } else {
                 Log.warn("No exercises found");
             }
-            if(updatedTrainingSession.getGoalkeepers() != null) {
+            if(updatedTrainingSession.getGoalkeeperIds() != null) {
                 trainingSession.setGoalkeepers(new ArrayList<>());
-                for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
+                for(long goalkeeperId : updatedTrainingSession.getGoalkeeperIds()) {
                     //new instance needed, otherwise it's a detached entity
                     Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
                     trainingSession.getGoalkeepers().add(goalkeeper);

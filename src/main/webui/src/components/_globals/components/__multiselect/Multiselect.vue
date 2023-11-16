@@ -1,11 +1,14 @@
 <script setup>
 import VueMultiselect from 'vue-multiselect';
 import { ref } from 'vue';
-const multiValue = ref()
+const multiValue = ref([])
 const props = defineProps({
-  multiselectOptions: Object
+  multiselectOptions: Object,
+  preselectedValues: Object
 });
 const multiselectOptions = props.multiselectOptions;
+multiValue.value = props.preselectedValues;
+console.log(props.preselectedValues);
 
 </script>
 
@@ -14,12 +17,14 @@ const multiselectOptions = props.multiselectOptions;
     <VueMultiselect
         v-model="multiValue"
         :options="multiselectOptions"
+        :value="props.preselectedValues"
         :multiple="true"
         :close-on-select="false"
         placeholder="Wähle einen/mehrere Torhüter"
         label="name"
         track-by="name"
         :limit="3"
+
     />
   </div>
 </template>

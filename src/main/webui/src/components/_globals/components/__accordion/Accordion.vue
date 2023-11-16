@@ -1,19 +1,47 @@
 <script setup>
 import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
-import {nextTick, onActivated, onBeforeUpdate, onMounted, ref} from "vue";
+import {nextTick, onActivated, onBeforeMount, onBeforeUpdate, onMounted, ref} from "vue";
 import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
 import * as SessionStorageFunctions from '../../../../globals/sessionStorageUtilitiyFunctions.js';
 //ID's from the exercises to add
 const exerciseKeyfacts = ref([]);
 const props = defineProps({
+  isEditView: Boolean,
   category: String,
   modalID: String,
+  exercisesIds: Object
 });
+
 let exercises = ref([]);
 const exercisesKey = ref();
 const totalDuration = ref('00:00');
 const totalIntensity = ref(0);
 
+onBeforeMount(() => {
+  getExercisesFromSessionStorage();
+  let checkedExercises = [];
+  if(props.isEditView) {
+    for (let id of props.exercisesIds) {
+      checkedExercises.push({exerciseID: id.exerciseId, exerciseTitle: id.exerciseTitle});
+    }
+    exerciseKeyfacts.value = checkedExercises;
+  }
+});
+onMounted(() => {
+  if(props.isEditView) {
+  const modalCheckboxes = document.getElementsByClassName(props.modalID);
+  for(let modalCheckbox of modalCheckboxes) {
+    const idTableRow = modalCheckbox.parentElement.nextSibling;
+      for (let id of props.exercisesIds) {
+        if (idTableRow.innerText == id.exerciseId) {
+          console.log('test');
+          modalCheckbox.checked = true;
+          break;
+        }
+      }
+    }
+  }
+});
 
 function addExerciseButtonClicked() {
   getExercisesFromSessionStorage();
