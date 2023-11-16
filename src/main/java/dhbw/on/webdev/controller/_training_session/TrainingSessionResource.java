@@ -22,6 +22,7 @@ import java.util.List;
 public class TrainingSessionResource {
     @Inject
     TrainingSessionService trainingSessionService;
+
     @GET
     @Path("/get/specific")
     @RolesAllowed("user")

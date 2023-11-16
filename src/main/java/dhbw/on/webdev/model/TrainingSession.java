@@ -44,6 +44,17 @@ public class TrainingSession {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Transient
+    private String dataUrl;
+
+    public String getDataUrl() {
+        return dataUrl;
+    }
+
+    public void setDataUrl(String dataUrl) {
+        this.dataUrl = dataUrl;
+    }
+
     public long getId() {
         return id;
     }

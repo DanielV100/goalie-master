@@ -11,13 +11,27 @@ function logOutClicked() {
 function logoClicked() {
   GlobalConfig.changeWindowToTargetRoute('Overview');
 }
+
+function userIconClicked() {
+  downloadPdf();
+}
+
+async function downloadPdf() {
+  const response = await fetch('/pdf/download');
+  const blob = await response.blob();
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'mydocument.pdf';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
 </script>
 
 <template>
   <div class="__header">
     <a @click="logoClicked" class="logo">{{ GlobalConfig.APP_NAME }}</a>
     <div class="header-right">
-      <i class='bx bx-user'></i>
+      <i @click="userIconClicked" class='bx bx-user'></i>
       <i @click="logOutClicked" class='bx bx-log-out'></i>
     </div>
   </div>

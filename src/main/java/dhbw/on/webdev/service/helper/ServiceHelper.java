@@ -1,11 +1,20 @@
 package dhbw.on.webdev.service.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dhbw.on.webdev.model.User;
+import dhbw.on.webdev.pdf.PDFHelper;
 import dhbw.on.webdev.repository.UserRepository;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.xml.bind.DatatypeConverter;
+import org.hibernate.type.format.jackson.JacksonXmlFormatMapper;
 
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,6 +28,9 @@ import java.util.Base64;
 public class ServiceHelper {
     @Inject
     UserRepository userRepository;
+
+    @Inject
+    PDFHelper pdfHelper;
 
     /**
      * This is a generic method for updating every fields from existing entities.
@@ -94,5 +106,49 @@ public class ServiceHelper {
             Log.warn("Data url is null");
             return null;
         }
+    }
+
+    public <T> String convertEntityToJson(T entity) {
+        if(entity != null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+                String entityAsJson = objectMapper.writeValueAsString(entity);
+                System.out.println(entityAsJson);
+                byte[] pdfBytes = pdfHelper.convertXmlToPdf(convertJsonToXML(entityAsJson));
+                try (FileOutputStream fos = new FileOutputStream("output.pdf")) {
+                    fos.write(pdfBytes);
+                }
+
+                System.out.println("PDF generated successfully!");
+                return entityAsJson;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    public String convertJsonToXML(final String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode jsonNode = objectMapper.readTree(json);
+            String xmlString = new XmlMapper().writeValueAsString(jsonNode);
+            System.out.println(xmlString);
+            return xmlString;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public  String getDataUrl(byte[] data) {
+        String base64str = DatatypeConverter.printBase64Binary(data);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("data:");
+        sb.append("image/png");
+        sb.append(";base64,");
+        sb.append(base64str);
+
+        System.out.println(sb.toString());
+        return sb.toString();
     }
 }

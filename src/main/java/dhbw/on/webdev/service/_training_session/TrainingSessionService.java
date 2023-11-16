@@ -58,6 +58,11 @@ public class TrainingSessionService {
     }
 
     public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
+        TrainingSession trainingSession = trainingSessionRepository.findById(1L);
+        trainingSession.setDataUrl(serviceHelper.getDataUrl(trainingSession.getExercises().get(0).getSketch()));
+
+        serviceHelper.convertEntityToJson(trainingSessionRepository.findById(1L));
+
         return clearUnnecessaryDataForResponse(trainingSessionRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
     }
 
