@@ -244,14 +244,9 @@
                             </fo:table>
                         </xsl:if>
                         <fo:block>
-                            <fo:external-graphic>
-
-                                <xsl:attribute name="src">
-                                    <xsl:value-of select="dataUrl"/>
-                                </xsl:attribute>
-                            </fo:external-graphic>
+                            <xsl:variable name="imageData" select="dataUrl"/>
+                            <fo:external-graphic src="{$imageData}"/>
                         </fo:block>
-
                     </xsl:for-each>
 
                 </fo:flow>

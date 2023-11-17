@@ -143,10 +143,11 @@ public class ServiceHelper {
         String base64str = DatatypeConverter.printBase64Binary(data);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("data:");
+        sb.append("url('data:");
         sb.append("image/png");
         sb.append(";base64,");
         sb.append(base64str);
+        sb.append("')");
 
         System.out.println(sb.toString());
         return sb.toString();
