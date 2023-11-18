@@ -3,6 +3,7 @@ package dhbw.on.webdev.service._login;
 import dhbw.on.webdev.model.entities.User;
 import dhbw.on.webdev.model.entities.UserCredentials;
 import dhbw.on.webdev.repository.UserRepository;
+import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -51,7 +52,7 @@ public class UserService {
         String password = userCredentials.getPassword();
         for (User user : allUsers) {
             if(user.getUsername().equals(username)) {
-                if(user.getPassword().equals(password)) {
+                if(BcryptUtil.matches(password, user.getPassword())) {
                     authenticatedUser = user;
                 }
             }

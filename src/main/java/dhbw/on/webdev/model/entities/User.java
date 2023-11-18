@@ -8,19 +8,16 @@ import io.quarkus.security.jpa.Username;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
 @UserDefinition
 public class User extends BaseClass {
     @Username
-    @Column(name = "username")
     private String username;
-
-    @Column(name = "name")
     private String name;
     @Password
-    @Column(name = "password")
     private String password;
 
     @OneToMany(mappedBy = "user")
@@ -37,6 +34,15 @@ public class User extends BaseClass {
     @JsonIgnore
     @Transient
     private List<TrainingSession> trainingSessions;
+
+    public User() {
+    }
+
+    public User(String username, String name, String password) {
+        this.username = username;
+        this.name = name;
+        this.password = password;
+    }
 
     public String getUsername() {
         return username;
@@ -84,5 +90,18 @@ public class User extends BaseClass {
 
     public void setTrainingSessions(List<TrainingSession> trainingSessions) {
         this.trainingSessions = trainingSessions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(username, user.username) && Objects.equals(name, user.name) && Objects.equals(password, user.password) && Objects.equals(goalkeepers, user.goalkeepers) && Objects.equals(exercises, user.exercises) && Objects.equals(trainingSessions, user.trainingSessions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, name, password, goalkeepers, exercises, trainingSessions);
     }
 }
