@@ -1,6 +1,6 @@
 package dhbw.on.webdev.controller._login;
 
-import dhbw.on.webdev.model.UserCredentials;
+import dhbw.on.webdev.model.entities.UserCredentials;
 import dhbw.on.webdev.service._login.JwtTokenService;
 import dhbw.on.webdev.service._login.UserService;
 import jakarta.annotation.security.PermitAll;

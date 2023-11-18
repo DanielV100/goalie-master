@@ -1,7 +1,6 @@
 package dhbw.on.webdev.service._goalkeeper;
 
-import dhbw.on.webdev.model.Exercise;
-import dhbw.on.webdev.model.Goalkeeper;
+import dhbw.on.webdev.model.entities.Goalkeeper;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
@@ -9,19 +8,11 @@ import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Lob;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
 
 @ApplicationScoped
 public class GoalkeeperService {

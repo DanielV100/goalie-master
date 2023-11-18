@@ -1,7 +1,7 @@
 package dhbw.on.webdev.service._login;
 
-import dhbw.on.webdev.model.User;
-import dhbw.on.webdev.model.UserCredentials;
+import dhbw.on.webdev.model.entities.User;
+import dhbw.on.webdev.model.entities.UserCredentials;
 import dhbw.on.webdev.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -33,7 +33,7 @@ public class UserService {
     public Response loginUser(UserCredentials userCredentials) {
         User user = getAuthenticatedUser(userCredentials, getAllUsers());
         if(user != null) {
-            return Response.ok(jwtTokenService.generateJwtToken(user.id)).build();
+            return Response.ok(jwtTokenService.generateJwtToken(user.getId())).build();
         } else {
             return Response.status(401).build();
         }
@@ -50,8 +50,8 @@ public class UserService {
         String username = userCredentials.getUsername();
         String password = userCredentials.getPassword();
         for (User user : allUsers) {
-            if(user.username.equals(username)) {
-                if(user.password.equals(password)) {
+            if(user.getUsername().equals(username)) {
+                if(user.getPassword().equals(password)) {
                     authenticatedUser = user;
                 }
             }

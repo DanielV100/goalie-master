@@ -14,8 +14,5 @@ public class ServiceHelperTest {
     @Inject
     TrainingSessionRepository trainingSessionRepository;
 
-    @Test
-    public void testConvertEntityToXML() {
-        System.out.println(serviceHelper.convertEntityToXML(trainingSessionRepository.findById(0L)));
-    }
+
 }

@@ -1,7 +1,6 @@
 package dhbw.on.webdev.controller._training_session;
 
-import dhbw.on.webdev.model.Exercise;
-import dhbw.on.webdev.model.TrainingSession;
+import dhbw.on.webdev.model.entities.TrainingSession;
 import dhbw.on.webdev.service._training_session.TrainingSessionService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -29,6 +28,12 @@ public class TrainingSessionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
         return trainingSessionService.getAllTrainingSessionsFromCurrentUser();
+    }
+    @GET
+    @Path("/download/{id}")
+    @Produces("application/pdf")
+    public Response getTrainingSessionAsPdf(@PathParam("id") final long trainingSessionId) {
+        return trainingSessionService.getTrainingSessionAsPdf(trainingSessionId);
     }
 
     @POST

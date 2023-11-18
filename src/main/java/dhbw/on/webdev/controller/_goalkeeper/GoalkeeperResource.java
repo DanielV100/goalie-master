@@ -1,7 +1,6 @@
 package dhbw.on.webdev.controller._goalkeeper;
 
-import dhbw.on.webdev.model.Goalkeeper;
-import dhbw.on.webdev.repository.GoalkeeperRepository;
+import dhbw.on.webdev.model.entities.Goalkeeper;
 import dhbw.on.webdev.service._goalkeeper.GoalkeeperService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;

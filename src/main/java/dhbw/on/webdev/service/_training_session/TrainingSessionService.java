@@ -1,8 +1,9 @@
 package dhbw.on.webdev.service._training_session;
 
-import dhbw.on.webdev.model.Exercise;
-import dhbw.on.webdev.model.Goalkeeper;
-import dhbw.on.webdev.model.TrainingSession;
+import dhbw.on.webdev.model.entities.Exercise;
+import dhbw.on.webdev.model.entities.Goalkeeper;
+import dhbw.on.webdev.model.entities.TrainingSession;
+import dhbw.on.webdev.pdf.PDFHelper;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.TrainingSessionRepository;
@@ -26,6 +27,8 @@ public class TrainingSessionService {
     @Inject
     GoalkeeperRepository goalkeeperRepository;
 
+    @Inject
+    PDFHelper pdfHelper;
 
     @Inject
     ExerciseRepository exerciseRepository;
@@ -58,12 +61,20 @@ public class TrainingSessionService {
     }
 
     public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
-        TrainingSession trainingSession = trainingSessionRepository.findById(1L);
-        trainingSession.setDataUrl(serviceHelper.getDataUrl(trainingSession.getExercises().get(0).getSketch()));
-
-        serviceHelper.convertEntityToJson(trainingSessionRepository.findById(1L));
-
         return clearUnnecessaryDataForResponse(trainingSessionRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+    }
+
+    public Response getTrainingSessionAsPdf(final long trainingSessionId) {
+        TrainingSession trainingSession = trainingSessionRepository.findById(trainingSessionId);
+        try {
+            byte[] pdfBytes = pdfHelper.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
+            return Response.ok(pdfBytes)
+                    .header("Content-Disposition", "attachment; filename=\"trainingseinheit.pdf\"")
+                    .build();
+        } catch (Exception exception) {
+            System.out.println(exception);
+            return Response.serverError().build();
+        }
     }
 
     //Wieso User von Goalkeeper und Exercises nicht gleich bei der Abfrage bereinigen?

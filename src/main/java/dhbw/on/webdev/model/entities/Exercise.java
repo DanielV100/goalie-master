@@ -1,17 +1,15 @@
-package dhbw.on.webdev.model;
+package dhbw.on.webdev.model.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import dhbw.on.webdev.model.baseClass.BaseClass;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "exercises")
-public class Exercise {
+public class Exercise extends BaseClass {
     @Transient
     private String sketchDataURL;
 
-    @Id
-    @GeneratedValue
-    private long id;
     private String title;
 
     private String category;
@@ -58,14 +56,6 @@ public class Exercise {
 
     public void setSketchDataURL(String sketchDataURL) {
         this.sketchDataURL = sketchDataURL;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getTitle() {

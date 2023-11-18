@@ -1,18 +1,13 @@
-package dhbw.on.webdev.model;
+package dhbw.on.webdev.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import dhbw.on.webdev.model.baseClass.BaseClass;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "training_sessions")
-public class TrainingSession {
-    @Id
-    @GeneratedValue
-    private long id;
-
+public class TrainingSession extends BaseClass {
     private String title;
 
     private LocalDate date;
@@ -55,13 +50,6 @@ public class TrainingSession {
         this.dataUrl = dataUrl;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

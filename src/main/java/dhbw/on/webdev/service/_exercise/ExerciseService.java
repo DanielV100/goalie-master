@@ -1,6 +1,6 @@
 package dhbw.on.webdev.service._exercise;
 
-import dhbw.on.webdev.model.Exercise;
+import dhbw.on.webdev.model.entities.Exercise;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._login.JwtTokenService;
@@ -9,10 +9,8 @@ import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 /**

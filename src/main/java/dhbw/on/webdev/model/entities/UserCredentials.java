@@ -1,4 +1,4 @@
-package dhbw.on.webdev.model;
+package dhbw.on.webdev.model.entities;
 
 public class UserCredentials {
     private String username;

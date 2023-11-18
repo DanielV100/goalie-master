@@ -115,7 +115,7 @@ public class PDFHelper {
 
             // Load XSLT file
             TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer(new StreamSource(new File("src/main/java/dhbw/on/webdev/pdf/stylesheet.xsl")));
+            Transformer transformer = factory.newTransformer(new StreamSource(getClass().getClassLoader().getResourceAsStream("stylesheet.xsl")));
 
             // Set up input for transformation
             StreamSource src = new StreamSource(new ByteArrayInputStream(xmlData.getBytes()));
@@ -126,7 +126,6 @@ public class PDFHelper {
         } finally {
             out.close();
         }
-
         return out.toByteArray();
     }
 }

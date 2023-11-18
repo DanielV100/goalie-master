@@ -1,7 +1,6 @@
 package dhbw.on.webdev.controller._exercise;
 
-import dhbw.on.webdev.model.Exercise;
-import dhbw.on.webdev.model.Goalkeeper;
+import dhbw.on.webdev.model.entities.Exercise;
 import dhbw.on.webdev.service._exercise.ExerciseService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
