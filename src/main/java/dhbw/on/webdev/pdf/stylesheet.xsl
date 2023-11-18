@@ -131,12 +131,9 @@
                     <fo:block font-size="12pt" wrap-option="wrap">
                         <xsl:value-of select="notes"/>
                     </fo:block>
-                    <fo:block>
-                        <fo:leader leader-pattern="rule" leader-length="100%" rule-style="solid" rule-thickness="2pt"/>
-                    </fo:block>
 
                     <xsl:for-each select="exercises">
-                        <fo:block font-size="14pt" font-weight="bold" margin-top="10pt">
+                        <fo:block page-break-before="always" font-size="14pt" font-weight="bold" margin-top="10pt">
                             <xsl:value-of select="concat(categoryGroup, ': ', title)"/>
                         </fo:block>
 
@@ -243,10 +240,18 @@
                                 </fo:table-body>
                             </fo:table>
                         </xsl:if>
-                        <fo:block>
-                            <xsl:variable name="imageData" select="dataUrl"/>
-                            <fo:external-graphic src="{$imageData}"/>
-                        </fo:block>
+                        <xsl:if test="sketch">
+                            <xsl:for-each select="sketch">
+                                <fo:block>
+                                    <fo:external-graphic src="{concat('url(data:image/png;base64,', ., ')')}" content-height="scale-to-fit"  content-width="17cm" scaling="non-uniform" />
+                                </fo:block>
+                            </xsl:for-each>
+                        </xsl:if>
+                        <xsl:if test="note">
+                            <fo:block font-size="14pt" font-family="sans-serif">
+                                Notizen: <xsl:value-of select="note"/>
+                            </fo:block>
+                        </xsl:if>
                     </xsl:for-each>
 
                 </fo:flow>
