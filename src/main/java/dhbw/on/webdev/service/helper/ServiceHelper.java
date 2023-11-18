@@ -59,7 +59,7 @@ public class ServiceHelper {
                 continue;
             }
             //Getting setter method
-            final String setterMethodName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+           final String setterMethodName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
             try {
                 field.setAccessible(true);
                 Object sourceValue = field.get(source);

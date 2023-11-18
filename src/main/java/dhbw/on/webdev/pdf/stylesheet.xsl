@@ -126,7 +126,7 @@
                         </fo:table-body>
                     </fo:table>
                     <fo:block font-size="14pt" font-weight="bold" margin-top="5pt" margin-bottom="5pt">
-                        Notizen
+                        Notizen zur Trainingseinheit
                     </fo:block>
                     <fo:block font-size="12pt" wrap-option="wrap">
                         <xsl:value-of select="notes"/>
@@ -247,13 +247,12 @@
                                 </fo:block>
                             </xsl:for-each>
                         </xsl:if>
-                        <xsl:if test="note">
+                        <xsl:if test="note[normalize-space()]">
                             <fo:block font-size="14pt" font-family="sans-serif">
                                 Notizen: <xsl:value-of select="note"/>
                             </fo:block>
                         </xsl:if>
                     </xsl:for-each>
-
                 </fo:flow>
             </fo:page-sequence>
         </fo:root>
