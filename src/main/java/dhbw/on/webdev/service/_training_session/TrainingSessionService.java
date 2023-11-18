@@ -8,6 +8,7 @@ import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.TrainingSessionRepository;
 import dhbw.on.webdev.repository.UserRepository;
+import dhbw.on.webdev.service._exercise.ExerciseService;
 import dhbw.on.webdev.service._login.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.logging.Log;
@@ -16,7 +17,10 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @ApplicationScoped
@@ -42,19 +46,27 @@ public class TrainingSessionService {
     @Inject
     ServiceHelper serviceHelper;
 
+    @Inject
+    ExerciseService exerciseService;
+
     @Transactional
     public Response createNewTrainingSession(TrainingSession trainingSession) {
         trainingSession.setExercises(new ArrayList<>());
         trainingSession.setGoalkeepers(new ArrayList<>());
-        for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
-            //new instance needed, otherwise it's a detached entity
-            Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
-            trainingSession.getGoalkeepers().add(goalkeeper);
+        if(trainingSession.getGoalkeeperIds() != null) {
+            for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
+                //new instance needed, otherwise it's a detached entity
+                Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
+                trainingSession.getGoalkeepers().add(goalkeeper);
+            }
         }
-        for(long exerciseId : trainingSession.getExerciseIds()) {
-            Exercise exercise = exerciseRepository.findById(exerciseId);
-            trainingSession.getExercises().add(exercise);
+        if(trainingSession.getExerciseIds() != null) {
+            for(long exerciseId : trainingSession.getExerciseIds()) {
+                Exercise exercise = exerciseRepository.findById(exerciseId);
+                trainingSession.getExercises().add(exercise);
+            }
         }
+
         trainingSession.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
         trainingSessionRepository.persist(trainingSession);
         return Response.ok().build();
@@ -97,7 +109,8 @@ public class TrainingSessionService {
 
     @Transactional
     public Response deleteTrainingSession(long trainingSessionId) {
-        goalkeeperRepository.deleteById(trainingSessionId);
+        generateRandomTraining("Test", LocalDate.parse("2018-12-27"));
+        trainingSessionRepository.deleteById(trainingSessionId);
         return Response.accepted().build();
     }
 
@@ -133,6 +146,22 @@ public class TrainingSessionService {
         } else {
             Log.error("Exercise not found for Id:" + updatedTrainingSession.getId());
             return Response.status(404).build();
+        }
+    }
+
+    @Transactional
+    public void generateRandomTraining(final String title, final LocalDate date) {
+        final long numberOfExercisesInDB = exerciseRepository.count();
+        if (numberOfExercisesInDB > 5) {
+            TrainingSession randomTrainingSession = new TrainingSession(title, date);
+            List<Long> exerciseIds = new ArrayList<>();
+            for (int i = 0; i < numberOfExercisesInDB; i++) {
+                exerciseIds.add((long)i);
+            }
+            Collections.shuffle(exerciseIds);
+            randomTrainingSession.setExerciseIds(exerciseIds.subList(0,5));
+            randomTrainingSession.setUser(userRepository.findById(1L));
+            createNewTrainingSession(randomTrainingSession);
         }
     }
 }

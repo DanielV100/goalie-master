@@ -42,6 +42,14 @@ public class TrainingSession extends BaseClass {
     @Transient
     private String dataUrl;
 
+    public TrainingSession() {
+    }
+
+    public TrainingSession(String title, LocalDate date) {
+        this.title = title;
+        this.date = date;
+    }
+
     public String getDataUrl() {
         return dataUrl;
     }

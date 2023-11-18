@@ -45,41 +45,44 @@
                     <fo:block font-size="14pt" font-weight="bold" margin-top="5pt" margin-bottom="5pt">
                         Torhüter im Überblick
                     </fo:block>
-                    <fo:table width="100%" border="solid 1pt" table-layout="fixed">
-                        <fo:table-column column-width="20%"/>
-                        <fo:table-column column-width="40%"/>
-                        <fo:table-column column-width="40%"/>
-                        <fo:table-header>
-                            <fo:table-row>
-                                <fo:table-cell border="solid 1pt" background-color="#5fbf81">
-                                    <fo:block font-weight="bold">Id</fo:block>
-                                </fo:table-cell>
-                                <fo:table-cell border="solid 1pt" background-color="#5fbf81">
-                                    <fo:block font-weight="bold">Vorname</fo:block>
-                                </fo:table-cell>
-                                <fo:table-cell border="solid 1pt" background-color="#5fbf81">
-                                    <fo:block font-weight="bold">Nachname</fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-                        </fo:table-header>
-                        <fo:table-body>
-                            <!-- Daten für jeden Torhüter -->
-                            <xsl:for-each select="goalkeepers">
+                    <xsl:if test="goalkeepers">
+                        <fo:table width="100%" border="solid 1pt" table-layout="fixed">
+                            <fo:table-column column-width="20%"/>
+                            <fo:table-column column-width="40%"/>
+                            <fo:table-column column-width="40%"/>
+                            <fo:table-header>
                                 <fo:table-row>
-                                    <fo:table-cell border="solid 1pt">
-                                        <fo:block><xsl:value-of select="id"/></fo:block>
+                                    <fo:table-cell border="solid 1pt" background-color="#5fbf81">
+                                        <fo:block font-weight="bold">Id</fo:block>
                                     </fo:table-cell>
-                                    <fo:table-cell border="solid 1pt">
-                                        <fo:block><xsl:value-of select="firstname"/></fo:block>
+                                    <fo:table-cell border="solid 1pt" background-color="#5fbf81">
+                                        <fo:block font-weight="bold">Vorname</fo:block>
                                     </fo:table-cell>
-                                    <fo:table-cell border="solid 1pt">
-                                        <fo:block><xsl:value-of select="lastname"/></fo:block>
+                                    <fo:table-cell border="solid 1pt" background-color="#5fbf81">
+                                        <fo:block font-weight="bold">Nachname</fo:block>
                                     </fo:table-cell>
                                 </fo:table-row>
-                            </xsl:for-each>
-                        </fo:table-body>
-                    </fo:table>
+                            </fo:table-header>
+                            <fo:table-body>
+                                <!-- Daten für jeden Torhüter -->
 
+                                <xsl:for-each select="goalkeepers">
+                                    <fo:table-row>
+                                        <fo:table-cell border="solid 1pt">
+                                            <fo:block><xsl:value-of select="id"/></fo:block>
+                                        </fo:table-cell>
+                                        <fo:table-cell border="solid 1pt">
+                                            <fo:block><xsl:value-of select="firstname"/></fo:block>
+                                        </fo:table-cell>
+                                        <fo:table-cell border="solid 1pt">
+                                            <fo:block><xsl:value-of select="lastname"/></fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+                                </xsl:for-each>
+
+                            </fo:table-body>
+                        </fo:table>
+                    </xsl:if>
 
                     <fo:block font-size="14pt" font-weight="bold" margin-top="5pt" margin-bottom="5pt">
                         Übungen im Überblick

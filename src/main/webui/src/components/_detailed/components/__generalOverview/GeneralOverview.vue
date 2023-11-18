@@ -25,7 +25,8 @@ onMounted( () => {
 async function init() {
   elements.value = await GetRequestFunctions.getAllTrainingSessions();
   let tmp = await GetRequestFunctions.getAllExercisesFromDB();
-  tmp = await GetRequestFunctions.getGoalkeepersFromDB();
+  console.log(tmp);
+  let tmp2 = await GetRequestFunctions.getGoalkeepersFromDB();
 }
 
 
@@ -39,7 +40,7 @@ async function deleteTrainingSession(id) {
   await DeleteRequestFunctions.deleteEntityById('training_session', id);
 }
 async function refreshAfterTrainingSessionDeleted() {
-  elements.value = await GetRequestFunctions.getAllExercisesFromDB();
+  elements.value = await GetRequestFunctions.getAllTrainingSessions();
 }
 
 function exercisesClicked() {
