@@ -2,6 +2,8 @@ package dhbw.on.webdev.controller._training_session;
 
 import dhbw.on.webdev.model.entities.TrainingSession;
 import dhbw.on.webdev.service._training_session.TrainingSessionService;
+import io.quarkus.mailer.Mail;
+import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -18,13 +20,14 @@ import java.util.List;
         type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT"
 )
+@RolesAllowed("user")
 public class TrainingSessionResource {
     @Inject
     TrainingSessionService trainingSessionService;
 
+    /**** GET-REQUEST-HANDLERS ****/
     @GET
     @Path("/get/specific")
-    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
         return trainingSessionService.getAllTrainingSessionsFromCurrentUser();
@@ -36,27 +39,45 @@ public class TrainingSessionResource {
         return trainingSessionService.getTrainingSessionAsPdf(trainingSessionId);
     }
 
+    /**
+     * Request handler for generating a training session as pdf, attach it to mail and send mail to
+     * passed mail.
+     * @param trainingSessionId of training session, which should be attached
+     * @param mail of client
+     * @return Response
+     */
+    @GET
+    @Path ("mail/{id}/{mail}")
+    @Blocking
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sendMailWithAttachedTrainingSession(@PathParam("id") final long trainingSessionId, @PathParam("mail") final String mail) {
+        if(trainingSessionId > 0 && mail.contains("@")) {
+            return trainingSessionService.sendMailWithAttachedTrainingSession(trainingSessionId, mail);
+        }
+        return Response.status(400).build();
+    }
+
+    /**** POST-REQUEST-HANDLERS ****/
     @POST
     @Path("/create")
-    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createNewTrainingSession(TrainingSession trainingSession) {
         return trainingSessionService.createNewTrainingSession(trainingSession);
     }
 
+    /**** PUT-REQUEST-HANDLERS ****/
     @PUT
     @Path("/update")
-
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
         return trainingSessionService.updateExistingTrainingSession(updatedTrainingSession);
     }
 
+    /**** DELETE-REQUEST-HANDLERS ****/
     @DELETE
     @Path("/delete/{id}")
-    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteTrainingSession(@PathParam("id") long trainingSessionId) {

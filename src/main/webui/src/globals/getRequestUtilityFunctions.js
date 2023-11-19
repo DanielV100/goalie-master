@@ -53,3 +53,35 @@ export async function getAllTrainingSessions() {
         return [];
     }
 }
+
+export async function getTrainingSessionAsPdf(id) {
+    try {
+        const response = await axios.get('training_session/download/'+id, {
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+            },
+            responseType: 'blob'
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function getTrainingSessionAsMail(id, mail) {
+    try {
+        const response = await axios.get('training_session/mail/'+id+'/'+mail, {
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+

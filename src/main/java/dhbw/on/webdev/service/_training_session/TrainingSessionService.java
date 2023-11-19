@@ -3,6 +3,7 @@ package dhbw.on.webdev.service._training_session;
 import dhbw.on.webdev.model.entities.Exercise;
 import dhbw.on.webdev.model.entities.Goalkeeper;
 import dhbw.on.webdev.model.entities.TrainingSession;
+import dhbw.on.webdev.service.helper.MailService;
 import dhbw.on.webdev.service.helper.PdfService;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
@@ -48,6 +49,9 @@ public class TrainingSessionService {
     @Inject
     ExerciseService exerciseService;
 
+    @Inject
+    MailService mailService;
+
     @Transactional
     public Response createNewTrainingSession(TrainingSession trainingSession) {
         trainingSession.setExercises(new ArrayList<>());
@@ -75,15 +79,40 @@ public class TrainingSessionService {
         return clearUnnecessaryDataForResponse(trainingSessionRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
     }
 
+    /**
+     * Method for getting training session as a pdf file.
+     * @param trainingSessionId id for training session
+     * @return Response ok with pdf or serverError()
+     */
     public Response getTrainingSessionAsPdf(final long trainingSessionId) {
+        Log.info("Starting to get training session as pdf");
         TrainingSession trainingSession = trainingSessionRepository.findById(trainingSessionId);
         try {
-            byte[] pdfBytes = pdfService.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
+            byte[] pdfBytes = pdfService.convertTrainingSessionToPdf(trainingSession);
+            Log.info("Got training session as pdf");
             return Response.ok(pdfBytes)
-                    .header("Content-Disposition", "attachment; filename=\"trainingseinheit.pdf\"")
+                    .header("Content-Disposition", "attachment; filename=\"" + pdfService.getFilenameForPdf() + "\"")
                     .build();
+        } catch (final IllegalArgumentException | NullPointerException exception) {
+            return Response.serverError().build();
+        }
+    }
+
+    /**
+     * Method for sending a mail with the training session (as a pdf) from the passed id.
+     * @param trainingSessionId which should be in the pdf
+     * @param mail to send to - mail address
+     * @return Response ok() or serverError()
+     */
+    public Response sendMailWithAttachedTrainingSession(final long trainingSessionId, final String mail) {
+        Log.info("Starting to send training session as mail");
+        TrainingSession trainingSession = trainingSessionRepository.findById(trainingSessionId);
+        try {
+            byte[] pdfBytes = pdfService.convertTrainingSessionToPdf(trainingSession);
+            mailService.sendMail(pdfBytes, mail);
+            Log.info("Finished sending mail");
+            return Response.ok().build();
         } catch (Exception exception) {
-            System.out.println(exception);
             return Response.serverError().build();
         }
     }

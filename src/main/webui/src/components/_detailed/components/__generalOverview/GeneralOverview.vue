@@ -114,11 +114,10 @@ function downloadIconClicked(event) {
 }
 
 async function downloadPdf(id) {
-  const response = await fetch('/training_session/download/' + id);
-  const blob = await response.blob();
+  const blob = await GetRequestFunctions.getTrainingSessionAsPdf(id);
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'trainingsession.pdf';
+  link.download = 'trainingseinheit.pdf';
   link.click();
   URL.revokeObjectURL(link.href);
 }
@@ -127,7 +126,7 @@ function shareIconClicked(event) {
   sendEmail(getIdFromClickedElement(event));
 }
 async function sendEmail(id) {
-  const response = await fetch('/mail/test/' + id);
+  let x = await GetRequestFunctions.getTrainingSessionAsMail(id, 'info@d-vollmer.de');
 }
 
 </script>

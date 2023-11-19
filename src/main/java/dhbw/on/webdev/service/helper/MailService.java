@@ -1,74 +1,68 @@
 package dhbw.on.webdev.service.helper;
 
-import dhbw.on.webdev.model.entities.TrainingSession;
-import dhbw.on.webdev.repository.TrainingSessionRepository;
+import io.quarkus.logging.Log;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
-import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.smallrye.common.annotation.Blocking;
-import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-@Path("/mail")
+/***
+ * Class for doing all mail related stuff.
+ * @see <a href="https://quarkus.io/guides/mailer">Quarkus Mailer</a>
+ * @author daniel
+ */
+@ApplicationScoped
 public class MailService {
 
+    /**** CONFIG PROPERTIES ****/
     @ConfigProperty(name = "mailer.service.subject")
     String mailServiceSubject;
+    @ConfigProperty(name = "mailer.service.text")
+    String mailServiceText;
+    @ConfigProperty(name = "mailer.service.content.type")
+    String mailServiceContentType;
+
+    /**** CDI ****/
     @Inject
     Mailer mailer;
-
-    @Inject
-    TrainingSessionRepository trainingSessionRepository;
-
-    @Inject
-    ServiceHelper serviceHelper;
     @Inject
     PdfService pdfService;
 
-    @GET
-    @Path ("test/{id}")
+    /**
+     * This method send a mail with the training session attached to the passed mail-address.
+     * Therefor a Gmail-account with dedicated access was set up
+     * @see <a href="https://support.google.com/accounts/answer/185833?hl=en">Gmail app passwords</a>
+     * @param pdfBytes, which represent the pdf
+     * @param mail address of the client
+     * @throws Exception if error while sending occurs
+     */
     @Blocking
-    public void sendEmail(@PathParam("id") final long id) {
-        TrainingSession trainingSession = trainingSessionRepository.findById(id);
-        byte[] pdfBytes = new byte[0];
+    public void sendMail(final byte[] pdfBytes, final String mail) throws Exception {
         try {
-            pdfBytes = pdfService.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        mailer.send(
-                Mail.withText("info@d-vollmer.de",
-                        mailServiceSubject,
-                        "A simple email sent from a Quarkus application.")
-                        .addAttachment("trainingseinheit", pdfBytes, "application/pdf")
-        );
-    }
-    @Inject
-    ReactiveMailer reactiveMailer;
-
-    @GET
-    @Path("/reactive/{id}")
-    public Uni<Void> sendEmailUsingReactiveMailer(@PathParam("id") final long id) {
-        TrainingSession trainingSession = trainingSessionRepository.findById(id);
-        try {
-            byte[] pdfBytes = pdfService.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
-            return reactiveMailer.send(
-                    Mail.withText("info@d-vollmer.de",
-                            mailServiceSubject,
-                            "A simple email sent from a Quarkus application using the reactive API.")
-                            .addAttachment("trainingseinheit", pdfBytes, "application/pdf")
-                            );
+            Log.info("Trying to send mail");
+            mailer.send(generateMailToSend(pdfBytes, mail));
         } catch (Exception exception) {
-            System.out.println(exception);
-            return null;
+            Log.error("Couldn't send mail " + exception);
+            throw new Exception(exception);
         }
-
-
     }
 
-
+    /**
+     * Method for generating a mail with attached pdf.
+     * @param pdfBytes pdf to attach
+     * @param mail to send to
+     * @return Mail t send
+     */
+    private Mail generateMailToSend(final byte[] pdfBytes, final String mail) {
+        Log.info("Start to generate mail...");
+        Mail mailToSend = new Mail();
+        mailToSend.addTo(mail);
+        mailToSend.setSubject(mailServiceSubject);
+        mailToSend.setText(mailServiceText);
+        mailToSend.addAttachment(pdfService.getFilenameForPdf(),pdfBytes, mailServiceContentType);
+        Log.info("Generated mail");
+        return mailToSend;
+    }
 }
