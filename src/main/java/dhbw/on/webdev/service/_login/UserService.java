@@ -3,6 +3,7 @@ package dhbw.on.webdev.service._login;
 import dhbw.on.webdev.model.entities.User;
 import dhbw.on.webdev.model.entities.UserCredentials;
 import dhbw.on.webdev.repository.UserRepository;
+import dhbw.on.webdev.service.helper.JwtTokenService;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

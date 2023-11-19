@@ -1,5 +1,6 @@
 package dhbw.on.webdev.controller._goalkeeper;
 
+import dhbw.on.webdev.model.dto.GoalkeeperDTO;
 import dhbw.on.webdev.model.entities.Goalkeeper;
 import dhbw.on.webdev.service._goalkeeper.GoalkeeperService;
 import jakarta.annotation.security.RolesAllowed;
@@ -18,41 +19,43 @@ import java.util.List;
         type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT"
 )
+@RolesAllowed("user")
 public class GoalkeeperResource {
+    /**** CDI ****/
     @Inject
     GoalkeeperService goalkeeperService;
 
+    /**** GET-REQUEST-HANDLERS ****/
+    @GET
+    @Path("/get/specific")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<GoalkeeperDTO> getAllGoalkeepersFromCurrentUser() {
+        return goalkeeperService.getAllGoalkeepersFromCurrentUser();
+    }
+
+    /**** POST-REQUEST-HANDLERS ****/
     @POST
     @Path("/add")
-    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
         return goalkeeperService.addNewGoalkeeper(goalkeeper);
     }
 
-    @GET
-    @Path("/get/specific")
-    @RolesAllowed("user")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Goalkeeper> getAllGoalkeepersFromCurrentUser() {
-        return goalkeeperService.getAllGoalkeepersFromCurrentUser();
-    }
-
+    /**** PUT-REQUEST-HANDLERS ****/
     @PUT
     @Path("/update")
-    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
         return goalkeeperService.updateExistingGoalkeeper(goalkeeper);
     }
 
+
+    /**** DELETE-REQUEST-HANDLERS ****/
     @DELETE
     @Path("/delete/{id}")
-    @RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteGoalkeeper(@PathParam("id") long goalkeeperId) {
         return goalkeeperService.deleteGoalkeeper(goalkeeperId);
     }

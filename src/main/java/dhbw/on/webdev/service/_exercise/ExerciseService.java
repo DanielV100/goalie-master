@@ -3,7 +3,7 @@ package dhbw.on.webdev.service._exercise;
 import dhbw.on.webdev.model.entities.Exercise;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.UserRepository;
-import dhbw.on.webdev.service._login.JwtTokenService;
+import dhbw.on.webdev.service.helper.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;

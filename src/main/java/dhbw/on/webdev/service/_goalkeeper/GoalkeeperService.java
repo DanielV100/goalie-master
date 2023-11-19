@@ -1,15 +1,17 @@
 package dhbw.on.webdev.service._goalkeeper;
 
+import dhbw.on.webdev.model.dto.GoalkeeperDTO;
 import dhbw.on.webdev.model.entities.Goalkeeper;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.UserRepository;
-import dhbw.on.webdev.service._login.JwtTokenService;
+import dhbw.on.webdev.service.helper.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ public class GoalkeeperService {
     ServiceHelper serviceHelper;
 
 
+
     @Transactional
     /**
      * Method for adding new goalkeeper to db.
@@ -45,8 +48,17 @@ public class GoalkeeperService {
         }
     }
 
-    public List<Goalkeeper> getAllGoalkeepersFromCurrentUser() {
-        return hideUserInformationInResponse(goalkeeperRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+    /**
+     * Method for getting all goalkeepers from/saved by current user.
+     * @return GoalkeeperDTO-List with goalkeepers in it
+     */
+    public List<GoalkeeperDTO> getAllGoalkeepersFromCurrentUser() {
+        final long userId = jwtTokenService.getUserIdFromJwtToken();
+        if(userId > 0) {
+            return goalkeeperRepository.getGoalkeepersByField("user", userRepository.findById(userId));
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     private List<Goalkeeper> hideUserInformationInResponse(List<Goalkeeper> goalkeepers) {

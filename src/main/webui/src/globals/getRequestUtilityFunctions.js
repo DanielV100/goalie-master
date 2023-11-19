@@ -31,6 +31,7 @@ export async function getGoalkeepersFromDB() {
             }
         });
         SessionStorageFunctions.saveAllGoalkeepersInSessionStorage(response.data);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(error);

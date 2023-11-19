@@ -10,7 +10,7 @@ import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.TrainingSessionRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service._exercise.ExerciseService;
-import dhbw.on.webdev.service._login.JwtTokenService;
+import dhbw.on.webdev.service.helper.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -120,13 +120,13 @@ public class TrainingSessionService {
     //Wieso User von Goalkeeper und Exercises nicht gleich bei der Abfrage bereinigen?
     private List<TrainingSession> clearUnnecessaryDataForResponse(List<TrainingSession> trainingSessions) {
         for(TrainingSession trainingSession : trainingSessions) {
-            List<Goalkeeper> goalkeepers = trainingSession.getGoalkeepers();
+            /*List<Goalkeeper> goalkeepers = trainingSession.getGoalkeepers();
             for(Goalkeeper goalkeeper : goalkeepers) {
                 goalkeeper.setUser(null);
                 goalkeeper.setBirthday(null);
                 goalkeeper.setClub(null);
                 goalkeeper.setNotes(null);
-            }
+            }*/
             List<Exercise> exercises = trainingSession.getExercises();
             for(Exercise exercise : exercises) {
                 exercise.setUser(null);

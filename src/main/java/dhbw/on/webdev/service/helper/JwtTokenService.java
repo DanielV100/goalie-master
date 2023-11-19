@@ -1,5 +1,6 @@
-package dhbw.on.webdev.service._login;
+package dhbw.on.webdev.service.helper;
 
+import io.quarkus.logging.Log;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -32,8 +33,12 @@ public class JwtTokenService {
      */
     public long getUserIdFromJwtToken() {
         if (jsonWebToken != null) {
-            JsonNumber userID = jsonWebToken.getClaim("userID");
-            return userID.longValueExact();
+            try {
+                JsonNumber userID = jsonWebToken.getClaim("userID");
+                return userID.longValueExact();
+            } catch (Exception exception) {
+                Log.error("Couldn't get userID from JwtToken: ", exception);
+            }
         }
         return -1;
     }
