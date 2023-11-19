@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dhbw.on.webdev.model.entities.User;
-import dhbw.on.webdev.pdf.PDFHelper;
 import dhbw.on.webdev.repository.UserRepository;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,7 +26,7 @@ public class ServiceHelper {
     UserRepository userRepository;
 
     @Inject
-    PDFHelper pdfHelper;
+    PdfService pdfService;
 
     /**
      * This is a generic method for updating every fields from existing entities.

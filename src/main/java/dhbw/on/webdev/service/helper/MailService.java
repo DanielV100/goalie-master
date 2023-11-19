@@ -1,7 +1,6 @@
 package dhbw.on.webdev.service.helper;
 
 import dhbw.on.webdev.model.entities.TrainingSession;
-import dhbw.on.webdev.pdf.PDFHelper;
 import dhbw.on.webdev.repository.TrainingSessionRepository;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
@@ -12,7 +11,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Path("/mail")
@@ -29,7 +27,7 @@ public class MailService {
     @Inject
     ServiceHelper serviceHelper;
     @Inject
-    PDFHelper pdfHelper;
+    PdfService pdfService;
 
     @GET
     @Path ("test/{id}")
@@ -38,7 +36,7 @@ public class MailService {
         TrainingSession trainingSession = trainingSessionRepository.findById(id);
         byte[] pdfBytes = new byte[0];
         try {
-            pdfBytes = pdfHelper.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
+            pdfBytes = pdfService.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +55,7 @@ public class MailService {
     public Uni<Void> sendEmailUsingReactiveMailer(@PathParam("id") final long id) {
         TrainingSession trainingSession = trainingSessionRepository.findById(id);
         try {
-            byte[] pdfBytes = pdfHelper.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
+            byte[] pdfBytes = pdfService.convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
             return reactiveMailer.send(
                     Mail.withText("info@d-vollmer.de",
                             mailServiceSubject,
