@@ -93,7 +93,7 @@ public class TrainingSessionService {
             return Response.ok(pdfBytes)
                     .header("Content-Disposition", "attachment; filename=\"" + pdfService.getFilenameForPdf() + "\"")
                     .build();
-        } catch (final IllegalArgumentException | NullPointerException exception) {
+        } catch (final Exception exception) {
             return Response.serverError().build();
         }
     }

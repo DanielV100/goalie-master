@@ -4,19 +4,18 @@ import dhbw.on.webdev.model.entities.TrainingSession;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.apps.Fop;
-import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
+import org.apache.fop.apps.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 
 /**
@@ -27,9 +26,11 @@ import java.sql.Timestamp;
 @ApplicationScoped
 public class PdfService {
 
+    /**** CONFIG PROPERTIES ****/
     @ConfigProperty(name = "pdf.service.name")
     String pdfName;
 
+    /**** CDI ****/
     @Inject
     ServiceHelper serviceHelper;
 
@@ -37,12 +38,13 @@ public class PdfService {
      * Method takes the xml and transforms it with the stylesheet.xsl to a pdf.
      * @param xmlData, which is wel-formed and the entity as xml
      * @return byte[] of the pdf
-     * @throws Exception
+     * @throws Exception could be io, fop, transformer or illegal argument
      */
     public byte[] convertXmlToPdf(String xmlData) throws Exception {
         Log.info("Starting XML to PDF conversion");
         if (xmlData == null || xmlData.isEmpty()) {
-            throw new IllegalArgumentException("XML data cannot be null or empty.");
+            Log.error("XML data cannot be null or empty");
+            throw new IllegalArgumentException("XML data cannot be null or empty");
         }
         FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
         FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
@@ -52,9 +54,11 @@ public class PdfService {
             Transformer transformer = factory.newTransformer(new StreamSource(getClass().getClassLoader().getResourceAsStream("stylesheet.xsl")));
             StreamSource src = new StreamSource(new ByteArrayInputStream(xmlData.getBytes()));
             transformer.transform(src, new SAXResult(fop.getDefaultHandler()));
+            Log.info("Converted xml to pdf");
             return out.toByteArray();
-        } catch (Exception e) {
-            throw new Exception("Error converting XML to PDF", e);
+        } catch (final IOException | FOPException | TransformerException exception) {
+            Log.error("Error converting xml to pdf", exception);
+            throw new Exception("Error converting xml to pdf", exception);
         }
     }
 
@@ -63,7 +67,7 @@ public class PdfService {
      * @param trainingSession from db
      * @return byte[], which represents the pdf
      */
-    public final byte[] convertTrainingSessionToPdf(final TrainingSession trainingSession) {
+    public final byte[] convertTrainingSessionToPdf(final TrainingSession trainingSession) throws Exception {
         if(trainingSession == null) {
             Log.error("Training session not found");
             throw new IllegalArgumentException();
@@ -72,7 +76,7 @@ public class PdfService {
             return convertXmlToPdf(serviceHelper.convertJsonToXML(serviceHelper.convertEntityToJson(trainingSession)));
         } catch (Exception exception) {
             Log.error("Couldn't covert training session to pdf", exception);
-            throw new NullPointerException();
+            throw new Exception(exception);
         }
     }
 
