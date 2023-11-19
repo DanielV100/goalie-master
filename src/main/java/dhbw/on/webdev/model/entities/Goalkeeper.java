@@ -9,9 +9,13 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Goalkeeper entity saved in db.
+ */
 @Entity
 @Table(name = "goalkeepers")
 public class Goalkeeper extends BaseClass {
+    /**** FIELDS ****/
     private String firstname;
     private String lastname;
     private String club;
@@ -20,6 +24,7 @@ public class Goalkeeper extends BaseClass {
     @Nullable
     private String notes;
 
+    /**** FOREIGN_KEYS ****/
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -29,8 +34,7 @@ public class Goalkeeper extends BaseClass {
     @Transient
     private List<TrainingSession> trainingSessions;
 
-
-
+    /**** GETTERS AND SETTERS ****/
     public String getFirstname() {
         return firstname;
     }

@@ -22,11 +22,11 @@ import java.util.Base64;
  */
 @ApplicationScoped
 public class ServiceHelper {
+
+    /**** CDI ****/
     @Inject
     UserRepository userRepository;
 
-    @Inject
-    PdfService pdfService;
 
     /**
      * This is a generic method for updating every fields from existing entities.

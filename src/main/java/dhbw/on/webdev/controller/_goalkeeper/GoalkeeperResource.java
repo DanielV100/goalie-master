@@ -13,6 +13,10 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
 import java.util.List;
 
+/**
+ * REST-Endpoint-Handlers for goalkeeper entity.
+ * @author daniel
+ */
 @Path("/goalkeeper")
 @SecurityScheme(
         scheme = "bearer",
@@ -51,15 +55,23 @@ public class GoalkeeperResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
-        return goalkeeperService.updateExistingGoalkeeper(goalkeeper);
-    }
+        if(goalkeeper != null) {
+            return goalkeeperService.updateExistingGoalkeeper(goalkeeper);
+        } else {
+            return Response.status(400).build();
+        }
 
+    }
 
     /**** DELETE-REQUEST-HANDLERS ****/
     @DELETE
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteGoalkeeper(@PathParam("id") long goalkeeperId) {
-        return goalkeeperService.deleteGoalkeeper(goalkeeperId);
+    public Response deleteGoalkeeper(@PathParam("id") final long goalkeeperId) {
+        if(goalkeeperId > 0) {
+            return goalkeeperService.deleteGoalkeeper(goalkeeperId);
+        } else {
+            return Response.status(400).build();
+        }
     }
 }

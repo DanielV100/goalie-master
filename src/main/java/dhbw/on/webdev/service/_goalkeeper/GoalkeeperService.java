@@ -11,11 +11,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * REST-Endpoint service workers for goalkeeper entities.
+ * @author daniel
+ */
 @ApplicationScoped
 public class GoalkeeperService {
     /**** CDI ****/
@@ -72,13 +74,21 @@ public class GoalkeeperService {
     }
 
     /**** PUT-REQUEST-SERVICES ****/
+
+    /**
+     * Method for updating an existing goalkeeper.
+     * Put passed goalkeeper and copy updated fields to goalkeeper in database.
+     * @param updatedGoalkeeper comes from the client
+     * @return Response ok(), serverError or Status 404
+     */
     @Transactional
     public Response updateExistingGoalkeeper(Goalkeeper updatedGoalkeeper) {
+        Log.info("Trying to update goalkeeper");
         Goalkeeper goalkeeper = goalkeeperRepository.findById(updatedGoalkeeper.getId());
         if(goalkeeper != null) {
             if(serviceHelper.updateEntity(updatedGoalkeeper, goalkeeper)) {
                 goalkeeperRepository.flush();
-                return Response.accepted().build();
+                return Response.ok().build();
             } else  {
                 Log.error("Updating entity failed");
                 return Response.serverError().build();
@@ -87,17 +97,24 @@ public class GoalkeeperService {
             Log.error("Goalkeeper not found for Id" + updatedGoalkeeper.getId());
             return Response.status(404).build();
         }
-
     }
 
     /**** DELETE-REQUEST-SERVICES ****/
+
+    /**
+     * Method for deleting a goalkeeper by its id.
+     * @param goalkeeperId passed by client via path param
+     * @return Response ok() or serverError
+     */
     @Transactional
-    public Response deleteGoalkeeper(long goalkeeperId) {
-        goalkeeperRepository.deleteById(goalkeeperId);
-        return Response.accepted().build();
+    public Response deleteGoalkeeper(final long goalkeeperId) {
+        try {
+            Log.info("Trying to delete goalkeeper");
+            goalkeeperRepository.deleteById(goalkeeperId);
+            return Response.ok().build();
+        } catch (Exception exception) {
+            Log.error("Deletion of goalkeeper failed ", exception);
+            return Response.serverError().build();
+        }
     }
-
-
-
-
 }
