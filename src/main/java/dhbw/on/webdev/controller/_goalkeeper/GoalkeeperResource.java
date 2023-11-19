@@ -39,7 +39,10 @@ public class GoalkeeperResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
-        return goalkeeperService.addNewGoalkeeper(goalkeeper);
+        if(goalkeeper != null) {
+            return goalkeeperService.addNewGoalkeeper(goalkeeper);
+        }
+        return Response.status(400).build();
     }
 
     /**** PUT-REQUEST-HANDLERS ****/

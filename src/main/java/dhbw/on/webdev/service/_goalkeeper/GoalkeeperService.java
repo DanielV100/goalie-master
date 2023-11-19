@@ -18,6 +18,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class GoalkeeperService {
+    /**** CDI ****/
     @Inject
     GoalkeeperRepository goalkeeperRepository;
 
@@ -31,22 +32,7 @@ public class GoalkeeperService {
     ServiceHelper serviceHelper;
 
 
-
-    @Transactional
-    /**
-     * Method for adding new goalkeeper to db.
-     */
-    public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
-        try {
-            //setting primary key to user id from JWT-token
-            goalkeeper.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
-            goalkeeperRepository.persist(goalkeeper);
-            return Response.ok().build();
-        } catch (Exception exception) {
-            System.out.println(exception);
-            return Response.serverError().build();
-        }
-    }
+    /**** GET-REQUEST-SERVICES ****/
 
     /**
      * Method for getting all goalkeepers from/saved by current user.
@@ -61,15 +47,31 @@ public class GoalkeeperService {
         }
     }
 
-    private List<Goalkeeper> hideUserInformationInResponse(List<Goalkeeper> goalkeepers) {
-        List<Goalkeeper> goalkeepersWithNoUserData = new ArrayList<>();
-        for (Goalkeeper goalkeeper : goalkeepers) {
-            goalkeeper.setUser(null);
-            goalkeepersWithNoUserData.add(goalkeeper);
+    /**** POST-REQUEST-SERVICES ****/
+
+    /****
+     * Method for adding a new goalkeeper to the database.
+     * @param goalkeeper to add
+     * @return Response ok() or serverError();
+     */
+    @Transactional
+    public Response addNewGoalkeeper(Goalkeeper goalkeeper) {
+        Log.info("Trying to add new goalkeeper: " + goalkeeper.getFirstname() + goalkeeper.getLastname());
+        final long userId = jwtTokenService.getUserIdFromJwtToken();
+        if(userId > 0) {
+            try {
+                goalkeeper.setUser(userRepository.findById(userId));
+                goalkeeperRepository.persist(goalkeeper);
+                Log.info("Adding goalkeeper successful");
+                return Response.ok().build();
+            } catch (Exception exception) {
+                Log.error("Adding goalkeeper didn't work", exception);
+            }
         }
-        return goalkeepersWithNoUserData;
+        return Response.serverError().build();
     }
 
+    /**** PUT-REQUEST-SERVICES ****/
     @Transactional
     public Response updateExistingGoalkeeper(Goalkeeper updatedGoalkeeper) {
         Goalkeeper goalkeeper = goalkeeperRepository.findById(updatedGoalkeeper.getId());
@@ -88,6 +90,7 @@ public class GoalkeeperService {
 
     }
 
+    /**** DELETE-REQUEST-SERVICES ****/
     @Transactional
     public Response deleteGoalkeeper(long goalkeeperId) {
         goalkeeperRepository.deleteById(goalkeeperId);
