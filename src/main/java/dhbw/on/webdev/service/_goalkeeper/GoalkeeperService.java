@@ -42,6 +42,7 @@ public class GoalkeeperService {
      */
     public List<GoalkeeperDTO> getAllGoalkeepersFromCurrentUser() {
         final long userId = jwtTokenService.getUserIdFromJwtToken();
+        System.out.println(userId);
         if(userId > 0) {
             return goalkeeperRepository.getGoalkeepersByField("user", userRepository.findById(userId));
         } else {

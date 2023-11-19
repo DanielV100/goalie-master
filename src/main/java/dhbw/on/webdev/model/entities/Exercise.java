@@ -1,5 +1,8 @@
 package dhbw.on.webdev.model.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dhbw.on.webdev.model.baseClass.BaseClass;
 import jakarta.persistence.*;
 import java.util.List;
@@ -21,20 +24,10 @@ public class Exercise extends BaseClass {
 
     private int intensity;
 
-    @ElementCollection
-    @CollectionTable(name = "materials", joinColumns = @JoinColumn(name = "exercises_id"))
-    @Column(name = "material")
-    private List<String> materials;
+    private String materials;
 
-    @ElementCollection
-    @CollectionTable(name = "numbers_of_material", joinColumns = @JoinColumn(name = "exercises_id"))
-    @Column(name = "number_of_material")
-    private List<Integer> numbersOfMaterial;
-
-    @ElementCollection
-    @CollectionTable(name = "description_steps", joinColumns = @JoinColumn(name = "exercises_id"))
-    @Column(name = "description_step")
-    private List<String> descriptionSteps;
+    private String numbersOfMaterial;
+    private String descriptionSteps;
 
     @Column(columnDefinition = "bytea")
     private byte[] sketch;
@@ -107,27 +100,51 @@ public class Exercise extends BaseClass {
     }
 
     public List<String> getMaterials() {
-        return materials;
+        try {
+            return new ObjectMapper().readValue(materials, new TypeReference<List<String>>(){});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setMaterials(List<String> materials) {
-        this.materials = materials;
+        try {
+            this.materials = new ObjectMapper().writeValueAsString(materials);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Integer> getNumbersOfMaterial() {
-        return numbersOfMaterial;
+        try {
+            return new ObjectMapper().readValue(numbersOfMaterial, new TypeReference<List<Integer>>(){});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setNumbersOfMaterial(List<Integer> numbersOfMaterial) {
-        this.numbersOfMaterial = numbersOfMaterial;
+        try {
+            this.numbersOfMaterial = new ObjectMapper().writeValueAsString(numbersOfMaterial);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<String> getDescriptionSteps() {
-        return descriptionSteps;
+        try {
+            return new ObjectMapper().readValue(descriptionSteps, new TypeReference<List<String>>(){});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setDescriptionSteps(List<String> descriptionSteps) {
-        this.descriptionSteps = descriptionSteps;
+        try {
+            this.descriptionSteps = new ObjectMapper().writeValueAsString(descriptionSteps);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public byte[] getSketch() {

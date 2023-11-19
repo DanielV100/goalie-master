@@ -1,5 +1,6 @@
 package dhbw.on.webdev.service._exercise;
 
+import dhbw.on.webdev.model.dto.ExerciseDTO;
 import dhbw.on.webdev.model.entities.Exercise;
 import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.UserRepository;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @ApplicationScoped
 public class ExerciseService {
+    /**** CDI ****/
     @Inject
     ExerciseRepository exerciseRepository;
 
@@ -45,8 +47,13 @@ public class ExerciseService {
      * Method for getting all exercises of current user.
      * @return list of exercises of current user.
      */
-    public List<Exercise> getAllExercisesFromCurrentUser() {
-        return hideUserInformationInResponse(exerciseRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+    public List<ExerciseDTO> getAllExercisesFromCurrentUser() {
+        final long userId = jwtTokenService.getUserIdFromJwtToken();
+        if(userId > 0) {
+            return exerciseRepository.getExercisesByField("user", userRepository.findById(userId));
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**** POST-REQUEST-SERVICES ****/
