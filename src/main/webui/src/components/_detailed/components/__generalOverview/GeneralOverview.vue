@@ -123,6 +123,13 @@ async function downloadPdf(id) {
   URL.revokeObjectURL(link.href);
 }
 
+function shareIconClicked(event) {
+  sendEmail(getIdFromClickedElement(event));
+}
+async function sendEmail(id) {
+  const response = await fetch('/mail/test/' + id);
+}
+
 </script>
 
 <template>
@@ -142,6 +149,7 @@ async function downloadPdf(id) {
           <th v-if="isGoalkeeper">Vorname</th>
           <th v-if="isGoalkeeper">Nachname</th>
           <th v-if="isTrainingSession"></th>
+          <th v-if="isTrainingSession"></th>
           <th></th>
           <th></th>
         </tr>
@@ -155,6 +163,7 @@ async function downloadPdf(id) {
           <td v-if="isGoalkeeper">{{ element.firstname }}</td>
           <td v-if="isGoalkeeper">{{ element.lastname }}</td>
           <td class="edit" v-if="isTrainingSession"><i @click="downloadIconClicked" class='bx bxs-download'></i></td>
+          <td class="edit" v-if="isTrainingSession"><i @click="shareIconClicked" class='bx bxs-share-alt'></i></td>
           <td class="edit"><i @click="updateItemClicked" class='bx bxs-edit-alt'></i></td>
           <td class="edit delete"><i @click="deleteItemClicked" class='bx bxs-trash-alt' ></i></td>
         </tr>
