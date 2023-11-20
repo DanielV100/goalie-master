@@ -3,10 +3,13 @@ package dhbw.on.webdev.model.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.hibernate.orm.panache.common.ProjectedFieldName;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.inject.Inject;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,10 @@ import java.util.stream.Collectors;
  */
 @RegisterForReflection
 public class ExerciseDTO {
+
+    @Inject
+    ServiceHelper serviceHelper;
+
     /**** DTO-FIELDS-FOR-REFLECTION ****/
     final private long id;
     final private String title;
@@ -114,8 +121,12 @@ public class ExerciseDTO {
         return numbersOfMaterialAsString;
     }
 
-    public byte[] getSketch() {
-        return sketch;
+    public String getSketch() {
+        if(sketch != null) {
+            final String base64String = Base64.getEncoder().encodeToString(sketch);
+            return "data:image/png;base64," + base64String;
+        }
+        return "";
     }
 
     public String getNote() {

@@ -88,7 +88,7 @@ public class ExerciseService {
             if(updatedExercise.getSketchDataURL() != null) {
                 exercise.setSketch(serviceHelper.convertDataUrlToByteArray(exercise.getSketchDataURL()));
             } else {
-                Log.warn("No data url found");
+                Log.warn("No data url found for exercise: " + updatedExercise.getTitle());
             }
             if(serviceHelper.updateEntity(updatedExercise, exercise)) {
                 exerciseRepository.flush();

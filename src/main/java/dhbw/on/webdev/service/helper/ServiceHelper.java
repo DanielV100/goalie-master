@@ -129,6 +129,12 @@ public class ServiceHelper {
         }
     }
 
+    public String convertByteArrayToDataUrl(final byte[] sketchBinaryData) {
+        System.out.println("Hello!");
+        final String base64String = Base64.getEncoder().encodeToString(sketchBinaryData);
+        return "data:image/png;base64," + base64String;
+    }
+
     public <T> String convertEntityToJson(T entity) {
         if(entity != null) {
             try {

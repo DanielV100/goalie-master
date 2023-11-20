@@ -56,7 +56,7 @@ function fillFormFields() {
         isNoteNotEmpty.value = true;
         note.value = exercise.note;
       }
-      byteArrayToDataURL(exercise.sketch)
+      sketchDataUrl.value = exercise.sketch;
     }
   });
 }

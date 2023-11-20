@@ -34,7 +34,7 @@ const props = defineProps({
   materials: Object,
   numbersOfMaterial: Object,
   descriptionSteps: Object,
-  sketch: Object
+  sketch: String
 });
 
 onBeforeMount(() => {
@@ -54,7 +54,7 @@ function init() {
     }
     materialList.value = test;
     descriptionList.value = props.descriptionSteps;
-    byteArrayToDataURL(props.sketch)
+    sketchDataUrl.value = props.sketch;
   }
 }
 function byteArrayToDataURL(byteArray) {
