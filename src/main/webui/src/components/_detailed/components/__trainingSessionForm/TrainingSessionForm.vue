@@ -1,25 +1,46 @@
 
 <script setup>
 /**
+ * SFC for creating and editing training session
+ * @author daniel
  * @Important: Calling the accordions is only working correctly with passing a modalID.
  * Otherwise, the states of the three accordions appear interfering and some stupid things happen.
  * @TimeToFindOut: 120min.
  */
-import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
-import * as LocalConfig from './resources/createTrainingSessionForm.js';
-import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
-import Accordion from "@/components/_globals/components/__accordion/Accordion.vue";
+
+/**** IMPORTS ****/
 import {computed, onBeforeMount, onMounted, ref} from "vue";
 import axios from "axios";
+/**** CONFIGS ****/
+import * as LocalConfig from './resources/createTrainingSessionForm.js';
+/**** UTILITY FUNCTIONS ****/
 import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 import * as GetRequestFunctions from "@/globals/getRequestUtilityFunctions.js";
+/**** COMPONENTS ****/
+import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
+import Multiselect from "@/components/_globals/components/__multiselect/Multiselect.vue";
+import Accordion from "@/components/_globals/components/__accordion/Accordion.vue";
+import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
+import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
+/**** VARIABLES ****/
 const title = ref('');
 const date = ref('');
 const note = ref('');
 const goalkeepersNameAndId = ref([]);
 const selectedGoalkeepers = ref([]);
+const isNotSubmitted = ref(true);
+const errorMessage = ref('');
+const submitButtonText = ref(LocalConfig.BUTTON_CREATE_TRAINING_SESSION);
+const successMessageText = ref(LocalConfig.SUCCESS_MESSAGE);
 
+/**** COMPUTED PROPERTIES ****/
+const isSubmitDisabled = computed(() => {
+  console.log(date.value);
+  return !(title.value !== '' && date.value !== '');
+});
+
+/**** PROPS ****/
 const props = defineProps({
   isEditView: Boolean,
   id: Number,
@@ -32,29 +53,23 @@ const props = defineProps({
   goalkeepersIds: Object
 });
 
+/**** HOOKS ****/
 onBeforeMount(() => {
   init();
-})
-function init() {
-  if(props.isEditView) {
-    title.value = props.title;
-    date.value = props.date;
-    note.value = props.note;
-  }
-}
+});
 
 onMounted(async () => {
+  if(props.isEditView) {
+    submitButtonText.value = LocalConfig.BUTTON_CREATE_TRAINING_SESSION_EDIT;
+    successMessageText.value = LocalConfig.SUCCESS_MESSAGE_EDIT;
+  }
+
   let goalkeepersFromDB = await GetRequestFunctions.getGoalkeepersFromDB();
   createGoalkeepersSelectable(goalkeepersFromDB);
-
   let exercises = await GetRequestFunctions.getAllExercisesFromDB();
 });
 
-const isSubmitDisabled = computed(() => {
-  console.log(date.value);
-  return !(title.value !== '' && date.value !== '');
-});
-
+/**** HTTP-REQUESTS ****/
 const isCreatingTrainingSessionSuccessful = async () => {
   try {
     await axios.post('/training_session/create', createTrainingSessionObjectForResponse(), {
@@ -64,8 +79,7 @@ const isCreatingTrainingSessionSuccessful = async () => {
     });
     return true;
   } catch (error) {
-   //errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
-    //resetForm();
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
     return false;
   }
 }
@@ -79,12 +93,42 @@ const isUpdatingExistingTrainingSessionSuccessful = async () => {
     });
     return true;
   } catch (error) {
-    //errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
-    //resetForm();
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
     return false;
   }
 }
 
+/**** CLICK-HANDLERS ****/
+/**
+ * Triggered when submit button clicked
+ * @returns {Promise<void>}
+ */
+async function onSubmitClick() {
+  UtilityFunctions.setLoadingCircleInSubmitButton();
+  let isSuccessful;
+  if(props.isEditView) {
+    isSuccessful = await isUpdatingExistingTrainingSessionSuccessful();
+  } else {
+    isSuccessful = await isCreatingTrainingSessionSuccessful();
+  }
+  if(isSuccessful) {
+    isNotSubmitted.value = false;
+  }
+}
+
+/**** FUNCTIONS ****/
+function init() {
+  if(props.isEditView) {
+    title.value = props.title;
+    date.value = props.date;
+    note.value = props.note;
+  }
+}
+
+/**
+ * Create training session as object for http-response
+ * @returns object
+ */
 function createTrainingSessionObjectForResponse() {
   const trainingSession = {
     title: title.value,
@@ -98,19 +142,7 @@ function createTrainingSessionObjectForResponse() {
   }
   return trainingSession;
 }
-async function onSubmitClick() {
-  UtilityFunctions.setLoadingCircleInSubmitButton();
-  let isSuccessful;
-  if(props.isEditView) {
-    isSuccessful = await isUpdatingExistingTrainingSessionSuccessful();
-  } else {
-    isSuccessful = await isCreatingTrainingSessionSuccessful();
-  }
-  if(isSuccessful) {
-    console.log(isSuccessful);
-    //isNotSubmitted.value = false;
-  }
-}
+
 
 /**
  * The multiselect component needs an object of arrays as prop, which gets build in this method.
@@ -169,6 +201,10 @@ function getSelectedGoalkeepers() {
 }
 
 
+/**
+ * Getting ids from checked exercises
+ * @returns list of ids
+ */
 function getIdsFromCheckedExercises() {
   let exercisesIds = [];
   const checkedCheckboxes = document.querySelectorAll('input:checked');
@@ -186,7 +222,7 @@ function getIdsFromCheckedExercises() {
 <template>
   <div class="__create_training_session_form">
     <CurrentPageIndicator>{{ LocalConfig.CURRENT_PAGE }}</CurrentPageIndicator>
-    <div class="wrapper">
+    <div v-if="isNotSubmitted" class="wrapper">
       <form @submit="onSubmitClick" class="form">
         <div class="column">
           <div class="input-box">
@@ -223,9 +259,11 @@ function getIdsFromCheckedExercises() {
         <label>Notizen</label>
         <textarea class="input" v-model="note" id="textTest" rows="3"></textarea>
       </div>
-      <button class="submit" @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ LocalConfig.BUTTON_CREATE_TRAINING_SESSION }}</button>
+      <button class="submit" @click.prevent="onSubmitClick" :disabled="isSubmitDisabled">{{ submitButtonText }}</button>
+      </div>
+      <SuccessAnimation v-else>{{ successMessageText }}</SuccessAnimation>
     </div>
-  </div>
+  <ErrorDialog>{{ errorMessage }}</ErrorDialog>
 </template>
 
 <style scoped>
@@ -243,12 +281,6 @@ function getIdsFromCheckedExercises() {
   height: 50px;
   width: 100%;
   margin-top: 8px;
-}
-
-#soccerFieldContainer {
-  display: grid;
-  cursor: crosshair;
-  padding: 0;
 }
 
 #multi button {

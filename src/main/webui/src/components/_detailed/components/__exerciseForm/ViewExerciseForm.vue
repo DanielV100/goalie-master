@@ -1,11 +1,15 @@
 <script setup>
-import * as LocalConfig from './resources/addExerciseFormConfig.js';
-import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
-import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
-import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
-import {computed, onBeforeMount, onMounted, ref} from "vue";
-import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
+/**
+ * Minified SFC for viewing a exercise in training session
+ * @author daniel
+ */
 
+/**** IMPORTS ****/
+import {onMounted, ref} from "vue";
+/**** CONFIGS ****/
+import * as LocalConfig from './resources/addExerciseFormConfig.js';
+
+/**** VARIABLES ****/
 const title = ref('');
 const category = ref('');
 const numberOfGoalkeeper = ref('');
@@ -18,15 +22,19 @@ const note = ref();
 const isNoteNotEmpty = ref(false);
 const isDescriptionNotEmpty = ref(false);
 
+/**** PROPS ****/
 const props = defineProps({
   category: String,
   exerciseID: Number,
   exercises: Object
 });
+
+/**** HOOKS ****/
 onMounted(() => {
   fillFormFields();
 });
 
+/**** FUNCTIONS ****/
 
 /**
  * This function fills the form with the data from the database.
@@ -34,9 +42,9 @@ onMounted(() => {
 function fillFormFields() {
   props.exercises.forEach((exercise)=> {
     if(exercise.id === props.exerciseID) {
-      let test = [];
+      let materialListTemp = [];
       for(let i = 0; i < exercise.numbersOfMaterial.length; i++) {
-        test.push({numberOfMaterial: exercise.numbersOfMaterial[i], material: exercise.materials[i]});
+        materialListTemp.push({numberOfMaterial: exercise.numbersOfMaterial[i], material: exercise.materials[i]});
       }
       title.value = exercise.title;
       category.value = exercise.category;
@@ -49,7 +57,7 @@ function fillFormFields() {
         isDescriptionNotEmpty.value = true;
         descriptionList.value = exercise.descriptionSteps;
       }
-      materialList.value = test;
+      materialList.value = materialListTemp;
       if(exercise.note === null || exercise.note === '') {
         isNoteNotEmpty.value = false;
       } else {
@@ -59,15 +67,6 @@ function fillFormFields() {
       sketchDataUrl.value = exercise.sketch;
     }
   });
-}
-function byteArrayToDataURL(byteArray) {
-  let blob = new Blob([new Uint8Array(byteArray)], { type: 'image/png' });
-  var reader = new FileReader();
-  reader.onloadend = function() {
-    var dataURL = reader.result;
-    sketchDataUrl.value = dataURL;
-  };
-  reader.readAsDataURL(blob);
 }
 </script>
 

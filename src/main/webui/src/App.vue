@@ -12,7 +12,7 @@ import Header from "@/components/_globals/components/__header/Header.vue";
 import Overview from "@/components/_menu/components/__overview/Overview.vue";
 import AddGoalkeeperForm from "@/components/_detailed/components/__goalkeeperForm/GoalkeeperForm.vue";
 import AddExerciseForm from "@/components/_detailed/components/__exerciseForm/ExerciseForm.vue";
-import CreateTrainingSessionForm from "@/components/_detailed/components/__createTrainingSessionForm/CreateTrainingSessionForm.vue";
+import CreateTrainingSessionForm from "@/components/_detailed/components/__trainingSessionForm/TrainingSessionForm.vue";
 import GeneralOverview from "@/components/_detailed/components/__generalOverview/GeneralOverview.vue";
 import NotFound from "@/components/_globals/components/__notFound/NotFound.vue";
 /**** UTILITY FUNCTIONS ****/

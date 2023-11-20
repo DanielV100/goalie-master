@@ -63,7 +63,6 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-
   //making material and descriptions steps deletable
   if(props.isEditView) {
     successMessageText.value = LocalConfig.SUCCESS_MESSAGE_EDIT;
