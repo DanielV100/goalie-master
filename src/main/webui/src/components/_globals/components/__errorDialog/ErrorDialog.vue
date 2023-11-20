@@ -1,17 +1,23 @@
 <script setup>
-import {onMounted} from "vue";
-import * as LocalConfig from './resources/errorDialogConfig.js';
+/**
+ * SFC for error messages
+ * @author daniel
+ */
 
+/**** IMPORTS ****/
+import {onMounted} from "vue";
+/**** CONFIGS ****/
+import * as LocalConfig from './resources/errorDialogConfig.js';
+/**** VARIABLES ****/
 let dialog;
 onMounted(() => {
   dialog = document.querySelector('dialog');
 });
 
+/**** HOOKS ****/
 function closeButtonClicked() {
   dialog.close();
 }
-
-
 </script>
 
 <template>

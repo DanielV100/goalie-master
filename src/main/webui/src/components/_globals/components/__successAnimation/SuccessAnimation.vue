@@ -1,11 +1,16 @@
 <script setup>
+/**
+ * SFC for showing user a success message.
+ * @author daniel
+ */
+/**** IMPORTS ****/
+/**** CONFIGS ****/
 import * as GlobalConfig from '../../../../globals/gloablConfig.js';
 import * as LocalConfig from './resources/successAnimationConfig.js';
 
 function goToMenuButtonClicked() {
   GlobalConfig.changeWindowToTargetRoute('Overview');
 }
-
 </script>
 
 <template>

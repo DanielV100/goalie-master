@@ -1,3 +1,8 @@
+/**
+ * Global config contains strings and is used for in-application routing.
+ * @author daniel
+ */
+
 export const APP_NAME = "G⚽alieMaster";
 
 /**

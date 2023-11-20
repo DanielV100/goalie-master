@@ -1,30 +1,25 @@
 <script setup>
-import * as GlobalConfig from '../../../../globals/gloablConfig.js';
-import * as SessionStorageFunctions from '../../../../globals/sessionStorageUtilitiyFunctions.js';
+/**
+ * SFC which is a header on top of every page.
+ */
 
+/**** IMPORTS ****/
+/**** CONFIGS ****/
+import * as GlobalConfig from '@/globals/gloablConfig.js';
+import * as SessionStorageFunctions from '@/globals/sessionStorageUtilitiyFunctions.js';
+
+/**** CLICK-HANDLERS ****/
 function logOutClicked() {
   SessionStorageFunctions.clearSessionStorage();
   GlobalConfig.changeWindowToTargetRoute('LoginForm');
 }
 
-
 function logoClicked() {
   GlobalConfig.changeWindowToTargetRoute('Overview');
 }
-
 function userIconClicked() {
-  downloadPdf();
 }
 
-async function downloadPdf() {
-  const response = await fetch('/pdf/download');
-  const blob = await response.blob();
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'mydocument.pdf';
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
 </script>
 
 <template>

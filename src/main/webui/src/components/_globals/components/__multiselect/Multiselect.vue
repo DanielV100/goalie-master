@@ -1,15 +1,22 @@
 <script setup>
-import VueMultiselect from 'vue-multiselect';
+/**
+ * Wrapper for the vue-multiselect-library
+ * @see https://vue-multiselect.js.org/
+ * @author daniel
+ */
+
+/**** IMPORTS ****/
 import { ref } from 'vue';
-const multiValue = ref([])
+import VueMultiselect from 'vue-multiselect';
+/**** VARIABLES ****/
+const multiValue = ref([]);
+const multiselectOptions = props.multiselectOptions;
+/**** PROPS ****/
 const props = defineProps({
   multiselectOptions: Object,
   preselectedValues: Object
 });
-const multiselectOptions = props.multiselectOptions;
 multiValue.value = props.preselectedValues;
-console.log(props.preselectedValues);
-
 </script>
 
 <template>

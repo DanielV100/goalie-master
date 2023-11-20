@@ -1,4 +1,8 @@
 <script setup>
+/**
+ * SFC for the soccer field to take skteches on.
+ * @author daniel
+ */
 import { onMounted } from "vue";
 
 onMounted(() => {

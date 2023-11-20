@@ -1,3 +1,7 @@
+/**
+ * Utility functions, which are used in several places of the application.
+ * @author daniel
+ */
 
 /**** EXPORT FUNCTIONS ****/
 

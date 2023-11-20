@@ -1,5 +1,12 @@
 <script setup>
-import * as GlobalConfig from '../../../../globals/gloablConfig.js';
+/**
+ * SFC works basically as a indicator on which page the user is
+ * @author daniel
+ */
+/**** IMPORTS ****/
+/**** CONFIGS ****/
+import * as GlobalConfig from '@/globals/gloablConfig.js';
+
 function homeIconClicked() {
   GlobalConfig.changeWindowToTargetRoute('Overview');
 }

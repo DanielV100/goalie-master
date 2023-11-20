@@ -1,7 +1,20 @@
+/**
+ * Central file for handling everything session storage related.
+ * @importnat SessionStorage can only hold 5MB - keep that in mind.
+ * @author daniel
+ */
+/**
+ * Global clear of session strage.
+ */
 export function clearSessionStorage() {
     sessionStorage.clear();
 }
 
+/**
+ * Gets all exercises from db and categorises them.
+ * @param category
+ * @returns {*[]}
+ */
 export function getExercisesFromSessionStorage(category) {
     let exercises = [];
     if(category === 'warmUp') {
