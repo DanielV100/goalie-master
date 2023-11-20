@@ -3,38 +3,22 @@ package dhbw.on.webdev.model.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.hibernate.orm.panache.common.ProjectedFieldName;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.inject.Inject;
-
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 /**
  * DTO for exercise entity.
  * User from exercise may not be in http-response.
- * @param id
- * @param title
- * @param category
- * @param categoryGroup
- * @param numberOfGoalkeepers
- * @param duration
- * @param intensity
- * @param materials
- * @param numbersOfMaterial
- * @param descriptionSteps
- * @param sketch
- * @param note
+ * In a response sketch should be a dataUrl - so client hasn't to parse it:
+ * getSketch()
  */
 @RegisterForReflection
 public class ExerciseDTO {
-
-    @Inject
-    ServiceHelper serviceHelper;
-
     /**** DTO-FIELDS-FOR-REFLECTION ****/
     final private long id;
     final private String title;
@@ -68,11 +52,15 @@ public class ExerciseDTO {
         this.descriptionStepsAsString = descriptionStepsAsString;
         this.sketch = sketch;
         this.note = note;
+
+        //mapping jsons strings to List<T> - so, client hasn't to parse
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.descriptionSteps = mapper.readValue(descriptionStepsAsString, new TypeReference<List<String>>(){});
             this.materials = mapper.readValue(materialsAsString, new TypeReference<List<String>>(){});
+            //you can't directly parse a string to a list of integer - so you need a temp list
             List<String> numberOfMaterialsTemp = mapper.readValue(numbersOfMaterialAsString, new TypeReference<List<String>>(){});
+            //...then you can parse the strings to integer
             this.numbersOfMaterial = numberOfMaterialsTemp.stream()
                     .map(Integer::parseInt)
                     .collect(Collectors.toList());
@@ -121,6 +109,10 @@ public class ExerciseDTO {
         return numbersOfMaterialAsString;
     }
 
+    /**
+     * Client should directly receive data url and not the byte array
+     * @return data url from byte array
+     */
     public String getSketch() {
         if(sketch != null) {
             final String base64String = Base64.getEncoder().encodeToString(sketch);
