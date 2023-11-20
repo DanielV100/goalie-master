@@ -86,7 +86,8 @@ public class ExerciseService {
         if(exercise != null) {
             //sketch must be set here, otherwise helper method have to be edited
             if(updatedExercise.getSketchDataURL() != null) {
-                exercise.setSketch(serviceHelper.convertDataUrlToByteArray(exercise.getSketchDataURL()));
+                System.out.println(exercise.getSketchDataURL());
+                exercise.setSketch(serviceHelper.convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
             } else {
                 Log.warn("No data url found for exercise: " + updatedExercise.getTitle());
             }

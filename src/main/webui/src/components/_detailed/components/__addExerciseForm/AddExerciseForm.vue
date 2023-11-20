@@ -197,6 +197,7 @@ function getValueListFromDomInputFields(selector) {
  */
 function getDataUrlFromSketch() {
   const sketch = document.querySelector('canvas');
+  console.log(sketch);
   if(sketch === null) {
     return null;
   } else {
