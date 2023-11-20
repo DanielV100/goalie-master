@@ -1,7 +1,7 @@
 <script setup>
-import EditExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
+import EditExerciseForm from "@/components/_detailed/components/__exerciseForm/ViewExerciseForm.vue";
 import {nextTick, onActivated, onBeforeMount, onBeforeUpdate, onMounted, ref} from "vue";
-import ViewExerciseForm from "@/components/_detailed/components/__addExerciseForm/ViewExerciseForm.vue";
+import ViewExerciseForm from "@/components/_detailed/components/__exerciseForm/ViewExerciseForm.vue";
 import * as SessionStorageFunctions from '../../../../globals/sessionStorageUtilitiyFunctions.js';
 //ID's from the exercises to add
 const exerciseKeyfacts = ref([]);

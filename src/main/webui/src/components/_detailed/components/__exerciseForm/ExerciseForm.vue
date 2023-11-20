@@ -1,13 +1,22 @@
 <script setup>
+/**
+ * SFC for adding and edit an exercise
+ * @author daniel
+ */
+/**** IMPORTS ****/
+import {computed, onBeforeMount, ref} from "vue";
+import axios from "axios";
+/**** CONFIGS ****/
 import * as LocalConfig from './resources/addExerciseFormConfig.js';
+/**** UTILITY FUNCTIONS ****/
 import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
+/**** COMPONENTS ****/
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
-import {computed, onBeforeMount, ref} from "vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
-import axios from "axios";
 import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
 
+/**** VARIABLES ****/
 const isNotSubmitted = ref(true);
 const isSketchCheckboxChecked = ref();
 const isNotesCheckboxChecked = ref();
@@ -22,6 +31,12 @@ const materialList = ref([]);
 const descriptionList = ref([]);
 const sketchDataUrl = ref();
 
+/**** COMPUTED PROPERTIES ****/
+const isSubmitDisabled = computed(() => {
+  return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '');
+});
+
+/**** PROPS ****/
 const props = defineProps({
   isEditView: Boolean,
   id: Number,
@@ -37,38 +52,12 @@ const props = defineProps({
   sketch: String
 });
 
+/**** HOOKS ****/
 onBeforeMount(() => {
   init();
 });
-function init() {
-  if(props.isEditView) {
-    title.value = props.title;
-    category.value = props.category;
-    numberOfGoalkeeper.value = props.numberOfGoalkeeper;
-    duration.value = props.duration;
-    intensity.value = props.intensity;
-    note.value = props.note;
-    let test = [];
-    for(let i = 0; i < props.numbersOfMaterial.length; i++) {
-      test.push({numberOfMaterial: props.numbersOfMaterial[i], material: props.materials[i]});
-    }
-    materialList.value = test;
-    descriptionList.value = props.descriptionSteps;
-    sketchDataUrl.value = props.sketch;
-  }
-}
-function byteArrayToDataURL(byteArray) {
-  let blob = new Blob([new Uint8Array(byteArray)], { type: 'image/png' });
-  var reader = new FileReader();
-  reader.onloadend = function() {
-    var dataURL = reader.result;
-    sketchDataUrl.value = dataURL;
-  };
-  reader.readAsDataURL(blob);
-}
-const isSubmitDisabled = computed(() => {
-  return !(title.value !== '' && category.value !== '' && numberOfGoalkeeper.value !== '' && duration.value !== '' && intensity.value !== '');
-});
+
+/**** HTTP-REQUESTS ****/
 const isAddingExerciseSuccessful = async () => {
   try {
     await axios.post('/exercise/add', createExerciseForHttpRequest(), {
@@ -98,37 +87,11 @@ const isUpdatingExerciseSuccessful = async () => {
     return false;
   }
 }
-function getCategoryGroup() {
-  const selectedOption = document.querySelector('select[name="categories"] option:checked');
-  if(selectedOption === null) {
-    return '';
-  } else {
-    return selectedOption.parentElement.label;
-  }
-}
-/**
- * Method sets all v-models from form empty.
- */
-function resetForm() {
-  isSketchCheckboxChecked.value = false;
-  isNotesCheckboxChecked.value = false;
-  title.value = '';
-  category.value = '';
-  numberOfGoalkeeper.value = '';
-  duration.value = '';
-  intensity.value = '';
-  note.value = '';
-}
-function addMaterialButtonClicked(event) {
-  UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
-}
 
-function addDescriptionStepClicked(event) {
-  UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
-}
+/**** CLICK-HANDLERS ****/
 
 /**
- * Click handler for submit button.
+ * Triggered by clicking submit button
  * @returns {Promise<void>}
  */
 async function submitButtonClicked() {
@@ -146,6 +109,77 @@ async function submitButtonClicked() {
   }
 }
 
+/**
+ * Triggered when adding material add button is clicked
+ * @param event which triggered the click handler
+ */
+function addMaterialButtonClicked(event) {
+  UtilityFunctions.cloneExistingFieldsInContainer(event, 'material_container', 'material_element');
+}
+
+/**
+ * Triggered when description steps add button is clicked
+ * @param event which triggered the click handler
+ */
+function addDescriptionStepClicked(event) {
+  UtilityFunctions.cloneExistingFieldsInContainer(event, 'description_container', 'description');
+}
+
+/**** FUNCTIONS ****/
+
+/**
+ * Initialises form and fills form if sfc is called in edit view
+ */
+function init() {
+  if(props.isEditView) {
+    title.value = props.title;
+    category.value = props.category;
+    numberOfGoalkeeper.value = props.numberOfGoalkeeper;
+    duration.value = props.duration;
+    intensity.value = props.intensity;
+    note.value = props.note;
+    //material list requires list with amount and description
+    let materialListTemp = [];
+    for(let i = 0; i < props.numbersOfMaterial.length; i++) {
+      materialListTemp.push({numberOfMaterial: props.numbersOfMaterial[i], material: props.materials[i]});
+    }
+    materialList.value = materialListTemp;
+    descriptionList.value = props.descriptionSteps;
+    sketchDataUrl.value = props.sketch;
+  }
+}
+
+/**
+ * Getting category group from the exercise out dom
+ * @returns {*|string}
+ */
+function getCategoryGroup() {
+  const selectedOption = document.querySelector('select[name="categories"] option:checked');
+  if(selectedOption === null) {
+    return '';
+  } else {
+    return selectedOption.parentElement.label;
+  }
+}
+
+/**
+ * Method sets all v-models from form empty.
+ */
+function resetForm() {
+  isSketchCheckboxChecked.value = false;
+  isNotesCheckboxChecked.value = false;
+  title.value = '';
+  category.value = '';
+  numberOfGoalkeeper.value = '';
+  duration.value = '';
+  intensity.value = '';
+  note.value = '';
+}
+
+/**
+ * Method for creating object, which will get send in the body of http request
+ * @returns object
+ */
 function createExerciseForHttpRequest() {
   const exercise = {
     sketchDataURL:getDataUrlFromSketch(),

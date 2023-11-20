@@ -5,7 +5,7 @@ import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 import * as GetRequestFunctions from "@/globals/getRequestUtilityFunctions.js";
 import * as DeleteRequestFunctions from "@/globals/deleteRequestUtilityFunctions.js";
-import AddGoalkeeperForm from "@/components/_detailed/components/__addGoalkeeperForm/AddGoalkeeperForm.vue";
+import AddGoalkeeperForm from "@/components/_detailed/components/__goalkeeperForm/GoalkeeperForm.vue";
 import EntityEditor from "@/components/_detailed/components/__entityEditor/EntityEditor.vue";
 
 const isTrainingSession = ref(true);

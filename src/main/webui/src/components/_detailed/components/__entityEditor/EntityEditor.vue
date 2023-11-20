@@ -1,8 +1,8 @@
 <script setup>
 import {onBeforeMount, onMounted, ref} from "vue";
-import AddGoalkeeperForm from "@/components/_detailed/components/__addGoalkeeperForm/AddGoalkeeperForm.vue";
+import AddGoalkeeperForm from "@/components/_detailed/components/__goalkeeperForm/GoalkeeperForm.vue";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
-import AddExerciseForm from "@/components/_detailed/components/__addExerciseForm/AddExerciseForm.vue";
+import AddExerciseForm from "@/components/_detailed/components/__exerciseForm/ExerciseForm.vue";
 import CreateTrainingSessionForm from "@/components/_detailed/components/__createTrainingSessionForm/CreateTrainingSessionForm.vue";
 
 const props = defineProps({
