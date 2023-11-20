@@ -34,25 +34,10 @@ public class ExerciseResource {
 
     /**** GET-REQUEST-HANDLERS ****/
     @GET
-    @Path("/get/all")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Exercise> getAllExercises() {
-        return exerciseService.getAllExercises();
-    }
-    @GET
     @Path("/get/specific")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ExerciseDTO> getAllExercisesFromCurrentUser() {
-        ExerciseDTO exerciseDTO =  exerciseService.getAllExercisesFromCurrentUser().get(0);
-        System.out.println(exerciseDTO.descriptionSteps());
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            List<String> list = mapper.readValue(exerciseDTO.descriptionSteps(), new TypeReference<List<String>>(){});
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
+        return exerciseService.getAllExercisesFromCurrentUser();
     }
 
     /**** POST-REQUEST-HANDLERS ****/
@@ -78,7 +63,7 @@ public class ExerciseResource {
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteExercise(@PathParam("id") long exerciseId) {
+    public Response deleteExercise(@PathParam("id") final long exerciseId) {
         return exerciseService.deleteExercise(exerciseId);
     }
 

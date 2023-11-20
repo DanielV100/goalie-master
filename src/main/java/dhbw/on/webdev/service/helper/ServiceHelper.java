@@ -1,6 +1,7 @@
 package dhbw.on.webdev.service.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -15,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * This helper class contains several helper methods for the service classes.
@@ -62,9 +64,32 @@ public class ServiceHelper {
                 if (sourceValue == null) {
                     Log.info("Nothing to change at field: " + fieldName);
                 } else {
-                    Method setterMethod = enitityClass.getMethod(setterMethodName, field.getType());
-                    setterMethod.invoke(target, sourceValue);
+                    //field getType -> string not a list
+                    Method setterMethod;
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    if (fieldName.equals("materials") || fieldName.equals("descriptionSteps") || fieldName.equals("numbersOfMaterial")) {
+                        setterMethod = enitityClass.getMethod(setterMethodName, List.class);
+                        List<?> listValue;
+                        if (fieldName.equals("numbersOfMaterial")) {
+                            try {
+                                listValue = objectMapper.readValue((String) sourceValue, new TypeReference<List<Integer>>(){});
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        } else {
+                            try {
+                                listValue = objectMapper.readValue((String) sourceValue, new TypeReference<List<String>>(){});
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        setterMethod.invoke(target, listValue);
+                    } else {
+                        setterMethod = enitityClass.getMethod(setterMethodName, field.getType());
+                        setterMethod.invoke(target, sourceValue);
+                    }
                     Log.info("Updated field: " + fieldName + " with value: " + sourceValue);
+
                 }
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exception) {
                 Log.error("Error updating field: " + fieldName + ": " + exception);

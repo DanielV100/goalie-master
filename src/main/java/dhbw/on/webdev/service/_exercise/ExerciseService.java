@@ -36,14 +36,6 @@ public class ExerciseService {
     /**** GET-REQUEST-SERVICES ****/
 
     /**
-     * Method for getting all exercises in db.
-     * @return all exercises in db as list
-     */
-    public List<Exercise> getAllExercises() {
-        return hideUserInformationInResponse(exerciseRepository.listAll());
-    }
-
-    /**
      * Method for getting all exercises of current user.
      * @return list of exercises of current user.
      */
@@ -65,6 +57,7 @@ public class ExerciseService {
      */
     @Transactional
     public Response addNewExercise(Exercise exercise) {
+        System.out.println(exercise.getMaterials().getClass());
         exercise.setUser(serviceHelper.getCurrentUser(jwtTokenService.getUserIdFromJwtToken()));
         if(exercise.getSketchDataURL() == null) {
             exercise.setSketch(null);
@@ -112,28 +105,18 @@ public class ExerciseService {
 
     /**** DELETE-REQUEST-SERVICES ****/
 
+    /**
+     * Method for deleting a exercise by its id.
+     * @param exerciseId
+     * @return Resonse ok() or http-status code 404
+     */
     @Transactional
-    public Response deleteExercise(long exerciseId) {
+    public Response deleteExercise(final long exerciseId) {
         if(exerciseRepository.deleteById(exerciseId)) {
             return Response.ok().build();
         } else {
             Log.error("Exercise not found by Id: " + exerciseId);
             return Response.status(404).build();
         }
-    }
-
-
-    /**
-     * Sending plain user data to client could be a security risk, so set user data to null before passing to client.
-     * @param exercises
-     * @return list of exercises without userdata
-     */
-    private List<Exercise> hideUserInformationInResponse(List<Exercise> exercises) {
-        List<Exercise> exercisesWithNoUserData = new ArrayList<>();
-        for (Exercise exercise : exercises) {
-            exercise.setUser(null);
-            exercisesWithNoUserData.add(exercise);
-        }
-        return exercisesWithNoUserData;
     }
 }

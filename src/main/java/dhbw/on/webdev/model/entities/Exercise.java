@@ -178,4 +178,5 @@ public class Exercise extends BaseClass {
     public void setTrainingSessions(List<TrainingSession> trainingSessions) {
         this.trainingSessions = trainingSessions;
     }
+
 }

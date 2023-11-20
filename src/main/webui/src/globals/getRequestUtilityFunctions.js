@@ -10,6 +10,7 @@ export async function getAllExercisesFromDB() {
                 Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
             }
         });
+        console.log(response.data);
         SessionStorageFunctions.saveAllExercisesInSessionStorage(response.data);
         return response.data;
     } catch (error) {
