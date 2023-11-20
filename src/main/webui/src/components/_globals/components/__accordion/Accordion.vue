@@ -1,10 +1,27 @@
 <script setup>
-import EditExerciseForm from "@/components/_detailed/components/__exerciseForm/ViewExerciseForm.vue";
-import {nextTick, onActivated, onBeforeMount, onBeforeUpdate, onMounted, ref} from "vue";
-import ViewExerciseForm from "@/components/_detailed/components/__exerciseForm/ViewExerciseForm.vue";
+/**
+ * SFC for accordion, which holds exercises in it.
+ * @author daniel
+ */
+
+/**** IMPORTS ****/
+import {onBeforeMount, onMounted, ref} from "vue";
+/**** CONFIG ****/
+import * as LocalConfig from './resources/accordionConfig.js';
+/**** UTILITY FUNCTIONS ****/
 import * as SessionStorageFunctions from '../../../../globals/sessionStorageUtilitiyFunctions.js';
-//ID's from the exercises to add
+/**** COMPONENTS ****/
+import ViewExerciseForm from "@/components/_detailed/components/__exerciseForm/ViewExerciseForm.vue";
+
+/**** VARIABLES ****/
+//IDs and name of exercise from the exercises to add
 const exerciseKeyfacts = ref([]);
+const exercises = ref([]);
+const exercisesKey = ref();
+const totalDuration = ref('00:00');
+const totalIntensity = ref(0);
+
+/**** PROPS ****/
 const props = defineProps({
   isEditView: Boolean,
   category: String,
@@ -12,49 +29,63 @@ const props = defineProps({
   exercisesIds: Object
 });
 
-let exercises = ref([]);
-const exercisesKey = ref();
-const totalDuration = ref('00:00');
-const totalIntensity = ref(0);
-
+/**** HOOKS ****/
 onBeforeMount(() => {
-  getExercisesFromSessionStorage();
+  exercises.value = SessionStorageFunctions.getExercisesFromSessionStorage(props.category);
+  //push checked exercises into temp variable...
   let checkedExercises = [];
   if(props.isEditView) {
     for (let id of props.exercisesIds) {
       checkedExercises.push({exerciseID: id.exerciseId, exerciseTitle: id.exerciseTitle});
     }
+    //...and bring it via ref-object into dom
     exerciseKeyfacts.value = checkedExercises;
   }
 });
+
 onMounted(() => {
   if(props.isEditView) {
-  const modalCheckboxes = document.getElementsByClassName(props.modalID);
-  for(let modalCheckbox of modalCheckboxes) {
-    const idTableRow = modalCheckbox.parentElement.nextSibling;
-      for (let id of props.exercisesIds) {
-        if (idTableRow.innerText == id.exerciseId) {
-          console.log('test');
-          modalCheckbox.checked = true;
-          break;
+    //set the correct exercises checked
+    const modalCheckboxes = document.getElementsByClassName(props.modalID);
+    for(let modalCheckbox of modalCheckboxes) {
+      const idTableRow = modalCheckbox.parentElement.nextSibling;
+        for (let id of props.exercisesIds) {
+          if (idTableRow.innerText == id.exerciseId) {
+            modalCheckbox.checked = true;
+            break;
         }
       }
     }
+    getIDsFromCheckedExercises();
   }
 });
 
+/**** CLICK-HANDLERS ****/
+
+/**
+ * Adding exercise to accordion button clicked
+ */
 function addExerciseButtonClicked() {
-  getExercisesFromSessionStorage();
+  exercises.value = SessionStorageFunctions.getExercisesFromSessionStorage(props.category);
   document.getElementById(props.modalID).style.display = "block";
 }
 
-function getExercisesFromSessionStorage() {
-  exercises.value = SessionStorageFunctions.getExercisesFromSessionStorage(props.category);
-}
-
+/**
+ * Clicked on specific exercise in accordion
+ * @param event click event
+ */
 function exerciseAccordionClicked(event) {
   toggleExerciseAccordion(event);
 }
+
+/**
+ * Triggered when submit button in modal box is clicked
+ */
+function modalBoxButtonClicked() {
+  getIDsFromCheckedExercises();
+}
+
+/**** FUNCTIONS ****/
 
 /**
  * Through toggling the exercises the website is better readable and has a better structure.
@@ -69,10 +100,6 @@ function toggleExerciseAccordion(event) {
     exerciseView.style.overflow = '';
     exerciseView.style.display = '';
   }
-}
-
-function modalBoxButtonClicked() {
- getIDsFromCheckedExercises();
 }
 
 /**
@@ -103,20 +130,29 @@ function getIDsFromCheckedExercises() {
   document.getElementById(props.modalID).style.display = "none";
 }
 
+/**
+ * Average of each intensity of each exercise
+ * @param numberOfCheckedExercises
+ */
 function calculateTotalIntensity(numberOfCheckedExercises) {
-  totalIntensity.value = Math.round(totalIntensity.value/numberOfCheckedExercises);
+  const avgTotalIntensity = Math.round(totalIntensity.value/numberOfCheckedExercises);
+  if(avgTotalIntensity) {
+    totalIntensity.value = avgTotalIntensity;
+  }
 }
 
+/**
+ * Simple reset of the v-model variables
+ */
 function resetAccordion() {
   totalDuration.value = '00:00';
   totalIntensity.value = 0;
 }
 
-
-
 /**
- * Needed to make unique ids for the v-for (forcing re-rendering).
- * @returns {number}
+ * Needed to make unique ids for the v-for (forcing re-rendering)
+ * @see https://michaelnthiessen.com/force-re-render/
+ * @returns number representing unique exercise key
  */
 function generateRandomExerciseKey(exerciseKey) {
   let randomExerciseKey = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -134,8 +170,8 @@ function convertTimeToNumber(timeString) {
 function convertNumberToTime(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  const formattedHours = String(hours).padStart(2, '0'); // Ensure two digits for hours
-  const formattedMinutes = String(minutes).padStart(2, '0'); // Ensure two digits for minutes
+  const formattedHours = String(hours).padStart(2, '0');
+  const formattedMinutes = String(minutes).padStart(2, '0');
   return `${formattedHours}:${formattedMinutes}`;
 }
 
@@ -147,15 +183,15 @@ function convertNumberToTime(totalMinutes) {
       <table class="accordion_table">
         <tr>
           <td style="width: 50%">
-            <label>Kategorie</label>
+            <label>{{ LocalConfig.CATEGORY }}</label>
             <h2><slot></slot></h2>
           </td>
           <td class="after_td_one">
-            <label>Dauer</label>
+            <label>{{ LocalConfig.DURATION}}</label>
             <h2>{{ totalDuration }}</h2>
           </td>
           <td class="after_td_one">
-            <label>Intensität</label>
+            <label>{{ LocalConfig.INTENSITY }}</label>
             <h2>{{ totalIntensity }}/5</h2>
           </td>
         </tr>
@@ -174,14 +210,10 @@ function convertNumberToTime(totalMinutes) {
       <div class="modal" :id="props.modalID">
         <div class="modal-dialog">
           <div class="modal-content">
-
-            <!-- Modal Header -->
             <div class="modal-header">
-              <h4 class="modal-title">Übungen auswählen</h4>
+              <h4 class="modal-title">{{ LocalConfig.MODAL_HEADING }}</h4>
               <button type="button" class="close" id="closeModal">&times;</button>
             </div>
-
-            <!-- Modal body -->
             <div class="modal-body">
               <div class="table-container">
                 <table class="table table-striped">
@@ -212,13 +244,9 @@ function convertNumberToTime(totalMinutes) {
                 </table>
               </div>
             </div>
-
-
-            <!-- Modal footer -->
             <div class="modal-footer">
-              <button @click="modalBoxButtonClicked" type="button" class="btn btn-danger" id="closeModal">Close</button>
+              <button @click="modalBoxButtonClicked" type="button" class="btn btn-danger" id="closeModal">{{ LocalConfig.MODAL_BUTTON }}</button>
             </div>
-
           </div>
         </div>
       </div>
@@ -347,7 +375,4 @@ button {
   width: 100%;
   overflow-x: auto;
 }
-
-
-
 </style>

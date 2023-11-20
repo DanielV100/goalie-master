@@ -1,4 +1,3 @@
-
 <script setup>
 /**
  * SFC for creating and editing training session
@@ -23,6 +22,7 @@ import Multiselect from "@/components/_globals/components/__multiselect/Multisel
 import Accordion from "@/components/_globals/components/__accordion/Accordion.vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
 import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
+
 /**** VARIABLES ****/
 const title = ref('');
 const date = ref('');
@@ -176,7 +176,6 @@ function getGoalkeeperIds(goalkeepers) {
       }
     });
   });
-  console.log(goalkeeperIds);
   return goalkeeperIds;
 }
 

@@ -1,61 +1,59 @@
 <script setup>
+/**
+ * SFC which shows all entities in tables and make them deletable, editable, shareable, downloadable.
+ * @author daniel
+ */
+
+/**** IMPORTS ****/
 import {onMounted, ref} from "vue";
-import axios from "axios";
-import * as UtilityFunctions from "@/globals/utilityFunctions";
+/**** UTILITY FUNCTIONS ****/
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 import * as GetRequestFunctions from "@/globals/getRequestUtilityFunctions.js";
 import * as DeleteRequestFunctions from "@/globals/deleteRequestUtilityFunctions.js";
-import AddGoalkeeperForm from "@/components/_detailed/components/__goalkeeperForm/GoalkeeperForm.vue";
+/**** COMPONENTS ****/
 import EntityEditor from "@/components/_detailed/components/__entityEditor/EntityEditor.vue";
+import {all} from "axios";
 
+/**** VARIABLES ****/
 const isTrainingSession = ref(true);
 const isExercise = ref(false);
 const isGoalkeeper = ref(false);
 //elements --> training session, exercises or goalkeeper (depends on nav bar)
 const elements = ref();
-
 const entityId = ref(26);
-const entityType = ref('goalkeeper');
-
+const entityType = ref();
 const isShowingOverview = ref(true);
+
+/**** HOOKS ****/
 onMounted( () => {
   init();
 });
 
-async function init() {
-  elements.value = await GetRequestFunctions.getAllTrainingSessions();
-  let tmp = await GetRequestFunctions.getAllExercisesFromDB();
-  console.log(tmp);
-  let tmp2 = await GetRequestFunctions.getGoalkeepersFromDB();
-}
+/**** CLICK-HANDLERS ****/
 
-
+/**
+ * Triggered when training session is clicked
+ */
 function trainingSessionsClicked() {
   isTrainingSession.value = true;
   isExercise.value = false;
   isGoalkeeper.value = false;
   elements.value = SessionStorageFunctions.getAllTrainingSessionFromSessionStorage();
 }
-async function deleteTrainingSession(id) {
-  await DeleteRequestFunctions.deleteEntityById('training_session', id);
-}
-async function refreshAfterTrainingSessionDeleted() {
-  elements.value = await GetRequestFunctions.getAllTrainingSessions();
-}
 
+/**
+ * Triggered when exercises session is clicked
+ */
 function exercisesClicked() {
   isTrainingSession.value = false;
   isExercise.value = true;
   isGoalkeeper.value = false;
   elements.value = SessionStorageFunctions.getAllExercisesFromSessionStorage();
 }
-async function deleteExercise(id) {
-  await DeleteRequestFunctions.deleteEntityById('exercise', id);
-}
-async function refreshAfterExerciseDeleted() {
-  elements.value = await GetRequestFunctions.getAllExercisesFromDB();
-}
 
+/**
+ * Triggered when goalkeeper session is clicked
+ */
 function goalkeeperClicked() {
   isExercise.value = false;
   isTrainingSession.value = false;
@@ -63,15 +61,12 @@ function goalkeeperClicked() {
   elements.value = SessionStorageFunctions.getAllGoalkeepersFromSessionStorage();
 }
 
-async function deleteGoalkeeper(id) {
-  await DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
-}
-async function refreshAfterGoalkeeperDeleted() {
-  elements.value = await GetRequestFunctions.getGoalkeepersFromDB();
-}
-
+/**
+ * Triggered when delete icon is clicked
+ * @param event click event
+ */
 async function deleteItemClicked(event) {
-  if (confirm('Are you sure?')) {
+  if (confirm('Sind Sie sicher?')) {
     const id = getIdFromClickedElement(event);
     if(isTrainingSession.value === true) {
       await deleteTrainingSession(id);
@@ -89,6 +84,10 @@ async function deleteItemClicked(event) {
   }
 }
 
+/**
+ * Triggered when update item clicked
+ * @param event click event
+ */
 function updateItemClicked(event) {
   const id = getIdFromClickedElement(event);
   if(isGoalkeeper.value === true) {
@@ -104,31 +103,111 @@ function updateItemClicked(event) {
   isShowingOverview.value = false;
 }
 
+/**
+ * Download icon clicked
+ * @param event
+ */
+function downloadIconClicked(event) {
+  downloadPdf(getIdFromClickedElement(event));
+}
+
+/**
+ * Share icon clicked
+ * @param event
+ */
+function shareIconClicked(event) {
+  const mail = prompt("E-Mail-Adresse eingeben");
+  if(isValidEmail(mail)) {
+    sendEmail(getIdFromClickedElement(event), mail);
+  } else {
+    alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+  }
+}
+
+/**** FUNCTIONS ****/
+/**
+ * Loading entities from db and save it to session storage.
+ * @important session storage can only save 5mb!
+ * @returns {Promise<void>}
+ */
+async function init() {
+  elements.value = await GetRequestFunctions.getAllTrainingSessions();
+  let tmp = await GetRequestFunctions.getAllExercisesFromDB();
+  console.log(tmp);
+  let tmp2 = await GetRequestFunctions.getGoalkeepersFromDB();
+}
+
+/**
+ * Checks if given mail is a valid mail address via regex
+ * @param mail
+ * @returns {boolean}
+ */
+function isValidEmail(mail) {
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  return regex.test(mail);
+}
+
+/**** DELETE HANDLERS ****/
+async function deleteTrainingSession(id) {
+  await DeleteRequestFunctions.deleteEntityById('training_session', id);
+}
+async function deleteExercise(id) {
+  await DeleteRequestFunctions.deleteEntityById('exercise', id);
+}
+async function deleteGoalkeeper(id) {
+  await DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
+}
+
+/**** REFRESH HANDLERS ****/
+async function refreshAfterTrainingSessionDeleted() {
+  elements.value = await GetRequestFunctions.getAllTrainingSessions();
+}
+async function refreshAfterExerciseDeleted() {
+  elements.value = await GetRequestFunctions.getAllExercisesFromDB();
+}
+async function refreshAfterGoalkeeperDeleted() {
+  elements.value = await GetRequestFunctions.getGoalkeepersFromDB();
+}
+
+
+/**
+ * Gets entity id from click event in table.
+ * @param event click event
+ * @returns id as string
+ */
 function getIdFromClickedElement(event) {
   const idElement = event.target.parentElement.parentElement.firstChild;
   return idElement.innerText;
 }
 
-function downloadIconClicked(event) {
-  downloadPdf(getIdFromClickedElement(event));
-}
-
+/**
+ * Download pdf (create pseudo element, so that download starts automatically)
+ * @param id entity id
+ * @returns {Promise<void>}
+ */
 async function downloadPdf(id) {
   const blob = await GetRequestFunctions.getTrainingSessionAsPdf(id);
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'trainingseinheit.pdf';
+  link.download = blob.name;
   link.click();
   URL.revokeObjectURL(link.href);
 }
 
-function shareIconClicked(event) {
-  sendEmail(getIdFromClickedElement(event));
+async function sendEmail(id, mail) {
+  try {
+    const success = await GetRequestFunctions.getTrainingSessionAsMail(id, mail);
+    console.log(success);
+    if(success.includes('200')) {
+      alert('Mail erfolgreich gesendet!');
+    } else {
+      alert('Es ist ein Fehler aufgetreten!');
+    }
+  } catch (error) {
+    console.error('Fehler beim Senden der E-Mail:', error);
+    alert('Ein unerwarteter Fehler ist aufgetreten.');
+  }
 }
-async function sendEmail(id) {
-  let x = await GetRequestFunctions.getTrainingSessionAsMail(id, 'info@d-vollmer.de');
-}
-
 </script>
 
 <template>
@@ -198,5 +277,4 @@ button {
 .delete {
   color: red;
 }
-
 </style>

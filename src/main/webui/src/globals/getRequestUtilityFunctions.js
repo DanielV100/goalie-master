@@ -1,7 +1,15 @@
+/**
+ * There are a lot of http-get-requests in the application.
+ * To have a better overview, every get-requests is here.
+ * @author daniel
+ */
 import axios from "axios";
-import * as UtilityFunctions from "@/globals/utilityFunctions";
 import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions";
 
+/**
+ * Gets all exercises from current user from the db.
+ * @returns {Promise<any|*[]>}
+ */
 export async function getAllExercisesFromDB() {
     try {
         const response = await axios.get('exercise/get/specific', {
@@ -40,6 +48,10 @@ export async function getGoalkeepersFromDB() {
     }
 }
 
+/**
+ * Gets all training sessions from current user from the db.
+ * @returns {Promise<any|*[]>}
+ */
 export async function getAllTrainingSessions() {
     try {
         const response = await axios.get('training_session/get/specific', {
@@ -56,6 +68,11 @@ export async function getAllTrainingSessions() {
     }
 }
 
+/**
+ * Gets one training session as a pdf file.
+ * @param id
+ * @returns {Promise<any|*[]>}
+ */
 export async function getTrainingSessionAsPdf(id) {
     try {
         const response = await axios.get('training_session/download/'+id, {
@@ -65,6 +82,12 @@ export async function getTrainingSessionAsPdf(id) {
             },
             responseType: 'blob'
         });
+        const contentDisposition = response.headers['content-disposition'];
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+            const filename = filenameMatch ? filenameMatch[1] : null;
+            response.data["name"] = filename;
+        }
         return response.data;
     } catch (error) {
         console.error(error);
@@ -72,6 +95,12 @@ export async function getTrainingSessionAsPdf(id) {
     }
 }
 
+/**
+ * Triggers backend to send a mail with a training session attached to it.
+ * @param id
+ * @param mail
+ * @returns {Promise<*>}
+ */
 export async function getTrainingSessionAsMail(id, mail) {
     try {
         const response = await axios.get('training_session/mail/'+id+'/'+mail, {
@@ -80,10 +109,10 @@ export async function getTrainingSessionAsMail(id, mail) {
                 Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             },
         });
+        console.log('Response data: '+response.headers);
         return response.data;
     } catch (error) {
-        console.error(error);
-        return [];
+        return error;
     }
 }
 
