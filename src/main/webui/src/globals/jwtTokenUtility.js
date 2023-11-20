@@ -24,6 +24,20 @@ export function checkIfJwtTokenIsValid() {
     }
 }
 
+/**
+ * Gets name of the user from the jwt token
+ * @returns String of the user or if there is no name 'Trainer'
+ */
+export function getNameFromJwtToken() {
+    const jwtToken = SessionStorageFunctions.getJwtTokenFromSessionStorage();
+    if(jwtToken) {
+        const payload = getPayloadFromJwtToken(jwtToken);
+        return payload.name;
+    } else {
+        return "Trainer";
+    }
+}
+
 /**** PRIVATE FUNCTIONS ****/
 /**
  * Gets the payload from the passed jwt token and parses it into json.

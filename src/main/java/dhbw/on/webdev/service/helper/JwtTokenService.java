@@ -20,11 +20,12 @@ public class JwtTokenService {
      * @param userID
      * @return JWT-token as string
      */
-    public String generateJwtToken(Long userID) {
+    public String generateJwtToken(final Long userID, final String name) {
         return Jwt.issuer("goalie-master-backend")
                 .subject("goalie-master-frontend")
                 .groups("user")
                 .claim("userID", userID)
+                .claim("name", name)
                 .expiresIn(Duration.ofHours(2))
                 .sign();
     }

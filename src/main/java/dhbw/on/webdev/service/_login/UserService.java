@@ -35,7 +35,7 @@ public class UserService {
     public Response loginUser(UserCredentials userCredentials) {
         User user = getAuthenticatedUser(userCredentials, getAllUsers());
         if(user != null) {
-            return Response.ok(jwtTokenService.generateJwtToken(user.getId())).build();
+            return Response.ok(jwtTokenService.generateJwtToken(user.getId(), user.getName())).build();
         } else {
             return Response.status(401).build();
         }

@@ -1,12 +1,25 @@
 <script setup>
-import { onMounted } from 'vue';
-import * as GlobalConfig from '../../../../globals/gloablConfig.js'
-import * as LocalConfig from './resources/overviewConfig.js';
+/**
+ * Menu, which is shown after the login is successful.
+ * Can be accessed by clicking the logo in the header.
+ * @author daniel
+ */
 
-const username = "daniel.vollmer!";
+/**** IMPORTS ****/
+import { onMounted } from 'vue';
+/**** CONFIGS ****/
+import * as GlobalConfig from '@/globals/gloablConfig.js'
+import * as LocalConfig from './resources/overviewConfig.js';
+/**** UTILITY FUNCTIONS ****/
+import * as JwtTokenUtility from '@/globals/jwtTokenUtility.js';
+
+/**** VARIABLES ****/
+let username;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+/**** HOOKS ****/
 onMounted(() => {
+  username = JwtTokenUtility.getNameFromJwtToken();
   writeUsernameInTypewriterStyle();
 });
 
@@ -16,28 +29,43 @@ onMounted(() => {
  * @returns {Promise<void>}
  */
 async function writeUsernameInTypewriterStyle() {
-  for(let i = 0; i < username.length; i++) {
-    document.querySelector(".welcomeName").innerHTML += username.charAt(i);
-    await delay(LocalConfig.TYPEWRITTERSPEED);
+  let welcomeNameElement = document.querySelector(".welcomeName");
+  if(welcomeNameElement) {
+    for(let i = 0; i < username.length; i++) {
+      welcomeNameElement.innerHTML += username.charAt(i);
+      await delay(LocalConfig.TYPEWRITTERSPEED);
+    }
   }
 }
 
+/**** CLICK-HANDLERS ****/
+/**
+ * Guides user to the add goalkeeper form page
+ */
 function addGoalkeeperClicked() {
   GlobalConfig.changeWindowToTargetRoute('AddGoalkeeperForm');
 }
 
+/**
+ * Guides user to the add exercise form page
+ */
 function addExerciseClicked() {
   GlobalConfig.changeWindowToTargetRoute('AddExerciseForm');
 }
 
+/**
+ * Guides user to the create training session form page
+ */
 function createTrainingSessionClicked() {
   GlobalConfig.changeWindowToTargetRoute('CreateTrainingSessionForm'); 
 }
 
+/**
+ * Guides user to the general overview page
+ */
 function toGeneralOverviewClicked() {
   GlobalConfig.changeWindowToTargetRoute('GeneralOverview');
 }
-
 </script>
 
 <template>
