@@ -5,43 +5,51 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dhbw.on.webdev.model.baseClass.BaseClass;
 import jakarta.persistence.*;
-import java.util.List;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Exercise entity saved in db.
+ * Materials, description steps and number of materials
+ * are saved as string but passed as a json list from the client.
+ * So they'll get parsed in the getters/setters.
+ * @author daniel
+ */
 @Entity
 @Table(name = "exercises")
 public class Exercise extends BaseClass {
+    /**** TRANSIENT FIELDS ****/
     @Transient
     private String sketchDataURL;
 
+    /**** FIELDS ****/
     private String title;
-
     private String category;
     @Column(name = "category_group")
     private String categoryGroup;
     @Column(name = "number_of_goalkeepers")
     private int numberOfGoalkeepers;
     private String duration;
-
     private int intensity;
-
     private String materials;
-
     private String numbersOfMaterial;
     private String descriptionSteps;
-
     @Column(columnDefinition = "bytea")
     private byte[] sketch;
-
     private String note;
 
+    /**** FOREIGN_KEYS ****/
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @ManyToMany(mappedBy = "exercises")
     @JsonIgnore
     @Transient
     private List<TrainingSession> trainingSessions;
+
+    /**** GETTERS AND SETTERS ****/
 
     public String getSketchDataURL() {
         return sketchDataURL;
@@ -179,4 +187,38 @@ public class Exercise extends BaseClass {
         this.trainingSessions = trainingSessions;
     }
 
+    /**** OVERRIDES ****/
+    @Override
+    public String toString() {
+        return "Exercise{" +
+                "sketchDataURL='" + sketchDataURL + '\'' +
+                ", title='" + title + '\'' +
+                ", category='" + category + '\'' +
+                ", categoryGroup='" + categoryGroup + '\'' +
+                ", numberOfGoalkeepers=" + numberOfGoalkeepers +
+                ", duration='" + duration + '\'' +
+                ", intensity=" + intensity +
+                ", materials='" + materials + '\'' +
+                ", numbersOfMaterial='" + numbersOfMaterial + '\'' +
+                ", descriptionSteps='" + descriptionSteps + '\'' +
+                ", sketch=" + Arrays.toString(sketch) +
+                ", note='" + note + '\'' +
+                ", user=" + user +
+                ", trainingSessions=" + trainingSessions +
+                '}';
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Exercise exercise = (Exercise) o;
+        return numberOfGoalkeepers == exercise.numberOfGoalkeepers && intensity == exercise.intensity && Objects.equals(sketchDataURL, exercise.sketchDataURL) && Objects.equals(title, exercise.title) && Objects.equals(category, exercise.category) && Objects.equals(categoryGroup, exercise.categoryGroup) && Objects.equals(duration, exercise.duration) && Objects.equals(materials, exercise.materials) && Objects.equals(numbersOfMaterial, exercise.numbersOfMaterial) && Objects.equals(descriptionSteps, exercise.descriptionSteps) && Arrays.equals(sketch, exercise.sketch) && Objects.equals(note, exercise.note) && Objects.equals(user, exercise.user) && Objects.equals(trainingSessions, exercise.trainingSessions);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(sketchDataURL, title, category, categoryGroup, numberOfGoalkeepers, duration, intensity, materials, numbersOfMaterial, descriptionSteps, note, user, trainingSessions);
+        result = 31 * result + Arrays.hashCode(sketch);
+        return result;
+    }
 }

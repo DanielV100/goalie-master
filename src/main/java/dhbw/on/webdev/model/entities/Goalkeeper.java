@@ -8,9 +8,11 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Goalkeeper entity saved in db.
+ * @author daniel
  */
 @Entity
 @Table(name = "goalkeepers")
@@ -91,5 +93,32 @@ public class Goalkeeper extends BaseClass {
 
     public void setTrainingSessions(List<TrainingSession> trainingSessions) {
         this.trainingSessions = trainingSessions;
+    }
+
+    /**** OVERRIDES ****/
+    @Override
+    public String toString() {
+        return "Goalkeeper{" +
+                "firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", club='" + club + '\'' +
+                ", birthday=" + birthday +
+                ", notes='" + notes + '\'' +
+                ", user=" + user +
+                ", trainingSessions=" + trainingSessions +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Goalkeeper that = (Goalkeeper) o;
+        return Objects.equals(firstname, that.firstname) && Objects.equals(lastname, that.lastname) && Objects.equals(club, that.club) && Objects.equals(birthday, that.birthday) && Objects.equals(notes, that.notes) && Objects.equals(user, that.user) && Objects.equals(trainingSessions, that.trainingSessions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstname, lastname, club, birthday, notes, user, trainingSessions);
     }
 }

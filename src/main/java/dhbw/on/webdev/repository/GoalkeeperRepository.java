@@ -10,6 +10,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
+/**
+ * Panache repo for accessing the goalkeepers in the db.
+ */
 @ApplicationScoped
 public class GoalkeeperRepository implements PanacheRepository<Goalkeeper> {
     /**

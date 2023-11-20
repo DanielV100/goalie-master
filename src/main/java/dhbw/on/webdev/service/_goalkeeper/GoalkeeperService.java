@@ -41,6 +41,7 @@ public class GoalkeeperService {
      * @return GoalkeeperDTO-List with goalkeepers in it
      */
     public List<GoalkeeperDTO> getAllGoalkeepersFromCurrentUser() {
+        Log.info("Getting all goalkeepers from current user");
         final long userId = jwtTokenService.getUserIdFromJwtToken();
         System.out.println(userId);
         if(userId > 0) {
@@ -105,14 +106,18 @@ public class GoalkeeperService {
     /**
      * Method for deleting a goalkeeper by its id.
      * @param goalkeeperId passed by client via path param
-     * @return Response ok() or serverError
+     * @return Response ok() or serverError or http-status 404
      */
     @Transactional
     public Response deleteGoalkeeper(final long goalkeeperId) {
+        Log.info("Trying to delete goalkeeper");
         try {
-            Log.info("Trying to delete goalkeeper");
-            goalkeeperRepository.deleteById(goalkeeperId);
-            return Response.ok().build();
+            if(goalkeeperRepository.deleteById(goalkeeperId)) {
+                return Response.ok().build();
+            } else {
+                Log.error("Goalkeeper not found by Id: " + goalkeeperId);
+                return Response.status(404).build();
+            }
         } catch (Exception exception) {
             Log.error("Deletion of goalkeeper failed ", exception);
             return Response.serverError().build();

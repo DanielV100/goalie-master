@@ -40,6 +40,7 @@ public class ExerciseService {
      * @return list of exercises of current user.
      */
     public List<ExerciseDTO> getAllExercisesFromCurrentUser() {
+        Log.info("Getting all exercises from current user");
         final long userId = jwtTokenService.getUserIdFromJwtToken();
         if(userId > 0) {
             return exerciseRepository.getExercisesByField("user", userRepository.findById(userId));
@@ -57,11 +58,13 @@ public class ExerciseService {
      */
     @Transactional
     public Response addNewExercise(Exercise exercise) {
-        System.out.println(exercise.getMaterials().getClass());
+        Log.info("Trying to add new exercises: " + exercise.getTitle());
         exercise.setUser(serviceHelper.getCurrentUser(jwtTokenService.getUserIdFromJwtToken()));
         if(exercise.getSketchDataURL() == null) {
+            Log.warn("No sketch sent by client");
             exercise.setSketch(null);
         } else {
+            Log.info("Sketch found and set");
             exercise.setSketch(serviceHelper.convertDataUrlToByteArray(exercise.getSketchDataURL()));
         }
         try {
@@ -82,11 +85,11 @@ public class ExerciseService {
      */
     @Transactional
     public Response updateExistingExercise(Exercise updatedExercise) {
+        Log.info("Trying to update exercise");
         Exercise exercise = exerciseRepository.findById(updatedExercise.getId());
         if(exercise != null) {
-            //sketch must be set here, otherwise helper method have to be edited
+            //sketch must be set here, otherwise helper method have to be edited, which is more complex
             if(updatedExercise.getSketchDataURL() != null) {
-                System.out.println(exercise.getSketchDataURL());
                 exercise.setSketch(serviceHelper.convertDataUrlToByteArray(updatedExercise.getSketchDataURL()));
             } else {
                 Log.warn("No data url found for exercise: " + updatedExercise.getTitle());
@@ -107,17 +110,23 @@ public class ExerciseService {
     /**** DELETE-REQUEST-SERVICES ****/
 
     /**
-     * Method for deleting a exercise by its id.
+     * Method for deleting an exercise by its id.
      * @param exerciseId
-     * @return Resonse ok() or http-status code 404
+     * @return Resonse ok(), serverError or http-status code 404
      */
     @Transactional
     public Response deleteExercise(final long exerciseId) {
-        if(exerciseRepository.deleteById(exerciseId)) {
-            return Response.ok().build();
-        } else {
-            Log.error("Exercise not found by Id: " + exerciseId);
-            return Response.status(404).build();
+        Log.info("Trying to delete exercise");
+        try {
+            if(exerciseRepository.deleteById(exerciseId)) {
+                return Response.ok().build();
+            } else {
+                Log.error("Exercise not found by Id: " + exerciseId);
+                return Response.status(404).build();
+            }
+        } catch (Exception exception) {
+            Log.error("Deletion of goalkeeper failed ", exception);
+            return Response.serverError().build();
         }
     }
 }
