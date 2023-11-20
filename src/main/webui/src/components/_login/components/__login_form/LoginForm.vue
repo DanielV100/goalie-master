@@ -1,31 +1,45 @@
 <script setup>
-import {computed, ref} from 'vue';
-import * as GlobalConfig from '../../../../globals/gloablConfig.js';
-import * as LocalConfig from './resources/loginFormConfig.js';
-import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
-import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
-import axios from "axios";
-import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
+/**
+ * This SFC is the login form for the application.
+ * User can sign in with username and password.
+ * @author daniel
+ */
 
+/**** IMPORTS ****/
+import {computed, ref} from 'vue';
+import axios from "axios";
+/**** COMPONENTS ****/
+import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
+import LoaderAnimation from "@/components/_login/components/__loader_animation/LoaderAnimation.vue";
+/**** CONFIGS ****/
+import * as GlobalConfig from '@/globals/gloablConfig.js';
+import * as LocalConfig from './resources/loginFormConfig.js';
+/**** UTILITY FUNCTIONS ****/
+import * as UtilityFunctions from '@/globals/utilityFunctions.js';
+import * as SessionStorageFunctions from '@/globals/sessionStorageUtilitiyFunctions.js';
+
+/**** VARIABLES ****/
 const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const isPasswordInvisible = ref(true);
 const isLoginFormVisible = ref(true);
+
+/**** COMPUTED PROPERTIES ****/
 //Button is only clickable, when username and password is set
 const isLoginButtonDisabled = computed(() => {
   return !(username.value !== '' && password.value !== '');
 });
 
-//send username and password to server and look if response is ok
-const isAuthorizedUser = async (hashedPassword) => {
+/**** HTTTP-REQUESTS ****/
+const isAuthorizedUser = async () => {
   try {
     const userCredentials = {
       username: username.value,
-      password: hashedPassword
+      password: password.value
     };
     const response = await axios.post('/login', userCredentials);
-    setJwtTokenToLocalStorage(response.data);
+    SessionStorageFunctions.setJwtTokenToLocalStorage(response.data);
     return true;
   } catch (error) {
     errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.SUBMIT_BUTTON_TEXT);
@@ -34,24 +48,35 @@ const isAuthorizedUser = async (hashedPassword) => {
   }
 }
 
-function setJwtTokenToLocalStorage(JwtToken) {
-  sessionStorage.setItem('jwttoken', JwtToken);
-}
+/**** CLICK-HANDLERS ****/
 
-function resetForm() {
-  username.value = '';
-  password.value = ''
-}
+/**
+ * Triggered when user clicks login button
+ * @returns {Promise<void>}
+ */
 async function loginButtonClicked() {
   UtilityFunctions.setLoadingCircleInSubmitButton();
-  const isAuthorized = await isAuthorizedUser(hashPassword());
+  const isAuthorized = await isAuthorizedUser();
   if (isAuthorized) {
     showLoaderAnimation();
   }
 }
 
-function hashPassword() {
-  return password.value.toString() ;
+/**
+ * Triggered when password icon is clicked
+ */
+function passwordIconClicked() {
+  togglePasswordIcon();
+}
+
+/**** FUNCTIONS ****/
+
+/**
+ * Resets the login form and clears it
+ */
+function resetForm() {
+  username.value = '';
+  password.value = ''
 }
 
 /**
@@ -60,19 +85,16 @@ function hashPassword() {
 function showLoaderAnimation() {
   isLoginFormVisible.value = false;
 }
-function passwordIconClicked() {
-  togglePasswordIcon();
-}
 
 /**
  * Function used for setting the lock opend/closed in password field.
  */
 function togglePasswordIcon() {
   if(isPasswordInvisible.value === true) {
-    setPasswordVisibility("text");
+    setPasswordVisibility('text');
     isPasswordInvisible.value = false;
   } else {
-    setPasswordVisibility("password");
+    setPasswordVisibility('password');
     isPasswordInvisible.value = true;
   }
 }

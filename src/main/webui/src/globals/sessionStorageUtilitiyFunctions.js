@@ -83,4 +83,6 @@ export function getJwtTokenFromSessionStorage() {
     return sessionStorage.getItem('jwttoken');
 }
 
-
+export function setJwtTokenToLocalStorage(JwtToken) {
+    sessionStorage.setItem('jwttoken', JwtToken);
+}
