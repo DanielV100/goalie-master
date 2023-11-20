@@ -7,6 +7,8 @@ import jakarta.inject.Inject;
 import jakarta.json.JsonNumber;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import java.time.Duration;
+
 
 @ApplicationScoped
 public class JwtTokenService {
@@ -23,7 +25,7 @@ public class JwtTokenService {
                 .subject("goalie-master-frontend")
                 .groups("user")
                 .claim("userID", userID)
-                .expiresAt(System.currentTimeMillis() + 3600)
+                .expiresIn(Duration.ofHours(2))
                 .sign();
     }
 

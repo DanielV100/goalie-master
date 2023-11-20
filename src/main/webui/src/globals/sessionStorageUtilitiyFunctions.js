@@ -79,4 +79,8 @@ export function getSessionStorageElementById(obj, id) {
     }
 }
 
+export function getJwtTokenFromSessionStorage() {
+    return sessionStorage.getItem('jwttoken');
+}
+
 

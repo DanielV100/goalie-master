@@ -6,7 +6,7 @@ export const APP_NAME = "G⚽alieMaster";
  * but paths could change.
  *
  */
-const ROUTES_MAP = {
+const routes_map = {
     'LoginForm':'#/',
     'Overview':'#/menu',
     'AddGoalkeeperForm':'#/add-goalkeeper',
@@ -20,5 +20,5 @@ const ROUTES_MAP = {
  * @param targetComponent
  */
 export function changeWindowToTargetRoute(targetComponent) {
-    window.location = ROUTES_MAP[targetComponent];
+    window.location = routes_map[targetComponent];
 }

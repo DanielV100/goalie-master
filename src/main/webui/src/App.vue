@@ -1,18 +1,27 @@
 <script setup>
+/**
+ * "Main"-Class for getting the Vue app ready. Routing is done here.
+ * @author daniel
+ */
+
+/**** IMPORTS ****/
+import {computed, ref} from "vue";
+/**** COMPONENTS ****/
 import LoginForm from "@/components/_login/components/__login_form/LoginForm.vue";
 import Header from "@/components/_globals/components/__header/Header.vue";
 import Overview from "@/components/_menu/components/__overview/Overview.vue";
 import AddGoalkeeperForm from "@/components/_detailed/components/__addGoalkeeperForm/AddGoalkeeperForm.vue";
-import {computed, ref} from "vue";
 import AddExerciseForm from "@/components/_detailed/components/__addExerciseForm/AddExerciseForm.vue";
-import CreateTrainingSessionForm
-  from "@/components/_detailed/components/__createTrainingSessionForm/CreateTrainingSessionForm.vue";
+import CreateTrainingSessionForm from "@/components/_detailed/components/__createTrainingSessionForm/CreateTrainingSessionForm.vue";
 import GeneralOverview from "@/components/_detailed/components/__generalOverview/GeneralOverview.vue";
+import NotFound from "@/components/_globals/components/__notFound/NotFound.vue";
+/**** UTILITY FUNCTIONS ****/
+import * as JwtTokenUtility from '@/globals/jwtTokenUtility.js';
 
-//defining the routes to the other pages
+/**** VARIABLES ****/
 const isShowingHeader = ref(false);
-
-const ROUTES = {
+const currentPath = ref(window.location.hash);
+const routes = {
   '/': LoginForm,
   '/menu': Overview,
   '/add-goalkeeper': AddGoalkeeperForm,
@@ -21,29 +30,32 @@ const ROUTES = {
   '/general-overview': GeneralOverview
 };
 
-const currentPath = ref(window.location.hash);
-window.addEventListener('hashchange', () => {
-  currentPath.value = window.location.hash;
-});
-
+/**** COMPUTED PROPERTIES ****/
 const currentView = computed(() => {
-  let current = ROUTES[currentPath.value.slice(1) || '/'];
-  //header shouldn't be shown in login page
-  if(current.__name !== 'LoginForm') {
-    isShowingHeader.value = true;
-  } else {
-    isShowingHeader.value = false;
+  console.log(JwtTokenUtility.checkIfJwtTokenIsValid());
+  const current = routes[currentPath.value.slice(1) || '/'];
+  if(current) {
+    //check if user is authenticated
+    if(current.__name !== 'LoginForm' && !JwtTokenUtility.checkIfJwtTokenIsValid()) {
+      return NotFound;
+    }
+    //header shouldn't be shown in login page
+    if(current.__name !== 'LoginForm') {
+      isShowingHeader.value = true;
+    } else {
+      isShowingHeader.value = false;
+    }
   }
   return  current || NotFound;
 });
 
+/**** EVENT LISTENERS ****/
+window.addEventListener('hashchange', () => {
+  currentPath.value = window.location.hash;
+});
 </script>
 
 <template>
   <Header v-if="isShowingHeader"/>
   <component :is="currentView" />
 </template>
-
-<style>
-
-</style>
