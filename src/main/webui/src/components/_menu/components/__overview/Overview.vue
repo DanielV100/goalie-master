@@ -23,21 +23,6 @@ onMounted(() => {
   writeUsernameInTypewriterStyle();
 });
 
-
-/**
- * Writes username in typewriter style (every letter in ms seconds).
- * @returns {Promise<void>}
- */
-async function writeUsernameInTypewriterStyle() {
-  let welcomeNameElement = document.querySelector(".welcomeName");
-  if(welcomeNameElement) {
-    for(let i = 0; i < username.length; i++) {
-      welcomeNameElement.innerHTML += username.charAt(i);
-      await delay(LocalConfig.TYPEWRITTERSPEED);
-    }
-  }
-}
-
 /**** CLICK-HANDLERS ****/
 /**
  * Guides user to the add goalkeeper form page
@@ -65,6 +50,22 @@ function createTrainingSessionClicked() {
  */
 function toGeneralOverviewClicked() {
   GlobalConfig.changeWindowToTargetRoute('GeneralOverview');
+}
+
+/**** FUNCTIONS ****/
+
+/**
+ * Writes username in typewriter style (every letter in ms seconds).
+ * @returns {Promise<void>}
+ */
+async function writeUsernameInTypewriterStyle() {
+  let welcomeNameElement = document.querySelector(".welcomeName");
+  if(welcomeNameElement) {
+    for(let i = 0; i < username.length; i++) {
+      welcomeNameElement.innerHTML += username.charAt(i);
+      await delay(LocalConfig.TYPEWRITTERSPEED);
+    }
+  }
 }
 </script>
 

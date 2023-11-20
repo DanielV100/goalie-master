@@ -1,26 +1,42 @@
 <script setup>
+/**
+ * SFC for adding a goalkeeper
+ * @author daniel
+ */
+/**** IMPORTS ****/
 import {computed, ref, defineProps, onBeforeMount} from "vue";
+import axios from "axios";
+/**** CONFIGS ****/
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
-import * as UtilityFunctions from "../../../../globals/utilityFunctions.js";
+/**** UTILITY FUNCTIONS ****/
+import * as UtilityFunctions from "@/globals/utilityFunctions.js";
+/**** COMPONENTS ****/
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
-import axios from "axios";
 import ErrorDialog from "@/components/_globals/components/__errorDialog/ErrorDialog.vue";
 
+/**** VARIABLES ****/
 const isNotSubmitted = ref(true);
 const firstname = ref('');
 const lastname = ref('');
+const regexForValidatingInput = /^[A-Za-z]+$/;
 const birthday = ref();
 const club = ref('');
 const notes = ref('');
 const errorMessage = ref('');
 const submitButtonText = ref(LocalConfig.BUTTON_ADD_GOALKEEPER);
 const successMessage = ref(LocalConfig.SUCCESS_MESSAGE);
+
+/**** COMPUTED PROPERTIES ****/
+const isValidEntry = computed(() => {
+  return regexForValidatingInput.test(firstname.value) && regexForValidatingInput.test(lastname.value);
+});
 //submit button is active when all mandatory fields are filled
 const isSubmitDisabled = computed(() => {
-  return !(firstname.value !== '' && lastname.value !== '' && club.value !== '');
+  return !(firstname.value !== '' && lastname.value !== '' && club.value !== '' && isValidEntry.value);
 });
 
+/**** PROPS ****/
 const props = defineProps({
   isEditView: Boolean,
   id: Number,
@@ -31,6 +47,7 @@ const props = defineProps({
   notes: String
 });
 
+/**** HOOKS ****/
 onBeforeMount(() => {
   if(props.isEditView) {
     firstname.value = props.firstname;
@@ -38,11 +55,12 @@ onBeforeMount(() => {
     birthday.value = props.birthday;
     club.value = props.club;
     notes.value = props.notes;
-    submitButtonText.value = "Torhüter aktualisieren"
-    successMessage.value = "Torhüter erfolgreich bearbeitet!";
+    submitButtonText.value = LocalConfig.BUTTON_ADD_GOALKEEPER_EDIT
+    successMessage.value = LocalConfig.SUCCESS_MESSAGE_EDIT;
   }
 });
 
+/**** HTTTP-REQUESTS ****/
 const isAddingGoalkeeperSuccessful = async () => {
   try {
     await axios.post('/goalkeeper/add', createGoalkeeperArrayForHttpRequest(), {
@@ -72,14 +90,11 @@ const isUpdatingGoalkeeperSuccessful = async () => {
   }
 }
 
-function resetForm() {
-  firstname.value = '';
-  lastname.value = '';
-  birthday.value = '';
-  club.value = '';
-  notes.value = '';
-}
-
+/**** CLICK-HANDLERS ****/
+/**
+ * Triggered when submit button is clicked.
+ * @returns {Promise<void>}
+ */
 async function onSubmitClick() {
   UtilityFunctions.setLoadingCircleInSubmitButton();
   let isSuccessful;
@@ -92,7 +107,22 @@ async function onSubmitClick() {
     isNotSubmitted.value = false;
   }
 }
+/**** FUNCTIONS ****/
+/**
+ * Method for resetting form and refs.
+ */
+function resetForm() {
+  firstname.value = '';
+  lastname.value = '';
+  birthday.value = '';
+  club.value = '';
+  notes.value = '';
+}
 
+/**
+ * Creating object which is in the body of the http request
+ * @returns object, which is used for the http request
+ */
 function createGoalkeeperArrayForHttpRequest() {
   const goalkeeper = {
     firstname: firstname.value,
@@ -106,8 +136,6 @@ function createGoalkeeperArrayForHttpRequest() {
   }
   return goalkeeper;
 }
-
-
 </script>
 
 <template>
@@ -180,5 +208,8 @@ function createGoalkeeperArrayForHttpRequest() {
 #notes {
   padding-top: 20px;
   padding-bottom: 20px;
+}
+.error {
+  background: lightcoral;
 }
 </style>
