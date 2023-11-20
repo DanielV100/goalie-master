@@ -4,3 +4,5 @@ export const WAITING_TEXTS = [
     "Auf geht's! Kämpfen und Siegen 🚀"
 ];
 
+export const DELAY = 2000;
+

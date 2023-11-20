@@ -1,11 +1,26 @@
 <script setup>
+/**
+ * SFC for loading animation at login
+ * @author daniel
+ */
+
+/**** IMPORTS ****/
+import {onMounted, ref} from "vue";
+/**** CONFIGS ****/
 import * as GlobalConfig from '../../../../globals/gloablConfig.js'
 import * as LocalConfig from './resources/loaderAnimationConfig.js';
-import {ref} from "vue";
 
+/**** VARIABLES ****/
 const waitingText = ref();
 //every two seconds there is another waiting text
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**** HOOKS ****/
+onMounted(() => {
+  changeWaitingText();
+});
+
+/**** FUNCTIONS ****/
 
 /**
  * Changes the waiting texts every two seconds.
@@ -14,11 +29,10 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 async function changeWaitingText() {
   for(let i = 0; i < LocalConfig.WAITING_TEXTS.length; i++) {
     waitingText.value = LocalConfig.WAITING_TEXTS[i];
-    await delay(2000);
+    await delay(LocalConfig.DELAY);
   }
   GlobalConfig.changeWindowToTargetRoute('Overview');
 }
-changeWaitingText();
 </script>
 
 <template>
