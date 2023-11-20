@@ -4,12 +4,13 @@
  * @author daniel
  */
 /**** IMPORTS ****/
-import {computed, onBeforeMount, ref} from "vue";
+import {computed, onBeforeMount, onMounted, ref} from "vue";
 import axios from "axios";
 /**** CONFIGS ****/
 import * as LocalConfig from './resources/addExerciseFormConfig.js';
 /**** UTILITY FUNCTIONS ****/
-import * as UtilityFunctions from '../../../../globals/utilityFunctions.js';
+import * as UtilityFunctions from '@/globals/utilityFunctions.js';
+import * as SessionStorageFunctions from '@/globals/sessionStorageUtilitiyFunctions.js';
 /**** COMPONENTS ****/
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SoccerField from "@/components/_globals/components/__soccerField/SoccerField.vue";
@@ -30,6 +31,10 @@ const errorMessage = ref('');
 const materialList = ref([]);
 const descriptionList = ref([]);
 const sketchDataUrl = ref();
+const isMaterialDeleteButtonDisabled = ref(true);
+const isDescriptionStepDeleteButtonDisabled = ref(true);
+const createExerciseButtonText = ref(LocalConfig.FORM_CREATE_EXERCISE_BUTTON);
+const successMessageText = ref(LocalConfig.SUCCESS_MESSAGE)
 
 /**** COMPUTED PROPERTIES ****/
 const isSubmitDisabled = computed(() => {
@@ -57,12 +62,22 @@ onBeforeMount(() => {
   init();
 });
 
+onMounted(() => {
+
+  //making material and descriptions steps deletable
+  if(props.isEditView) {
+    successMessageText.value = LocalConfig.SUCCESS_MESSAGE_EDIT;
+    createExerciseButtonText.value = LocalConfig.FORM_CREATE_EXERCISE_BUTTON_EDIT;
+    UtilityFunctions.bindDeleteEventListenerToAllDeleteButtons();
+  }
+});
+
 /**** HTTP-REQUESTS ****/
 const isAddingExerciseSuccessful = async () => {
   try {
     await axios.post('/exercise/add', createExerciseForHttpRequest(), {
       headers: {
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
     });
     return true;
@@ -77,7 +92,7 @@ const isUpdatingExerciseSuccessful = async () => {
   try {
     await axios.put('/exercise/update', createExerciseForHttpRequest(), {
       headers: {
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
     });
     return true;
@@ -104,8 +119,6 @@ async function submitButtonClicked() {
   }
   if(isSuccessful) {
     isNotSubmitted.value = false;
-  } else {
-
   }
 }
 
@@ -132,6 +145,7 @@ function addDescriptionStepClicked(event) {
  */
 function init() {
   if(props.isEditView) {
+
     title.value = props.title;
     category.value = props.category;
     numberOfGoalkeeper.value = props.numberOfGoalkeeper;
@@ -144,7 +158,13 @@ function init() {
       materialListTemp.push({numberOfMaterial: props.numbersOfMaterial[i], material: props.materials[i]});
     }
     materialList.value = materialListTemp;
+    if(Object.keys(props.materials).length > 1) {
+      isMaterialDeleteButtonDisabled.value = false;
+    }
     descriptionList.value = props.descriptionSteps;
+    if(Object.keys(props.descriptionSteps).length > 1) {
+      isDescriptionStepDeleteButtonDisabled.value = false;
+    }
     sketchDataUrl.value = props.sketch;
   }
 }
@@ -231,7 +251,6 @@ function getValueListFromDomInputFields(selector) {
  */
 function getDataUrlFromSketch() {
   const sketch = document.querySelector('canvas');
-  console.log(sketch);
   if(sketch === null) {
     return null;
   } else {
@@ -244,7 +263,7 @@ function getDataUrlFromSketch() {
   <div class="__add_exercise_form">
     <CurrentPageIndicator>{{ LocalConfig.CURRENT_PAGE }}</CurrentPageIndicator>
     <div v-if="isNotSubmitted" class="wrapper">
-      <form @submit="onSubmitClick" class="form">
+      <form class="form">
         <div class="column">
           <div class="input-box">
             <label>{{ LocalConfig.FORM_TITLE_LABEL }}</label>
@@ -258,20 +277,26 @@ function getDataUrlFromSketch() {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_CATEGORY_LABEL }}</label>
-            <select v-model="category" name="categories" id="cars">
-              <option value="others">Sonstige</option>
+            <select v-model="category" name="categories" required>
               <optgroup label="Aufwärmen">
                 <option value="coordination">{{ LocalConfig.CATEGORY_WARM_UP_COORDINATION }}</option>
                 <option value="balance_ability">{{ LocalConfig.CATEGORY_WARM_UP_BALANCE_ABILITY }}</option>
                 <option value="balance_ability">{{ LocalConfig.CATEGORY_WARM_UP_JUMP_COORDINATION }}</option>
+                <option value="agility">{{ LocalConfig.CATEGORY_WARM_UP_AGILITY }}</option>
+                <option value="flexibility">{{ LocalConfig.CATEGORY_WARM_UP_FLEXIBILITY }}</option>
+                <option value="other">{{ LocalConfig.OTHER }}</option>
               </optgroup>
               <optgroup label="Hauptteil">
                 <option value="1vs1">{{ LocalConfig.CATEGORY_MAIN_1vs1 }}</option>
                 <option value="pike">{{ LocalConfig.CATEGORY_MAIN_PIKE }}</option>
+                <option value="positioning">{{ LocalConfig.CATEGORY_MAIN_POSITIONING }}</option>
+                <option value="reflexes">{{ LocalConfig.CATEGORY_MAIN_REFLEXES }}</option>
+                <option value="other">{{ LocalConfig.OTHER }}</option>
               </optgroup>
               <optgroup label="Abschluss">
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
+                <option value="cool_down_stretch">{{ LocalConfig.CATEGORY_COOL_DOWN_STRETCH }}</option>
+                <option value="mental_relaxation">{{ LocalConfig.CATEGORY_COOL_DOWN_MENTAL_RELAXATION }}</option>
+                <option value="other">{{ LocalConfig.OTHER }}</option>
               </optgroup>
             </select>
           </div>
@@ -279,6 +304,7 @@ function getDataUrlFromSketch() {
             <label>{{ LocalConfig.FORM_NUMBER_OF_GOALKEEPER_LABEL }}</label>
             <input
                 v-model="numberOfGoalkeeper"
+                step="1"
                 type="number"
                 placeholder="2"
                 required
@@ -311,7 +337,7 @@ function getDataUrlFromSketch() {
           <div class="input-box" id="multi">
             <div id="material_container">
               <label style="width: 100%">{{ LocalConfig.FORM_MATERIAL_LABEL }}</label>
-              <div v-if="props.isEditView"  v-for="(material, index) in materialList" id="material_element" style="display: flex">
+              <div v-if="props.isEditView"  v-for="(material) in materialList" id="material_element" style="display: flex">
                 <input :value="material.numberOfMaterial" class="input number_of_material" type="number" style="width: 25%; margin-right: 8px" placeholder="9" />
                 <input
                     :value="material.material"
@@ -322,12 +348,13 @@ function getDataUrlFromSketch() {
                     list="materials"
                     required
                 />
-                <button class="deleteButton" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
+                <button class="deleteButton" id="delete_material" :disabled="isMaterialDeleteButtonDisabled" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
                 <datalist id="materials">
                   <option>Stangen</option>
                   <option>Hütchen</option>
                   <option>Bälle</option>
                   <option>Pylonen</option>
+                  <option>Hürden</option>
                 </datalist>
               </div>
               <div v-else id="material_element" style="display: flex">
@@ -340,7 +367,7 @@ function getDataUrlFromSketch() {
                     list="materials"
                     required
                 />
-                <button class="deleteButton" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
+                <button class="deleteButton" :disabled="isMaterialDeleteButtonDisabled" id="delete_material" style="width: 15%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
                 <datalist id="materials">
                   <option>Stangen</option>
                   <option>Hütchen</option>
@@ -349,25 +376,25 @@ function getDataUrlFromSketch() {
                 </datalist>
               </div>
             </div>
-            <button type="button" @click="addMaterialButtonClicked">+</button>
+            <button id="addMaterial" type="button" @click="addMaterialButtonClicked">+</button>
           </div>
         </div>
         <br />
       </form>
       <div id="description_container">
-        <form @submit="onSubmitClick" class="form" id="form">
+        <form class="form" id="form">
           <label>{{ LocalConfig.FORM_DESCRIPTION_LABEL }}</label>
           <div v-if="props.isEditView" v-for="description in descriptionList"  id="description" style="display: flex">
             <textarea :value="description" class="input description_step" id="textTest" rows="2"></textarea>
-            <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
+            <button @p.prevent id="delete_description" :disabled="isDescriptionStepDeleteButtonDisabled" class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
           </div>
           <div v-else  id="description" style="display: flex">
             <textarea class="input description_step" id="textTest" rows="2"></textarea>
-            <button class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
+            <button id="delete_description" :disabled="isDescriptionStepDeleteButtonDisabled" class="deleteButton" style="width: 10%;  margin-left: 8px; padding: 0 15px; margin-top: 8px; height: auto; " >-</button>
           </div>
         </form>
       </div>
-      <button @click="addDescriptionStepClicked">+</button>
+      <button id="addDescription" @click="addDescriptionStepClicked">+</button>
       <br>
       <br>
       <div>
@@ -398,9 +425,9 @@ function getDataUrlFromSketch() {
         <label>{{ LocalConfig.FORM_NOTES_LABEL }}</label>
         <textarea class="input" v-model="note" id="textTest" rows="3"></textarea>
       </div>
-      <button class="submit"  @click.prevent="submitButtonClicked" :disabled="isSubmitDisabled">{{ LocalConfig.FORM_CREATE_EXERCISE_BUTTON }}</button>
+      <button class="submit"  @click.prevent="submitButtonClicked" :disabled="isSubmitDisabled">{{ createExerciseButtonText }}</button>
     </div>
-    <SuccessAnimation v-else>{{ LocalConfig.SUCCESS_MESSAGE }}</SuccessAnimation>
+    <SuccessAnimation v-else>{{ successMessageText }}</SuccessAnimation>
   </div>
   <ErrorDialog>{{ errorMessage }}</ErrorDialog>
 </template>
@@ -433,6 +460,10 @@ function getDataUrlFromSketch() {
 }
 
 button {
+  width: 100%;
+}
+
+img {
   width: 100%;
 }
 </style>

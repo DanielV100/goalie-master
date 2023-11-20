@@ -59,7 +59,7 @@ const isCreatingTrainingSessionSuccessful = async () => {
   try {
     await axios.post('/training_session/create', createTrainingSessionObjectForResponse(), {
       headers: {
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
     });
     return true;
@@ -74,7 +74,7 @@ const isUpdatingExistingTrainingSessionSuccessful = async () => {
   try {
     await axios.put('/training_session/update', createTrainingSessionObjectForResponse(), {
       headers: {
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
     });
     return true;

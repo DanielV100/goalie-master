@@ -1,26 +1,40 @@
+
+/**** EXPORT FUNCTIONS ****/
+
+/**
+ * Method for cloning existing dom node. It's user for materials and descriptions steps e.g.
+ * @param event click event
+ * @param elementContainer container in which the node should be copied in
+ * @param elementToClone element to clone
+ */
 export function cloneExistingFieldsInContainer(event, elementContainer, elementToClone) {
+    event.preventDefault();
     const cloneElement = document.getElementById(elementToClone);
     const clonedElement = cloneElement.cloneNode(true);
     const inputs = clonedElement.querySelectorAll('.input');
     inputs.forEach((input) => (input.value = ''));
     document.getElementById(elementContainer).appendChild(clonedElement);
     bindDeleteEventListenerToAllDeleteButtons(event);
+
 }
 
-export function bindDeleteEventListenerToAllDeleteButtons(event) {
-    const allDeleteButtons =   document.querySelectorAll('.deleteButton');
+/**
+ * Binding click listener to dynamic delete buttons.
+ * Needed because @click can't be inherited.
+ * @param event click event
+ */
+export function bindDeleteEventListenerToAllDeleteButtons(event = null) {
+    const allDeleteButtons = document.querySelectorAll('.deleteButton');
     allDeleteButtons.forEach((deleteButton) => {
         deleteButton.addEventListener('click', deleteDeleteButtonsContainer);
     });
-}
-
-function deleteDeleteButtonsContainer(event) {
-    const parentNode = event.target.parentNode;
-    parentNode.innerHTML = '';
-}
-
-export function getJwtTokenFromSessionStorage() {
-    return sessionStorage.getItem('jwttoken');
+    if (event) {
+        if (event.target.id === 'addMaterial') {
+            enableAllDeleteButtons('#delete_material');
+        } else {
+            enableAllDeleteButtons('#delete_description');
+        }
+    }
 }
 
 /**
@@ -55,6 +69,49 @@ export function errorHandling(error, submitButtonText) {
     unsetLoadingCircleInSubmitButton(submitButtonText);
     return getErrorMessageFromHttpError(error);
 }
+
+/**** PRIVATE FUNCTIONS ****/
+
+/**
+ * Removing container element from button from dom.
+ * @param event click event
+ */
+function deleteDeleteButtonsContainer(event) {
+    event.preventDefault();
+    const parentNode = event.target.parentNode;
+    parentNode.remove();
+    if(event.target.id === 'delete_material') {
+        disableLastDeleteButton('#material_delete');
+    } else {
+        disableLastDeleteButton('#delete_description')
+    }
+}
+
+/**
+ * Method for setting all delete buttons enabled
+ * @param selector for delete buttons
+ */
+function enableAllDeleteButtons(selector) {
+    const deleteButtonElements = document.querySelectorAll(selector);
+    deleteButtonElements.forEach((deleteButtonElement) => {
+        deleteButtonElement.disabled = false;
+    });
+}
+/**
+ * Method for setting all delete buttons disabled
+ * @param selector for delete buttons
+ */
+function disableLastDeleteButton(selector) {
+    const deleteButtonElements = document.querySelectorAll(selector);
+    if(deleteButtonElements.length === 1) {
+        deleteButtonElements.forEach((deleteButtonElement) => {
+            deleteButtonElement.disabled = true;
+        });
+    }
+
+}
+
+
 function getErrorMessageFromHttpError(error) {
     const errorAsString = String(error);
     if (errorAsString.includes('401')) {

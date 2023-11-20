@@ -7,7 +7,7 @@ export async function getAllExercisesFromDB() {
         const response = await axios.get('exercise/get/specific', {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+                Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             }
         });
         console.log(response.data);
@@ -28,7 +28,7 @@ export async function getGoalkeepersFromDB() {
         const response = await axios.get('goalkeeper/get/specific', {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+                Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             }
         });
         SessionStorageFunctions.saveAllGoalkeepersInSessionStorage(response.data);
@@ -45,7 +45,7 @@ export async function getAllTrainingSessions() {
         const response = await axios.get('training_session/get/specific', {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+                Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             }
         });
         SessionStorageFunctions.saveAllTrainingSessionInSessionStorage(response.data);
@@ -61,7 +61,7 @@ export async function getTrainingSessionAsPdf(id) {
         const response = await axios.get('training_session/download/'+id, {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+                Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             },
             responseType: 'blob'
         });
@@ -77,7 +77,7 @@ export async function getTrainingSessionAsMail(id, mail) {
         const response = await axios.get('training_session/mail/'+id+'/'+mail, {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+                Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             },
         });
         return response.data;

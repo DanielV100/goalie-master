@@ -7,7 +7,7 @@ export async function deleteEntityById(entity, id) {
         const response = await axios.delete(`${entity}/delete/${id}`, {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+                Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             }
         });
         return response.data;

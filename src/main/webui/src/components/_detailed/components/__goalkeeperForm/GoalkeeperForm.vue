@@ -10,6 +10,7 @@ import axios from "axios";
 import * as LocalConfig from "./resources/addGoalkeeperFormConfig.js";
 /**** UTILITY FUNCTIONS ****/
 import * as UtilityFunctions from "@/globals/utilityFunctions.js";
+import * as SessionStorageFunctions from "@/globals/sessionStorageUtilitiyFunctions.js";
 /**** COMPONENTS ****/
 import CurrentPageIndicator from "@/components/_globals/components/__currentPageIndicator/CurrentPageIndicator.vue";
 import SuccessAnimation from "@/components/_globals/components/__successAnimation/SuccessAnimation.vue";
@@ -65,7 +66,7 @@ const isAddingGoalkeeperSuccessful = async () => {
   try {
     await axios.post('/goalkeeper/add', createGoalkeeperArrayForHttpRequest(), {
       headers: {
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
     });
     return true;
@@ -79,7 +80,7 @@ const isUpdatingGoalkeeperSuccessful = async () => {
   try {
     await axios.put('/goalkeeper/update', createGoalkeeperArrayForHttpRequest(), {
       headers: {
-        Authorization: `Bearer ${UtilityFunctions.getJwtTokenFromSessionStorage()}`
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
     });
     return true;
