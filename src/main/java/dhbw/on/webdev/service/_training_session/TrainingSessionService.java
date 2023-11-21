@@ -11,6 +11,7 @@ import dhbw.on.webdev.repository.TrainingSessionRepository;
 import dhbw.on.webdev.repository.UserRepository;
 import dhbw.on.webdev.service.helper.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -62,7 +63,7 @@ public class TrainingSessionService {
      */
     public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
         try {
-            return clearUnnecessaryDataForResponse(trainingSessionRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+            return clearUnnecessaryDataForResponse(trainingSessionRepository.getAllTrainingSessionsOrderedByDate(userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
         } catch (NullPointerException exception) {
             return new ArrayList<>();
         }
@@ -228,14 +229,21 @@ public class TrainingSessionService {
 
     /**** DELETE-REQUEST-SERVICES ****/
     /**
-     * Method for deleting training session by it's training session id.
-     * @param trainingSessionId
-     * @return
+     * Method for deleting training session by its training session id.
+     * @param trainingSessionId long from client
+     * @return Response ok();
      */
     @Transactional
     public Response deleteTrainingSession(long trainingSessionId) {
-        trainingSessionRepository.deleteById(trainingSessionId);
-        return Response.accepted().build();
+        Log.info("Trying to delete training session with id " + trainingSessionId );
+        try {
+            trainingSessionRepository.deleteById(trainingSessionId);
+            Log.info("Deleted training session with id " + trainingSessionId );
+            return Response.ok().build();
+        } catch (Exception exception) {
+            Log.info("Error occurred while deleting training session with id " + trainingSessionId );
+            return Response.serverError().build();
+        }
     }
 
     /**

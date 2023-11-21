@@ -104,7 +104,7 @@ public class ServiceHelper {
      * @param id from user in db
      * @return User or null
      */
-    public User getCurrentUser(long id) {
+    public User getCurrentUser(final long id) {
         User user = userRepository.findById(id);
         if(user != null) {
             Log.error("User found: " + user);
@@ -129,35 +129,43 @@ public class ServiceHelper {
         }
     }
 
-    public String convertByteArrayToDataUrl(final byte[] sketchBinaryData) {
-        System.out.println("Hello!");
-        final String base64String = Base64.getEncoder().encodeToString(sketchBinaryData);
-        return "data:image/png;base64," + base64String;
-    }
-
-    public <T> String convertEntityToJson(T entity) {
+    /**
+     * Converts the passed entity (generic pojo) to json.
+     * @param entity from db, generic
+     * @return json string
+     */
+    public <T> String convertEntityToJson(T entity) throws Exception {
         if(entity != null) {
+            Log.info("Trying to convert " + entity + "into json");
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.registerModule(new JavaTimeModule());
                 String entityAsJson = objectMapper.writeValueAsString(entity);
                 System.out.println(entityAsJson);
                 return entityAsJson;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                Log.error("Error occurred while converting entity into json", exception);
+                throw new Exception();
             }
         }
         return null;
     }
-    public String convertJsonToXML(final String json) {
+
+    /**
+     * Converting json into xml.
+     * Needed for pdf generation.
+     * @param json to convert
+     * @return xml
+     */
+    public String convertJsonToXML(final String json) throws Exception {
+        Log.info("Trying to convert " + json + "into xml");
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode jsonNode = objectMapper.readTree(json);
-            String xmlString = new XmlMapper().writeValueAsString(jsonNode);
-            System.out.println(xmlString);
-            return xmlString;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new XmlMapper().writeValueAsString(jsonNode);
+        } catch (JsonProcessingException exception) {
+            Log.error("Error occurred while converting json into xml", exception);
+            throw new Exception(exception);
         }
     }
 }

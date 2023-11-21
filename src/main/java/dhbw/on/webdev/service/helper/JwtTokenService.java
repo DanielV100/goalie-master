@@ -10,6 +10,10 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.time.Duration;
 
 
+/**
+ * Class for everything jwt token related.
+ * @author daniel
+ */
 @ApplicationScoped
 public class JwtTokenService {
     @Inject

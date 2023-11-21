@@ -3,7 +3,6 @@ package dhbw.on.webdev.controller._training_session;
 import dhbw.on.webdev.model.entities.TrainingSession;
 import dhbw.on.webdev.service._training_session.TrainingSessionService;
 import io.quarkus.logging.Log;
-import io.quarkus.mailer.Mail;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -15,6 +14,10 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
 import java.util.List;
 
+/**
+ * REST-Endpoint-Handlers for training session entity.
+ * @author daniel
+ */
 @Path("/training_session")
 @SecurityScheme(
         scheme = "bearer",
@@ -23,6 +26,7 @@ import java.util.List;
 )
 @RolesAllowed("user")
 public class TrainingSessionResource {
+    /**** CDI ****/
     @Inject
     TrainingSessionService trainingSessionService;
 

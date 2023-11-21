@@ -24,6 +24,12 @@ const entityId = ref(26);
 const entityType = ref();
 const isShowingOverview = ref(true);
 
+const isPastDate = (dateStr) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const elementDate = new Date(dateStr);
+  return elementDate < today;
+};
 /**** HOOKS ****/
 onMounted( () => {
   init();
@@ -69,16 +75,16 @@ async function deleteItemClicked(event) {
   if (confirm('Sind Sie sicher?')) {
     const id = getIdFromClickedElement(event);
     if(isTrainingSession.value === true) {
-      await deleteTrainingSession(id);
+      alert(await deleteTrainingSession(id));
       await refreshAfterTrainingSessionDeleted();
     }
     if(isExercise.value === true) {
-      await deleteExercise(id);
+      alert(await deleteExercise(id));
       await refreshAfterExerciseDeleted();
 
     }
     if(isGoalkeeper.value === true) {
-      await deleteGoalkeeper(id);
+      alert(await deleteGoalkeeper(id));
       await refreshAfterGoalkeeperDeleted();
     }
   }
@@ -149,13 +155,13 @@ function isValidEmail(mail) {
 
 /**** DELETE HANDLERS ****/
 async function deleteTrainingSession(id) {
-  await DeleteRequestFunctions.deleteEntityById('training_session', id);
+  return await DeleteRequestFunctions.deleteEntityById('training_session', id);
 }
 async function deleteExercise(id) {
-  await DeleteRequestFunctions.deleteEntityById('exercise', id);
+  return await DeleteRequestFunctions.deleteEntityById('exercise', id);
 }
 async function deleteGoalkeeper(id) {
-  await DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
+  return await DeleteRequestFunctions.deleteEntityById('goalkeeper', id);
 }
 
 /**** REFRESH HANDLERS ****/
@@ -194,15 +200,15 @@ async function downloadPdf(id) {
   URL.revokeObjectURL(link.href);
 }
 
+/**
+ * Method for triggering the http-request for getting pdf as mail.
+ * @param id
+ * @param mail
+ * @returns {Promise<void>}
+ */
 async function sendEmail(id, mail) {
   try {
-    const success = await GetRequestFunctions.getTrainingSessionAsMail(id, mail);
-    console.log(success);
-    if(success.includes('200')) {
-      alert('Mail erfolgreich gesendet!');
-    } else {
-      alert('Es ist ein Fehler aufgetreten!');
-    }
+    alert(await GetRequestFunctions.getTrainingSessionAsMail(id, mail));
   } catch (error) {
     console.error('Fehler beim Senden der E-Mail:', error);
     alert('Ein unerwarteter Fehler ist aufgetreten.');
@@ -233,7 +239,7 @@ async function sendEmail(id, mail) {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="element in elements">
+        <tr v-for="element in elements" :class="{ 'past-date': isPastDate(element.date) }">
           <td>{{ element.id }}</td>
           <td v-if="isTrainingSession || isExercise">{{ element.title }}</td>
           <td v-if="isTrainingSession">{{ element.date }}</td>
@@ -276,5 +282,8 @@ button {
 }
 .delete {
   color: red;
+}
+.past-date {
+  background-color: var(--placeholderColor);
 }
 </style>

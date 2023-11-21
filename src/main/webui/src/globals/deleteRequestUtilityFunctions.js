@@ -20,8 +20,8 @@ export async function deleteEntityById(entity, id) {
                 Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             }
         });
-        return response.data;
+        return 'Löschen war erfolgreich';
     } catch (error) {
-        return error;
+        return 'Ein Fehler ist aufgetreten. Möglicherweise befindet sich das zu löschende Element noch in einer Trainingseinheit: ' + error;
     }
 }

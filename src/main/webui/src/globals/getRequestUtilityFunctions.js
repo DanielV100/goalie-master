@@ -109,10 +109,9 @@ export async function getTrainingSessionAsMail(id, mail) {
                 Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             },
         });
-        console.log('Response data: '+response.headers);
-        return response.data;
+        return 'Mail wurde versand';
     } catch (error) {
-        return error;
+        return 'Es ist ein Fehler aufgetreten: ' + error;
     }
 }
 
