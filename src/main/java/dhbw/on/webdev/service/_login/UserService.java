@@ -7,9 +7,15 @@ import dhbw.on.webdev.service.helper.JwtTokenService;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
+import java.sql.PreparedStatement;
 import java.util.List;
 
+/**
+ * @author daniel
+ */
 @ApplicationScoped
 public class UserService {
     @Inject
@@ -32,7 +38,7 @@ public class UserService {
      * @param userCredentials
      * @return http-status-code
      */
-    public Response loginUser(UserCredentials userCredentials) {
+    public Response loginUser(final UserCredentials userCredentials) {
         User user = getAuthenticatedUser(userCredentials, getAllUsers());
         if(user != null) {
             return Response.ok(jwtTokenService.generateJwtToken(user.getId(), user.getName())).build();
@@ -47,7 +53,7 @@ public class UserService {
      * @param allUsers
      * @return User as a objet or null
      */
-    private User getAuthenticatedUser(UserCredentials userCredentials, List<User> allUsers) {
+    private User getAuthenticatedUser(final UserCredentials userCredentials, final List<User> allUsers) {
         User authenticatedUser = null;
         String username = userCredentials.getUsername();
         String password = userCredentials.getPassword();
@@ -59,5 +65,20 @@ public class UserService {
             }
         }
         return authenticatedUser;
+    }
+
+    /**
+     * Fast way to chang users password.
+     * @param newPassword from client
+     * @return Response ok(), serverError()
+     */
+    @Transactional
+    public Response changeUsersPassword(final String newPassword) {
+        User user = userRepository.findById(jwtTokenService.getUserIdFromJwtToken());
+        if(user != null) {
+            user.setPassword(userRepository.hashPassword(newPassword));
+            return Response.ok().build();
+        }
+        return Response.serverError().build();
     }
 }

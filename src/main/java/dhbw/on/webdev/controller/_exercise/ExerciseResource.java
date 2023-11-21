@@ -1,8 +1,5 @@
 package dhbw.on.webdev.controller._exercise;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dhbw.on.webdev.model.dto.ExerciseDTO;
 import dhbw.on.webdev.model.entities.Exercise;
 import dhbw.on.webdev.service._exercise.ExerciseService;

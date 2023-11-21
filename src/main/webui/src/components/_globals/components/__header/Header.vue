@@ -7,7 +7,24 @@
 /**** CONFIGS ****/
 import * as GlobalConfig from '@/globals/gloablConfig.js';
 import * as SessionStorageFunctions from '@/globals/sessionStorageUtilitiyFunctions.js';
+import axios from "axios";
+import * as UtilityFunctions from "@/globals/utilityFunctions";
+import * as LocalConfig from "@/components/_detailed/components/__goalkeeperForm/resources/addGoalkeeperFormConfig";
 
+/**** HTTP-REQUESTS ****/
+const isUpdatingPasswordSuccessful = async (newPassword) => {
+  try {
+    await axios.put('/login/update', newPassword, {
+      headers: {
+        'Content-Type':'text/plain',
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return 'Passwort aktualisiert!';
+  } catch (error) {
+    return 'Fehler aufgetretetn - Passwort muss mindestes sechs Zeichen lang sein!' + error;
+  }
+}
 /**** CLICK-HANDLERS ****/
 function logOutClicked() {
   SessionStorageFunctions.clearSessionStorage();
@@ -17,8 +34,21 @@ function logOutClicked() {
 function logoClicked() {
   GlobalConfig.changeWindowToTargetRoute('Overview');
 }
-function userIconClicked() {
+
+/**
+ * User can change it's password by clicking on user icon.
+ */
+async function userIconClicked() {
+  const newPassword = prompt("Neues Passwort eingeben");
+  if(newPassword.length > 6) {
+    alert(await isUpdatingPasswordSuccessful(newPassword));
+  } else {
+    alert("Passwort muss mindestens 6 Zeichen enthalten!");
+  }
 }
+
+
+
 
 </script>
 

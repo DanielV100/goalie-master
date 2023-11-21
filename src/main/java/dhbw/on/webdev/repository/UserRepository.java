@@ -15,7 +15,7 @@ public class UserRepository implements PanacheRepository<User> {
         persist(user);
     }
 
-    private String hashPassword(final String password) {
+    public String hashPassword(final String password) {
         return BcryptUtil.bcryptHash(password);
     }
 }
