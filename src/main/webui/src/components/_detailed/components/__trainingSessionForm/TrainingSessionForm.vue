@@ -70,9 +70,23 @@ onMounted(async () => {
 });
 
 /**** HTTP-REQUESTS ****/
-const isCreatingTrainingSessionSuccessful = async () => {
+const isCreatingTrainingSessionSuccessful = async (trainingSession) => {
   try {
-    await axios.post('/training_session/create', createTrainingSessionObjectForResponse(), {
+    await axios.post('/training_session/create', trainingSession, {
+      headers: {
+        Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
+      }
+    });
+    return true;
+  } catch (error) {
+    errorMessage.value = UtilityFunctions.errorHandling(error, LocalConfig.BUTTON_ADD_GOALKEEPER);
+    return false;
+  }
+}
+
+const isCreatingRandomTrainingSessionSuccessful = async (trainingSession) => {
+  try {
+    await axios.post('/training_session/random', trainingSession, {
       headers: {
         Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
       }
@@ -109,7 +123,13 @@ async function onSubmitClick() {
   if(props.isEditView) {
     isSuccessful = await isUpdatingExistingTrainingSessionSuccessful();
   } else {
-    isSuccessful = await isCreatingTrainingSessionSuccessful();
+    const trainingSession = createTrainingSessionObjectForResponse();
+    if(checkIfTrainingSessionShouldBeRandom(trainingSession)) {
+      isSuccessful = await isCreatingRandomTrainingSessionSuccessful(trainingSession);
+    } else {
+      isSuccessful = await isCreatingTrainingSessionSuccessful(trainingSession);
+    }
+
   }
   if(isSuccessful) {
     isNotSubmitted.value = false;
@@ -142,6 +162,16 @@ function createTrainingSessionObjectForResponse() {
   }
   return trainingSession;
 }
+
+/**
+ * If user adds no exercises to training session, a random training session is generated.
+ * @param trainingSession
+ * @returns {boolean}
+ */
+function checkIfTrainingSessionShouldBeRandom(trainingSession) {
+  return trainingSession.exerciseIds.length === 0;
+}
+
 
 
 /**

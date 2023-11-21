@@ -2,6 +2,7 @@ package dhbw.on.webdev.controller._training_session;
 
 import dhbw.on.webdev.model.entities.TrainingSession;
 import dhbw.on.webdev.service._training_session.TrainingSessionService;
+import io.quarkus.logging.Log;
 import io.quarkus.mailer.Mail;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.security.RolesAllowed;
@@ -29,13 +30,13 @@ public class TrainingSessionResource {
     @GET
     @Path("/get/specific")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
+    public final List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
         return trainingSessionService.getAllTrainingSessionsFromCurrentUser();
     }
     @GET
     @Path("/download/{id}")
     @Produces("application/pdf")
-    public Response getTrainingSessionAsPdf(@PathParam("id") final long trainingSessionId) {
+    public final Response getTrainingSessionAsPdf(@PathParam("id") final long trainingSessionId) {
         return trainingSessionService.getTrainingSessionAsPdf(trainingSessionId);
     }
 
@@ -50,7 +51,7 @@ public class TrainingSessionResource {
     @Path ("mail/{id}/{mail}")
     @Blocking
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sendMailWithAttachedTrainingSession(@PathParam("id") final long trainingSessionId, @PathParam("mail") final String mail) {
+    public final Response sendMailWithAttachedTrainingSession(@PathParam("id") final long trainingSessionId, @PathParam("mail") final String mail) {
         if(trainingSessionId > 0 && mail.contains("@")) {
             return trainingSessionService.sendMailWithAttachedTrainingSession(trainingSessionId, mail);
         }
@@ -62,8 +63,24 @@ public class TrainingSessionResource {
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createNewTrainingSession(TrainingSession trainingSession) {
-        return trainingSessionService.createNewTrainingSession(trainingSession);
+    public final Response createNewTrainingSession(final TrainingSession trainingSession) {
+        if(trainingSession != null) {
+            return trainingSessionService.createNewTrainingSession(trainingSession);
+        }
+        Log.error("Passed training session is null");
+        return Response.status(400).build();
+    }
+
+    @POST
+    @Path("/random")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public final Response createNewRandomTrainingSession(final TrainingSession trainingSession) {
+        if(trainingSession != null) {
+            return trainingSessionService.generateRandomTraining(trainingSession);
+        }
+        Log.error("Passed training session is null");
+        return Response.status(400).build();
     }
 
     /**** PUT-REQUEST-HANDLERS ****/
@@ -71,7 +88,7 @@ public class TrainingSessionResource {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
+    public final Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
         return trainingSessionService.updateExistingTrainingSession(updatedTrainingSession);
     }
 
@@ -80,7 +97,7 @@ public class TrainingSessionResource {
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteTrainingSession(@PathParam("id") long trainingSessionId) {
+    public final Response deleteTrainingSession(@PathParam("id") long trainingSessionId) {
         return trainingSessionService.deleteTrainingSession(trainingSessionId);
     }
 }

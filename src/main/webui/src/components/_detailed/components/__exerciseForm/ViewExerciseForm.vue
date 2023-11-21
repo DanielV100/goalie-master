@@ -89,20 +89,26 @@ function fillFormFields() {
           </div>
           <div class="input-box">
             <label>{{ LocalConfig.FORM_CATEGORY_LABEL }}</label>
-            <select :disabled="true" v-model="category" name="cars" id="cars">
-              <option value="others">Sonstige</option>
+            <select v-model="category" name="categories" required>
               <optgroup label="Aufwärmen">
                 <option value="coordination">{{ LocalConfig.CATEGORY_WARM_UP_COORDINATION }}</option>
                 <option value="balance_ability">{{ LocalConfig.CATEGORY_WARM_UP_BALANCE_ABILITY }}</option>
                 <option value="balance_ability">{{ LocalConfig.CATEGORY_WARM_UP_JUMP_COORDINATION }}</option>
+                <option value="agility">{{ LocalConfig.CATEGORY_WARM_UP_AGILITY }}</option>
+                <option value="flexibility">{{ LocalConfig.CATEGORY_WARM_UP_FLEXIBILITY }}</option>
+                <option value="other">{{ LocalConfig.OTHER }}</option>
               </optgroup>
               <optgroup label="Hauptteil">
                 <option value="1vs1">{{ LocalConfig.CATEGORY_MAIN_1vs1 }}</option>
                 <option value="pike">{{ LocalConfig.CATEGORY_MAIN_PIKE }}</option>
+                <option value="positioning">{{ LocalConfig.CATEGORY_MAIN_POSITIONING }}</option>
+                <option value="reflexes">{{ LocalConfig.CATEGORY_MAIN_REFLEXES }}</option>
+                <option value="other">{{ LocalConfig.OTHER }}</option>
               </optgroup>
               <optgroup label="Abschluss">
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
+                <option value="cool_down_stretch">{{ LocalConfig.CATEGORY_COOL_DOWN_STRETCH }}</option>
+                <option value="mental_relaxation">{{ LocalConfig.CATEGORY_COOL_DOWN_MENTAL_RELAXATION }}</option>
+                <option value="other">{{ LocalConfig.OTHER }}</option>
               </optgroup>
             </select>
           </div>

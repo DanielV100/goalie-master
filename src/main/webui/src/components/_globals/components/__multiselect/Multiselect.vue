@@ -10,12 +10,13 @@ import { ref } from 'vue';
 import VueMultiselect from 'vue-multiselect';
 /**** VARIABLES ****/
 const multiValue = ref([]);
-const multiselectOptions = props.multiselectOptions;
+
 /**** PROPS ****/
 const props = defineProps({
   multiselectOptions: Object,
   preselectedValues: Object
 });
+const multiselectOptions = props.multiselectOptions;
 multiValue.value = props.preselectedValues;
 </script>
 

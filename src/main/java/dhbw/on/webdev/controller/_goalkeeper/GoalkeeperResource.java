@@ -57,9 +57,9 @@ public class GoalkeeperResource {
     public Response updateExistingGoalkeeper(Goalkeeper goalkeeper) {
         if(goalkeeper != null) {
             return goalkeeperService.updateExistingGoalkeeper(goalkeeper);
-        } else {
-            return Response.status(400).build();
         }
+
+        return Response.status(400).build();
 
     }
 

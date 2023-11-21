@@ -9,7 +9,6 @@ import dhbw.on.webdev.repository.ExerciseRepository;
 import dhbw.on.webdev.repository.GoalkeeperRepository;
 import dhbw.on.webdev.repository.TrainingSessionRepository;
 import dhbw.on.webdev.repository.UserRepository;
-import dhbw.on.webdev.service._exercise.ExerciseService;
 import dhbw.on.webdev.service.helper.JwtTokenService;
 import dhbw.on.webdev.service.helper.ServiceHelper;
 import io.quarkus.logging.Log;
@@ -25,6 +24,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class TrainingSessionService {
+    /**** CDI ****/
     @Inject
     TrainingSessionRepository trainingSessionRepository;
 
@@ -47,36 +47,19 @@ public class TrainingSessionService {
     ServiceHelper serviceHelper;
 
     @Inject
-    ExerciseService exerciseService;
-
-    @Inject
     MailService mailService;
 
-    @Transactional
-    public Response createNewTrainingSession(TrainingSession trainingSession) {
-        trainingSession.setExercises(new ArrayList<>());
-        trainingSession.setGoalkeepers(new ArrayList<>());
-        if(trainingSession.getGoalkeeperIds() != null) {
-            for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
-                //new instance needed, otherwise it's a detached entity
-                Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
-                trainingSession.getGoalkeepers().add(goalkeeper);
-            }
-        }
-        if(trainingSession.getExerciseIds() != null) {
-            for(long exerciseId : trainingSession.getExerciseIds()) {
-                Exercise exercise = exerciseRepository.findById(exerciseId);
-                trainingSession.getExercises().add(exercise);
-            }
-        }
-
-        trainingSession.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
-        trainingSessionRepository.persist(trainingSession);
-        return Response.ok().build();
-    }
-
+    /**** GET-REQUEST-SERVICES ****/
+    /**
+     * Getting all training sessions from current user and hiding sensitive data.
+     * @return Training session or an empty array list
+     */
     public List<TrainingSession> getAllTrainingSessionsFromCurrentUser() {
-        return clearUnnecessaryDataForResponse(trainingSessionRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+        try {
+            return clearUnnecessaryDataForResponse(trainingSessionRepository.list("user", userRepository.findById(jwtTokenService.getUserIdFromJwtToken())));
+        } catch (NullPointerException exception) {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -116,32 +99,75 @@ public class TrainingSessionService {
             return Response.serverError().build();
         }
     }
+    /**** POST-REQUEST-SERVICES ****/
 
-    //Wieso User von Goalkeeper und Exercises nicht gleich bei der Abfrage bereinigen?
-    private List<TrainingSession> clearUnnecessaryDataForResponse(List<TrainingSession> trainingSessions) {
-        for(TrainingSession trainingSession : trainingSessions) {
-            /*List<Goalkeeper> goalkeepers = trainingSession.getGoalkeepers();
-            for(Goalkeeper goalkeeper : goalkeepers) {
-                goalkeeper.setUser(null);
-                goalkeeper.setBirthday(null);
-                goalkeeper.setClub(null);
-                goalkeeper.setNotes(null);
-            }*/
-            List<Exercise> exercises = trainingSession.getExercises();
-            for(Exercise exercise : exercises) {
-                exercise.setUser(null);
+    /**
+     * Method for adding a new training session to the db.
+     * @param trainingSession from client
+     * @return Response ok() or serverError();
+     */
+    @Transactional
+    public Response createNewTrainingSession(final TrainingSession trainingSession) {
+        Log.info("Trying to add new training session");
+        trainingSession.setExercises(new ArrayList<>());
+        trainingSession.setGoalkeepers(new ArrayList<>());
+        if(trainingSession.getGoalkeeperIds() != null) {
+            for(long goalkeeperId : trainingSession.getGoalkeeperIds()) {
+                //new instance needed, otherwise it's a detached entity
+                Goalkeeper goalkeeper = goalkeeperRepository.findById(goalkeeperId);
+                trainingSession.getGoalkeepers().add(goalkeeper);
             }
+        } else {
+            Log.warn("No goalkeepers found in training session: " + trainingSession.getTitle());
         }
-        return trainingSessions;
+        if(trainingSession.getExerciseIds() != null) {
+            for(long exerciseId : trainingSession.getExerciseIds()) {
+                Exercise exercise = exerciseRepository.findById(exerciseId);
+                trainingSession.getExercises().add(exercise);
+            }
+        } else {
+            Log.warn("No exercises found in training session: " + trainingSession.getTitle());
+        }
+        try {
+            trainingSession.setUser(userRepository.findById(jwtTokenService.getUserIdFromJwtToken()));
+            trainingSessionRepository.persist(trainingSession);
+            return Response.ok().build();
+        } catch (Exception exception) {
+            Log.error("Error occured while persisting training session", exception);
+            return Response.serverError().build();
+        }
     }
 
     @Transactional
-    public Response deleteTrainingSession(long trainingSessionId) {
-        generateRandomTraining("Test", LocalDate.parse("2018-12-27"));
-        trainingSessionRepository.deleteById(trainingSessionId);
-        return Response.accepted().build();
+    public Response generateRandomTraining(TrainingSession trainingSession) {
+        final long userId = jwtTokenService.getUserIdFromJwtToken();
+        if(userId > 0) {
+            TrainingSession randomTrainingSession = new TrainingSession(trainingSession.getTitle(), trainingSession.getDate());
+            List<Long> exerciseIds = new ArrayList<>();
+            List<Exercise> exercises = new ArrayList<>();
+            if(trainingSession.getGoalkeeperIds() != null) {
+                trainingSession.setGoalkeeperIds(trainingSession.getGoalkeeperIds());
+                exercises = exerciseRepository.getExercisesByMaximumNumberOfGoalkeeper(trainingSession.getGoalkeeperIds().size(), userId);
+            }  else {
+                exercises = exerciseRepository.list("user", userId);
+            }
+            if(exercises.size() > 5) {
+                exerciseIds = new ArrayList<>();
+                for (Exercise exercise : exercises) {
+                    exerciseIds.add(exercise.getId());
+                }
+            }
+            System.out.println("Exercise ID'S" + exerciseIds.size());
+            Collections.shuffle(exerciseIds);
+            randomTrainingSession.setExerciseIds(exerciseIds.subList(0,5));
+            randomTrainingSession.setUser(userRepository.findById(userId));
+            createNewTrainingSession(randomTrainingSession);
+
+        }
+        return Response.ok().build();
     }
 
+    /**** PUT-REQUEST-SERVICES ****/
     @Transactional
     public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
         TrainingSession trainingSession = trainingSessionRepository.findById(updatedTrainingSession.getId());
@@ -177,19 +203,42 @@ public class TrainingSessionService {
         }
     }
 
+
+    /**** DELETE-REQUEST-SERVICES ****/
     @Transactional
-    public void generateRandomTraining(final String title, final LocalDate date) {
-        final long numberOfExercisesInDB = exerciseRepository.count();
-        if (numberOfExercisesInDB > 5) {
-            TrainingSession randomTrainingSession = new TrainingSession(title, date);
-            List<Long> exerciseIds = new ArrayList<>();
-            for (int i = 0; i < numberOfExercisesInDB; i++) {
-                exerciseIds.add((long)i);
+    public Response deleteTrainingSession(long trainingSessionId) {
+        trainingSessionRepository.deleteById(trainingSessionId);
+        return Response.accepted().build();
+    }
+
+
+    /**
+     * Hiding all sensitive data from response. Better way to do
+     * it is via DTO-Pattern - but in this case it's somehow an overhead.
+     * @param trainingSessions as list to clear
+     * @return cleared training session as list
+     */
+    private List<TrainingSession> clearUnnecessaryDataForResponse(List<TrainingSession> trainingSessions) {
+        Log.info("Trying to clear sensitive data from training session");
+        if(trainingSessions != null) {
+            for(TrainingSession trainingSession : trainingSessions) {
+                List<Goalkeeper> goalkeepers = trainingSession.getGoalkeepers();
+                for(Goalkeeper goalkeeper : goalkeepers) {
+                    goalkeeper.setUser(null);
+                    goalkeeper.setBirthday(null);
+                    goalkeeper.setClub(null);
+                    goalkeeper.setNotes(null);
+                }
+                List<Exercise> exercises = trainingSession.getExercises();
+                for(Exercise exercise : exercises) {
+                    exercise.setUser(null);
+                }
+                trainingSession.setUser(null);
             }
-            Collections.shuffle(exerciseIds);
-            randomTrainingSession.setExerciseIds(exerciseIds.subList(0,5));
-            randomTrainingSession.setUser(userRepository.findById(1L));
-            createNewTrainingSession(randomTrainingSession);
+            return trainingSessions;
+        } else {
+            Log.error("No training session found");
+            throw new NullPointerException("No training session found");
         }
     }
 }

@@ -46,7 +46,10 @@ public class ExerciseResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addNewExercise(Exercise exercise) {
-        return exerciseService.addNewExercise(exercise);
+        if (exercise != null) {
+            return exerciseService.addNewExercise(exercise);
+        }
+        return Response.status(400).build();
     }
 
     /**** PUT-REQUEST-HANDLERS ****/
@@ -55,7 +58,10 @@ public class ExerciseResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateExistingExercise(Exercise updatedExercise) {
-        return exerciseService.updateExistingExercise(updatedExercise);
+        if(updatedExercise != null) {
+            return exerciseService.updateExistingExercise(updatedExercise);
+        }
+        return Response.status(400).build();
     }
 
     /**** DELETE-REQUEST-HANDLERS ****/

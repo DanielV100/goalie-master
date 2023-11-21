@@ -17,6 +17,7 @@ import java.util.List;
 public class ExerciseRepository implements PanacheRepository<Exercise> {
     /**
      * Method for getting goalkeepers by fields and field value.
+     * @important use this for response to client - because it's a dto!
      * @param field id, title...
      * @param fieldValue as a object
      * @return List of matching exercises
@@ -25,5 +26,16 @@ public class ExerciseRepository implements PanacheRepository<Exercise> {
         Log.info("Getting exercises by: " + field);
         PanacheQuery<ExerciseDTO> exerciseDTOPanacheQuery = find(field, fieldValue).project(ExerciseDTO.class);
         return exerciseDTOPanacheQuery.list();
+    }
+
+    /**
+     * Method for getting all exercises from user with a minimum amount of goalkeepers.
+     * @param maximumNumberOfGoalkeepers
+     * @param userId
+     * @return
+     */
+    public List<Exercise> getExercisesByMaximumNumberOfGoalkeeper(final int maximumNumberOfGoalkeepers, final long userId) {
+        Log.info("Getting all exercises ");
+        return list("numberOfGoalkeepers <= ?1 and user.id = ?2", maximumNumberOfGoalkeepers, userId);
     }
 }
