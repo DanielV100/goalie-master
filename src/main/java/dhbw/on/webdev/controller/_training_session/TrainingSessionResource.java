@@ -89,7 +89,11 @@ public class TrainingSessionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public final Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
-        return trainingSessionService.updateExistingTrainingSession(updatedTrainingSession);
+        if (updatedTrainingSession != null) {
+            return trainingSessionService.updateExistingTrainingSession(updatedTrainingSession);
+        }
+        Log.error("Passed training session is null");
+        return Response.status(400).build();
     }
 
     /**** DELETE-REQUEST-HANDLERS ****/
@@ -98,6 +102,10 @@ public class TrainingSessionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public final Response deleteTrainingSession(@PathParam("id") long trainingSessionId) {
-        return trainingSessionService.deleteTrainingSession(trainingSessionId);
+        if (trainingSessionId > 0) {
+            return trainingSessionService.deleteTrainingSession(trainingSessionId);
+        }
+        Log.error("Passed training session id is null");
+        return Response.status(400).build();
     }
 }

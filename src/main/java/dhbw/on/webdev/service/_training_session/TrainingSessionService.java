@@ -16,14 +16,20 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-
-import java.time.LocalDate;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This service class provides all training session-entity-related services.
+ * @author daniel
+ */
 @ApplicationScoped
 public class TrainingSessionService {
+    @ConfigProperty(name = "http.response.400.random")
+    String responseRandom;
+
     /**** CDI ****/
     @Inject
     TrainingSessionRepository trainingSessionRepository;
@@ -138,36 +144,53 @@ public class TrainingSessionService {
         }
     }
 
+    /**
+     * This method generates a training session with five random exercises
+     * depending on how many goalkeepers will attend at the training.
+     * If no goalkeeper is set, it's completely random.
+     * @param trainingSession from client
+     * @return Response ok(), 400,
+     */
     @Transactional
-    public Response generateRandomTraining(TrainingSession trainingSession) {
+    public Response generateRandomTraining(final TrainingSession trainingSession) {
+        Log.info("Trying to generate a random training");
         final long userId = jwtTokenService.getUserIdFromJwtToken();
         if(userId > 0) {
             TrainingSession randomTrainingSession = new TrainingSession(trainingSession.getTitle(), trainingSession.getDate());
-            List<Long> exerciseIds = new ArrayList<>();
-            List<Exercise> exercises = new ArrayList<>();
-            if(trainingSession.getGoalkeeperIds() != null) {
-                trainingSession.setGoalkeeperIds(trainingSession.getGoalkeeperIds());
-                exercises = exerciseRepository.getExercisesByMaximumNumberOfGoalkeeper(trainingSession.getGoalkeeperIds().size(), userId);
+            List<Long> exerciseIds;
+            List<Exercise> exercises;
+            if(trainingSession.getGoalkeeperIds().isEmpty()) {
+                exercises = exerciseRepository.list("user", userRepository.findById(userId));
             }  else {
-                exercises = exerciseRepository.list("user", userId);
+                randomTrainingSession.setGoalkeeperIds(trainingSession.getGoalkeeperIds());
+                exercises = exerciseRepository.getExercisesByMaximumNumberOfGoalkeeper(trainingSession.getGoalkeeperIds().size(), userRepository.findById(userId));
             }
             if(exercises.size() > 5) {
                 exerciseIds = new ArrayList<>();
                 for (Exercise exercise : exercises) {
                     exerciseIds.add(exercise.getId());
                 }
+                Collections.shuffle(exerciseIds);
+                randomTrainingSession.setExerciseIds(exerciseIds.subList(0,5));
+                randomTrainingSession.setUser(userRepository.findById(userId));
+                Log.info("Created random training");
+                return createNewTrainingSession(randomTrainingSession);
+            } else {
+                Log.error("There aren't a minimum of five exercises from user in repo");
+                return Response.status(400, responseRandom).build();
             }
-            System.out.println("Exercise ID'S" + exerciseIds.size());
-            Collections.shuffle(exerciseIds);
-            randomTrainingSession.setExerciseIds(exerciseIds.subList(0,5));
-            randomTrainingSession.setUser(userRepository.findById(userId));
-            createNewTrainingSession(randomTrainingSession);
-
         }
-        return Response.ok().build();
+        Log.error("Couldn't get users id");
+        return Response.status(400).build();
     }
 
     /**** PUT-REQUEST-SERVICES ****/
+
+    /**
+     * Method for updating an existing training session .
+     * @param updatedTrainingSession
+     * @return Response ok(), serverError() or 404
+     */
     @Transactional
     public Response updateExistingTrainingSession(TrainingSession updatedTrainingSession) {
         TrainingSession trainingSession = trainingSessionRepository.findById(updatedTrainingSession.getId());
@@ -203,14 +226,17 @@ public class TrainingSessionService {
         }
     }
 
-
     /**** DELETE-REQUEST-SERVICES ****/
+    /**
+     * Method for deleting training session by it's training session id.
+     * @param trainingSessionId
+     * @return
+     */
     @Transactional
     public Response deleteTrainingSession(long trainingSessionId) {
         trainingSessionRepository.deleteById(trainingSessionId);
         return Response.accepted().build();
     }
-
 
     /**
      * Hiding all sensitive data from response. Better way to do

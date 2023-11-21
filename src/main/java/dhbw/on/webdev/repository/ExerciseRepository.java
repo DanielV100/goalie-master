@@ -3,6 +3,7 @@ package dhbw.on.webdev.repository;
 import dhbw.on.webdev.model.dto.ExerciseDTO;
 import dhbw.on.webdev.model.dto.GoalkeeperDTO;
 import dhbw.on.webdev.model.entities.Exercise;
+import dhbw.on.webdev.model.entities.User;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.logging.Log;
@@ -31,11 +32,11 @@ public class ExerciseRepository implements PanacheRepository<Exercise> {
     /**
      * Method for getting all exercises from user with a minimum amount of goalkeepers.
      * @param maximumNumberOfGoalkeepers
-     * @param userId
+     * @param user
      * @return
      */
-    public List<Exercise> getExercisesByMaximumNumberOfGoalkeeper(final int maximumNumberOfGoalkeepers, final long userId) {
+    public List<Exercise> getExercisesByMaximumNumberOfGoalkeeper(final int maximumNumberOfGoalkeepers, final User user) {
         Log.info("Getting all exercises ");
-        return list("numberOfGoalkeepers <= ?1 and user.id = ?2", maximumNumberOfGoalkeepers, userId);
+        return list("numberOfGoalkeepers <= ?1 and user = ?2", maximumNumberOfGoalkeepers, user);
     }
 }

@@ -118,11 +118,26 @@ function disableLastDeleteButton(selector) {
 
 function getErrorMessageFromHttpError(error) {
     const errorAsString = String(error);
+
     if (errorAsString.includes('401')) {
         return 'Benutzername oder Passwort falsch.';
+    } else if (errorAsString.includes('403')) {
+        return 'Zugriff verweigert. Sie haben keine Berechtigung, auf diese Ressource zuzugreifen.';
+    } else if (errorAsString.includes('404')) {
+        return 'Die angeforderte Ressource wurde nicht gefunden.';
+    } else if (errorAsString.includes('500')) {
+        return 'Interner Serverfehler. Bitte versuchen Sie es später noch einmal.';
+    } else if (errorAsString.includes('502')) {
+        return 'Schlechtes Gateway. Probleme bei der Verbindung zum Server.';
+    } else if (errorAsString.includes('503')) {
+        return 'Dienst nicht verfügbar. Der Server ist derzeit nicht erreichbar.';
+    } else if (errorAsString.includes('504')) {
+        return 'Gateway-Zeitüberschreitung. Die Anfrage hat zu lange gedauert.';
     } else {
-        return 'Es ist ein unbekannter Fehler aufgetreten.';
+        console.log(error);
+        return error;
     }
+
 }
 
 function showErrorDialog() {
