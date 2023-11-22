@@ -64,8 +64,6 @@
                                 </fo:table-row>
                             </fo:table-header>
                             <fo:table-body>
-                                <!-- Daten für jeden Torhüter -->
-
                                 <xsl:for-each select="goalkeepers">
                                     <fo:table-row>
                                         <fo:table-cell border="solid 1pt">
@@ -83,10 +81,10 @@
                             </fo:table-body>
                         </fo:table>
                     </xsl:if>
-
                     <fo:block font-size="14pt" font-weight="bold" margin-top="5pt" margin-bottom="5pt">
                         Übungen im Überblick
                     </fo:block>
+                    <xsl:if test="exercises">
                     <fo:table width="100%" border="solid 1pt" table-layout="fixed">
                         <fo:table-column column-width="20%"/>
                         <fo:table-column column-width="40%"/>
@@ -109,7 +107,6 @@
                             </fo:table-row>
                         </fo:table-header>
                         <fo:table-body>
-                            <!-- Daten für jeden Torhüter -->
                             <xsl:for-each select="exercises">
                                 <fo:table-row>
                                     <fo:table-cell border="solid 1pt">
@@ -128,21 +125,21 @@
                             </xsl:for-each>
                         </fo:table-body>
                     </fo:table>
+                    </xsl:if>
+                    <xsl:if test="notes">
                     <fo:block font-size="14pt" font-weight="bold" margin-top="5pt" margin-bottom="5pt">
                         Notizen zur Trainingseinheit
                     </fo:block>
                     <fo:block font-size="12pt" wrap-option="wrap">
                         <xsl:value-of select="notes"/>
                     </fo:block>
-
+                    </xsl:if>
+                    <xsl:if test="exercises">
                     <xsl:for-each select="exercises">
                         <fo:block page-break-before="always" font-size="14pt" font-weight="bold" margin-top="10pt">
                             <xsl:value-of select="concat(categoryGroup, ': ', title)"/>
                         </fo:block>
-
-                        <!-- Basisinformationen-Tabelle -->
                         <fo:table width="100%" border="solid 1pt" table-layout="fixed">
-                            <!-- Tabellenkopf mit Kategorien -->
                             <fo:table-header>
                                 <fo:table-row>
                                     <fo:table-cell border="solid 1pt" background-color="#5fbf81">
@@ -177,6 +174,7 @@
                             </fo:table-body>
                         </fo:table>
 
+                    <xsl:if test="materials">
                         <fo:table width="100%" border="solid 1pt" table-layout="fixed">
                             <fo:table-header>
                                 <fo:table-row>
@@ -207,9 +205,10 @@
                                     </fo:table-row>
                                 </xsl:for-each>
                                 </xsl:if>
-
                             </fo:table-body>
                         </fo:table>
+                    </xsl:if>
+
                         <xsl:if test="descriptionSteps">
                             <fo:table width="100%" border="solid 1pt" table-layout="fixed">
                                 <fo:table-column column-width="20%"/>
@@ -255,7 +254,9 @@
                                 Notizen: <xsl:value-of select="note"/>
                             </fo:block>
                         </xsl:if>
+
                     </xsl:for-each>
+                    </xsl:if>
                 </fo:flow>
             </fo:page-sequence>
         </fo:root>
