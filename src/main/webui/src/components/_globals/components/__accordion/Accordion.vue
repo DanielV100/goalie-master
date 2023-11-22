@@ -163,6 +163,9 @@ function generateRandomExerciseKey(exerciseKey) {
   }
 }
 
+function closeModalButton() {
+  document.getElementById(props.modalID).style.display = "none";
+}
 function convertTimeToNumber(timeString) {
   const [hours, minutes] = timeString.split(':').map(Number);
   return hours * 60 + minutes;
@@ -212,7 +215,7 @@ function convertNumberToTime(totalMinutes) {
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">{{ LocalConfig.MODAL_HEADING }}</h4>
-              <button type="button" class="close" id="closeModal">&times;</button>
+              <button @click="closeModalButton" type="button" class="close" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
               <div class="table-container">
@@ -256,7 +259,6 @@ function convertNumberToTime(totalMinutes) {
 </template>
 
 <style scoped>
-/* Style the buttons that are used to open and close the accordion panel */
 .exercise_accordion {
   display: flex;
   justify-content: space-between;
@@ -276,12 +278,11 @@ function convertNumberToTime(totalMinutes) {
   margin-top: 0;
 }
 .exercise_accordion i {
-  font-size: 1.5rem; /* Adjust the size of the icon */
+  font-size: 1.5rem;
 }
 .accordion_table td {
   border: none;
 }
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .exercise_accordion:hover {
   background-color: #ccc;
 }
@@ -339,12 +340,12 @@ button {
 }
 
 .modal-title {
-  flex: 1; /* Takes up remaining space */
-  margin: 0; /* Remove any default margin */
+  flex: 1;
+  margin: 0;
 }
 
 .close {
-  margin-left: 10px; /* Adjust as needed */
+  margin-left: 10px;
 }
 
 
