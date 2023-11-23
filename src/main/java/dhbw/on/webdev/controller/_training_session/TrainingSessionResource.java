@@ -41,7 +41,10 @@ public class TrainingSessionResource {
     @Path("/download/{id}")
     @Produces("application/pdf")
     public final Response getTrainingSessionAsPdf(@PathParam("id") final long trainingSessionId) {
-        return trainingSessionService.getTrainingSessionAsPdf(trainingSessionId);
+        if(trainingSessionId > 0) {
+            return trainingSessionService.getTrainingSessionAsPdf(trainingSessionId);
+        }
+        return Response.status(400).build();
     }
 
     /**

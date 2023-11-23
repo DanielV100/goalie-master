@@ -77,7 +77,7 @@ export async function getTrainingSessionAsPdf(id) {
     try {
         const response = await axios.get('training_session/download/'+id, {
             headers: {
-                accept: 'application/json',
+                accept: 'application/pdf',
                 Authorization: `Bearer ${SessionStorageFunctions.getJwtTokenFromSessionStorage()}`
             },
             responseType: 'blob'
